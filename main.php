@@ -8,7 +8,7 @@
 </head>
 
 <body>
-
+    <h1>Welcome to LaiRaiShop</h1>
 </body>
 
 </html>
