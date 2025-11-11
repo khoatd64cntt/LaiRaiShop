@@ -1,3 +1,3 @@
 # LaiRaiShop
 
-Hello World!
+Hướng dẫn sử dụng file LaiRaiShop:
