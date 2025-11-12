@@ -9,6 +9,7 @@
 
 <body>
     <h1>Welcome to LaiRaiShop</h1>
+    <h2></h2>
 </body>
 
 </html>
