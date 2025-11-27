@@ -18,7 +18,7 @@
         <div class="top-bar">
             <div class="container top-bar-content">
                 <div class="top-bar-left">
-                    <a href="#">Kênh Người Bán</a><span>|</span><a href="#">Trở thành Người bán</a><span>|</span>
+                    <a href="seller/dashboard.php">Kênh Người Bán</a><span>|</span><a href="#">Trở thành Người bán</a><span>|</span>
                     <div class="top-bar-connect">
                         <p>Kết nối</p> <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
                         <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
