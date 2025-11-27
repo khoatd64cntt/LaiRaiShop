@@ -1,11 +1,12 @@
 <?php
 // --- 1. CẤU HÌNH ĐƯỜNG DẪN GỐC (QUAN TRỌNG) ---
 // Tên thư mục dự án của bạn là LaiRaiShop
-$project_folder = '/LaiRaiShop';
+$project_folder = '/LaiRaiShop-1'; 
 
 // Tạo các biến đường dẫn tuyệt đối để dùng cho mọi nơi
-$url_admin = $project_folder . '/admin/';      // Ví dụ: /LaiRaiShop/admin/
+$url_admin = $project_folder . '/page/AdminPage/';      // Ví dụ: /LaiRaiShop/admin/
 $url_home  = $project_folder . '/';            // Ví dụ: /LaiRaiShop/
+$url_login = $project_folder . '/page/HomePage/LoginPage/login.php';
 
 // --- 2. KHỞI TẠO VÀ KẾT NỐI ---
 if (session_status() === PHP_SESSION_NONE) {
@@ -13,8 +14,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // Kết nối DB (Dùng __DIR__ để luôn tìm đúng file db.php dù đứng ở đâu)
-$db_path = __DIR__ . '/../../db/db.php';
-
+$db_path = __DIR__ . '/../../../db/db.php';
 if (file_exists($db_path)) {
     require_once $db_path;
 } else {
@@ -24,9 +24,10 @@ if (file_exists($db_path)) {
 }
 
 // --- 3. KIỂM TRA QUYỀN ADMIN ---
-if (!isset($_SESSION['aid']) || $_SESSION['role'] !== 'admin') {
-    // Chuyển hướng về trang login ở thư mục gốc
-    header("Location: " . $url_home . "login.php");
+// Cho phép truy cập nếu có session aid và role là admin
+if (!isset($_SESSION['aid']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    // Chuyển hướng về trang login
+    header("Location: " . $url_login);
     exit();
 }
 
@@ -121,29 +122,29 @@ if (!function_exists('formatCurrency')) {
                     <i class="fas fa-tachometer-alt mr-2"></i> Tổng quan
                 </a>
 
-                <a href="<?php echo $url_admin; ?>module/categories_list.php" class="list-group-item">
+                <a href="<?php echo $url_admin; ?>CategoriesPage/categories_list.php" class="list-group-item">
                     <i class="fas fa-list mr-2"></i> Danh mục
                 </a>
 
-                <a href="<?php echo $url_admin; ?>module/products_list.php" class="list-group-item">
+                <a href="<?php echo $url_admin; ?>ProductPage/products_list.php" class="list-group-item">
                     <i class="fas fa-box mr-2"></i> Sản phẩm
                 </a>
 
-                <a href="<?php echo $url_admin; ?>module/orders_list.php" class="list-group-item">
+                <a href="<?php echo $url_admin; ?>OrderPage/orders_list.php" class="list-group-item">
                     <i class="fas fa-file-invoice-dollar mr-2"></i> Đơn hàng
                 </a>
 
-                <a href="<?php echo $url_admin; ?>module/users_list.php" class="list-group-item">
+                <a href="<?php echo $url_admin; ?>UserPage/users_list.php" class="list-group-item">
                     <i class="fas fa-users mr-2"></i> Người dùng
                 </a>
 
-                <a href="<?php echo $url_admin; ?>module/reports_revenue.php" class="list-group-item">
+                <a href="<?php echo $url_admin; ?>ReportsRevenuePage/reports_revenue.php" class="list-group-item">
                     <i class="fas fa-chart-line mr-2"></i> Báo cáo
                 </a>
 
                 <div class="dropdown-divider border-secondary"></div>
 
-                <a href="<?php echo $url_home; ?>login.php?logout=true" class="list-group-item text-warning font-weight-bold">
+                <a href="<?php echo $url_login; ?>?logout=true" class="list-group-item text-warning font-weight-bold">
                     <i class="fas fa-sign-out-alt mr-2"></i> Đăng xuất
                 </a>
             </div>

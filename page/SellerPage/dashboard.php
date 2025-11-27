@@ -1,12 +1,11 @@
 <?php
 // seller/dashboard.php
-require_once 'seller_session.php'; // Bắt buộc phải có dòng này ở đầu
+require_once 'types/seller_session.php'; // Bắt buộc phải có dòng này ở đầu
 ?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <title>Kênh Người Bán - Dashboard</title>
-    <?php include 'includes/header_css.php'; // (Gợi ý: nên tách css ra file riêng nếu được) ?>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -18,9 +17,9 @@ require_once 'seller_session.php'; // Bắt buộc phải có dòng này ở đ�
                 <hr>
                 <ul class="nav flex-column">
                     <li class="nav-item"><a class="nav-link text-white active" href="dashboard.php">Tổng quan</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="products.php">Quản lý Sản phẩm</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="orders.php">Quản lý Đơn hàng</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="../homepage.php">Quay lại Web</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="ProductPage/products.php">Quản lý Sản phẩm</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#">Quản lý Đơn hàng</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="../HomePage/homepage.php">Quay lại Web</a></li>
                 </ul>
             </div>
 
