@@ -1,6 +1,6 @@
 <?php
 // seller/products.php
-require_once '../types/seller_session.php';
+require_once 'seller_session.php';
 
 $sid = $_SESSION['shop_id'];
 $sql = "SELECT * FROM products WHERE sid = $sid ORDER BY pid DESC";

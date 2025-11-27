@@ -1,6 +1,6 @@
 <?php
 // BƯỚC 1: NHÚNG HEADER & KẾT NỐI CSDL (Dùng require_once để an toàn)
-require_once '../Layout/header.php';
+require_once '../include/header.php';
 
 // BƯỚC 2: XỬ LÝ CẬP NHẬT TRẠNG THÁI KIỂM DUYỆT
 $message = '';
@@ -237,5 +237,5 @@ if (!$result) {
 </script>
 
 <?php
-include '../Layout/footer.php';
+include '../include/footer.php';
 ?>

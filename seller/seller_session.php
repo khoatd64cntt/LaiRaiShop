@@ -4,15 +4,15 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once '../../db/db.php'; // Kết nối CSDL
+require_once '../db/db.php'; // Kết nối CSDL
 
 // 1. Kiểm tra đăng nhập
-if (!isset($_SESSION['aid']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'seller') {
-    header("Location: /LaiRaiShop-1/page/HomePage/LoginPage/login.php");
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../login.php");
     exit();
 }
 
-$aid = $_SESSION['aid'];
+$aid = $_SESSION['user_id'];
 
 // 2. Kiểm tra xem user đã có Shop chưa
 // Lưu ý: Không kiểm tra shop nếu đang ở trang tạo shop để tránh lặp vô tận
@@ -24,7 +24,7 @@ if ($current_page != 'create_shop.php') {
 
     if ($res_check->num_rows == 0) {
         // Chưa có shop -> Đá sang trang tạo shop
-        header("Location: ../CreateSellerPage/create_shop.php");
+        header("Location: create_shop.php");
         exit();
     } else {
         // Đã có shop -> Lưu thông tin shop vào session để dùng tiện hơn
