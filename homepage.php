@@ -54,7 +54,6 @@
                 </div>
             </div>
         </div>
-
         <header class="lairai-header">
             <div class="container header-content">
                 <div class="logo"><a href="#"><img src="images/logo.png" alt="LaiRaiShop Logo"></a></div>
