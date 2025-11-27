@@ -9,7 +9,7 @@ require_once 'seller_session.php';
 
 $message = "";
 $error = "";
-
+///rsxgfhcvbj
 // Xử lý khi người dùng nhấn nút Đăng Ký
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $shop_name = trim($_POST['shop_name']); // trim để cắt khoảng trắng thừa
