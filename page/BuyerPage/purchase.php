@@ -1,5 +1,5 @@
 <?php 
-require_once 'db/db.php'; 
+require_once '../../db/db.php'; 
 
 // --- MOCK DATA (DỮ LIỆU GIẢ LẬP) ---
 // Bạn sẽ thay thế phần này bằng câu truy vấn SQL lấy từ bảng orders và order_details
@@ -70,8 +70,8 @@ $current_tab = isset($_GET['type']) ? $_GET['type'] : 'all';
     <title>LaiRaishop | Mua Sắm Trực Tuyến</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="css/homepage.css?v=4">
-    <link rel="icon" href="images/icon.png" />
+    <link rel="stylesheet" href="style/purchase.css?v=4">
+    <link rel="icon" href="../../images/icon.png" />
 </head>
 
 <body>
@@ -93,8 +93,8 @@ $current_tab = isset($_GET['type']) ? $_GET['type'] : 'all';
                             <div class="notify-icon-wrapper"><i class="fas fa-user-alt"></i></div>
                             <p>Đăng nhập để xem Thông báo</p>
                             <div class="dropdown-footer">
-                                <a href="register.php" class="btn-register">Đăng ký</a>
-                                <a href="login.php" class="btn-login">Đăng nhập</a>
+                                <a href="../../page/HomePage/SignupPage/signup.php" class="btn-register">Đăng ký</a>
+                                <a href="../../page/HomePage/LoginPage/login.php" class="btn-login">Đăng nhập</a>
                             </div>
                         </div>
                     </div>
@@ -111,14 +111,14 @@ $current_tab = isset($_GET['type']) ? $_GET['type'] : 'all';
                         </div>
                     </div>
 
-                    <a href="register.php" class="auth-link">Đăng Ký</a><span>|</span><a href="login.php" class="auth-link">Đăng Nhập</a>
+                    <a href="../../page/HomePage/SignupPage/signup.php" class="auth-link">Đăng Ký</a><span>|</span><a href="../../page/HomePage/LoginPage/login.php" class="auth-link">Đăng Nhập</a>
                 </div>
             </div>
         </div>
 
         <header class="lairai-header">
             <div class="container header-content">
-                <div class="logo"><a href="#"><img src="images/logo.png" alt="LaiRaiShop Logo"></a></div>
+                <div class="logo"><a href="#"><img src="../../images/logo.png" alt="LaiRaiShop Logo"></a></div>
 
                 <div class="search-box">
                     <form action="search.php" method="GET">
@@ -325,6 +325,6 @@ $current_tab = isset($_GET['type']) ? $_GET['type'] : 'all';
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/homepage.js?v=4"></script>
+    <script src="../../js/homepage.js?v=4"></script>
 </body>
 </html>
