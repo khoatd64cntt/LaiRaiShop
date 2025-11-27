@@ -1,6 +1,6 @@
 <?php
 // 1. Gọi Header
-include 'Layout/header.php';
+include 'include/header.php';
 
 // Giả lập số liệu
 $revenue = 5600000;
@@ -66,5 +66,5 @@ if (!function_exists('formatCurrency')) {
 
 <?php
 // 3. Gọi Footer
-include 'Layout/footer.php';
+include 'include/footer.php';
 ?>

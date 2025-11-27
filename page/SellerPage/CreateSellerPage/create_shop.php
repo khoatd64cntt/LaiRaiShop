@@ -5,7 +5,7 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 // Gọi file session (file này đã bao gồm kết nối db và check login)
-require_once '../types/seller_session.php';
+require_once 'seller_session.php';
 
 $message = "";
 $error = "";
@@ -33,8 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_SESSION['shop_id'] = $conn->insert_id;
                 $_SESSION['shop_name'] = $shop_name;
                 
-                // Chưển hướng về dashboard
-                header("Location: ../dashboard.php");
+                // Chuyển hướng về dashboard
+                header("Location: dashboard.php");
                 exit();
             } else {
                 $error = "Lỗi hệ thống: " . $conn->error;
@@ -98,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </button>
             
             <div class="text-center mt-3">
-                <a href="../../page/HomePage/homepage.php" class="text-secondary"><i class="fas fa-arrow-left"></i> Quay lại trang chủ</a>
+                <a href="../homepage.php" class="text-secondary"><i class="fas fa-arrow-left"></i> Quay lại trang chủ</a>
             </div>
         </form>
     </div>

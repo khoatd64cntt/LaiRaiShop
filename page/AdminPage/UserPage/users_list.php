@@ -1,6 +1,6 @@
 <?php
 // BƯỚC 1: NHÚNG HEADER
-require_once '../Layout/header.php';
+require_once '../include/header.php';
 
 // Lấy ID admin hiện tại từ Session để ngăn tự đổi quyền chính mình
 // (Session đã được set trong login.php: $_SESSION['aid'])
@@ -171,5 +171,5 @@ $result = $conn->query($sql);
 </script>
 
 <?php
-include '../Layout/footer.php';
+include '../include/footer.php';
 ?>
