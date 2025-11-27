@@ -8,26 +8,57 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    $sql = "SELECT * FROM acc WHERE username = ? AND password = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $username, $password);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    // Escape username để tránh lỗi SQL
+    $username_esc = $conn->real_escape_string($username);
 
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        $_SESSION['user_id'] = $row['aid'];
-        $_SESSION['username'] = $row['username'];
-        $_SESSION['fullname'] = $row['afname'] . ' ' . $row['alname'];
-        $_SESSION['role'] = $row['role'];
+    // Query tài khoản trong DB (bảng acc)
+    $sql = "SELECT * FROM acc WHERE username = '$username_esc'";
+    $result = $conn->query($sql);
 
-        header("Location: homepage.php");
-        exit();
+    if ($result->num_rows === 1) {
+        $user = $result->fetch_assoc();
+
+        if ($password === $user['password']) {
+            // Lưu session
+            $_SESSION['aid'] = $user['aid'];
+            $_SESSION['role'] = $user['role'];
+            $_SESSION['fullname'] = $user['afname'] . " " . $user['alname'];
+
+            // ✅ Điều hướng theo role
+            if ($user['role'] === "admin") {
+                header("Location: admin/dashboard.php");
+                exit;
+            }
+            elseif ($user['role'] === "seller") {
+                header("Location: seller.php");
+                exit;
+            }
+            elseif ($user['role'] === "user") {
+                header("Location: homepage.php");
+                exit;
+            }
+            else {
+                $error = "Tài khoản không có role hợp lệ!";
+            }
+        } else {
+            $error = "Mật khẩu không đúng!";
+        }
     } else {
-        $error = "Tên đăng nhập hoặc mật khẩu không đúng!";
+        // Ngoài DB không có nhưng check acc admin cứng
+        if ($username === "admin" && $password === "123456") {
+            $_SESSION['aid'] = 0;
+            $_SESSION['role'] = "admin";
+            $_SESSION['fullname'] = "Administrator";
+            header("Location: admin/dashboard.php");
+            exit;
+        }
+
+        $error = "Tên đăng nhập không tồn tại!";
     }
 }
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="vi">
