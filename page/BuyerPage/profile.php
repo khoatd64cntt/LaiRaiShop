@@ -1,77 +1,21 @@
 <?php 
-require_once 'db/db.php'; 
-
-// --- MOCK DATA (DỮ LIỆU GIẢ LẬP) ---
-// Bạn sẽ thay thế phần này bằng câu truy vấn SQL lấy từ bảng orders và order_details
-$orders = [
-    [
-        "id" => "ORDER123456",
-        "shop_name" => "Compliment Viet Nam",
-        "status" => "HOÀN THÀNH",
-        "status_code" => "completed", // completed, shipping, to_pay, etc.
-        "items" => [
-            [
-                "name" => "Sữa Rửa Mặt Trắng Da Dưỡng Ẩm Giảm Mụn Kiềm Dầu Loại Sạch Bụi Bẩn Compliment",
-                "variant" => "Phân loại hàng: GRM Salicylic 200ml",
-                "qty" => 1,
-                "old_price" => 254000,
-                "price" => 112000,
-                "img" => "https://down-vn.img.susercontent.com/file/sg-11134258-821dk-mh8uv7fap5vt17@resize_w1594_nl.webp" // Ảnh mẫu
-            ]
-        ],
-        "total" => 110000
-    ],
-    [
-        "id" => "ORDER789012",
-        "shop_name" => "Mỹ Phẩm Mã Phượng - Chính Hãng",
-        "status" => "HOÀN THÀNH",
-        "status_code" => "completed",
-        "items" => [
-            [
-                "name" => "Derma Forte Giảm Thâm Mụn, Dưỡng trắng mịn da bản thường - Mỹ Phẩm Mã Phượng",
-                "variant" => "Phân loại hàng: BẢN THƯỜNG",
-                "qty" => 1,
-                "old_price" => 120000,
-                "price" => 116000,
-                "img" => "https://down-vn.img.susercontent.com/file/ef1f336ecc6f97b790d5aae9916dcb72_tn"
-            ]
-        ],
-        "total" => 101000
-    ],
-    [
-        "id" => "ORDER345678",
-        "shop_name" => "Harumi - thế giới bông",
-        "status" => "HOÀN THÀNH",
-        "status_code" => "completed",
-        "items" => [
-            [
-                "name" => "(Combo 2 Gói) Bông Tẩy Trang Lamer 201 Miếng, Bông Tẩy Trang Miniso 180 Miếng",
-                "variant" => "Phân loại hàng: Lamer 201 miếng, 2 gói",
-                "qty" => 1,
-                "old_price" => 80000,
-                "price" => 68000,
-                "img" => "https://down-vn.img.susercontent.com/file/31234a27876fb89cd522d7e3db1ba5ca_tn"
-            ]
-        ],
-        "total" => 68000
-    ]
-];
-
-// Lấy tab hiện tại từ URL, mặc định là 'all'
-$current_tab = isset($_GET['type']) ? $_GET['type'] : 'all';
+session_start();
+require_once '../../db/db.php'; 
 ?>
-
 <!DOCTYPE html>
 <html lang="vi">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LaiRaishop | Mua Sắm Trực Tuyến</title>
+    <title>Hồ Sơ Của Tôi | LaiRaiShop</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="css/homepage.css?v=4">
-    <link rel="icon" href="images/icon.png" />
+    
+    <link rel="stylesheet" href="../HomePage/style/homepage.css?v=4">
+    <link rel="stylesheet" href="style/profile.css?v=1">
+    
+    <link rel="icon" href="../../images/icon.png" />
 </head>
 
 <body>
@@ -118,7 +62,7 @@ $current_tab = isset($_GET['type']) ? $_GET['type'] : 'all';
 
         <header class="lairai-header">
             <div class="container header-content">
-                <div class="logo"><a href="#"><img src="images/logo.png" alt="LaiRaiShop Logo"></a></div>
+                <div class="logo"><a href="#"><img src="../../images/logo.png" alt="LaiRaiShop Logo"></a></div>
 
                 <div class="search-box">
                     <form action="search.php" method="GET">
@@ -148,57 +92,143 @@ $current_tab = isset($_GET['type']) ? $_GET['type'] : 'all';
 
     <div class="container mt-4 mb-5">
         <div class="row">
-            
-            <div class="col-md-2 d-none d-md-block">
-                 <div class="profile-card">
+            <div class="col-md-3 d-none d-md-block">
+                <div class="profile-card">
                     <div class="profile-avatar">
                         <img src="https://placehold.co/50x50" alt="Avatar">
                     </div>
-                     <div class="profile-info">
-                         <div class="profile-name"></div>
-                        <a href="#" class="profile-edit"><i class="fas fa-pen"></i> Thông tin cá nhân</a>
-                    </div> 
-                    <li>
-                        <a href="#"><i class="fas fa-bell text-danger mr-2"></i> Thông Báo</a>
-                    </li>
-                    
+                    <div class="profile-info">
+                        <div class="profile-name">User Name</div>
+                        <a href="profile.php" class="profile-edit"><i class="fas fa-pen"></i> Sửa hồ sơ</a>
+                    </div>
                 </div>
 
                 <ul class="sidebar-menu">
-                    <li>
-                        <a href="#"><i class="fas fa-user text-primary mr-2"></i> Tài Khoản Của Tôi</a>
-                        <ul class="sidebar-submenu pl-4">
-                            <li><a href="#">Hồ Sơ</a></li>
+                    <li class="active">
+                        <a href="profile.php"><i class="fas fa-user text-primary mr-2"></i> Tài Khoản Của Tôi</a>
+                        <ul class="sidebar-submenu pl-4" style="display: block;">
+                            <li><a href="profile.php" class="text-danger">Hồ Sơ</a></li>
                             <li><a href="#">Ngân Hàng</a></li>
                             <li><a href="#">Địa Chỉ</a></li>
                             <li><a href="#">Đổi Mật Khẩu</a></li>
                         </ul>
                     </li>
                     <li>
-                        <a href="#"><i class="fas fa-file-alt text-primary mr-2"></i> Đơn Mua</a>
+                        <a href="purchase.php"><i class="fas fa-file-alt text-primary mr-2"></i> Đơn Mua</a>
                     </li>
-                    
+                    <li>
+                        <a href="#"><i class="fas fa-bell text-danger mr-2"></i> Thông Báo</a>
+                    </li>
                     <li>
                         <a href="#"><i class="fas fa-ticket-alt text-danger mr-2"></i> Kho Voucher</a>
                     </li>
                 </ul>
-            </div>  
+            </div>
+
+            <div class="col-md-9">
+                <div class="profile-main-card">
+                    <div class="profile-header">
+                        <h3>Hồ Sơ Của Tôi</h3>
+                        <p>Quản lý thông tin hồ sơ để bảo mật tài khoản</p>
+                    </div>
+                    <hr>
+                    
+                    <div class="profile-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <form action="" method="POST">
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label text-right">Tên đăng nhập</label>
+                                        <div class="col-sm-9">
+                                            <p class="form-control-plaintext">y4z7sm_t6j</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label text-right">Tên</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control" value="É">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label text-right">Email</label>
+                                        <div class="col-sm-9">
+                                            <span class="d-inline-block mt-2">cu*********@gmail.com</span> 
+                                            <a href="#" class="ml-2 text-primary">Thay Đổi</a>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label text-right">Số điện thoại</label>
+                                        <div class="col-sm-9">
+                                            <span class="d-inline-block mt-2">*********88</span> 
+                                            <a href="#" class="ml-2 text-primary">Thay Đổi</a>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label text-right">Giới tính</label>
+                                        <div class="col-sm-9 mt-2">
+                                            <div class="custom-control custom-radio custom-control-inline">
+                                                <input type="radio" id="male" name="gender" class="custom-control-input">
+                                                <label class="custom-control-label" for="male">Nam</label>
+                                            </div>
+                                            <div class="custom-control custom-radio custom-control-inline">
+                                                <input type="radio" id="female" name="gender" class="custom-control-input">
+                                                <label class="custom-control-label" for="female">Nữ</label>
+                                            </div>
+                                            <div class="custom-control custom-radio custom-control-inline">
+                                                <input type="radio" id="other" name="gender" class="custom-control-input" checked>
+                                                <label class="custom-control-label" for="other">Khác</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label text-right">Ngày sinh</label>
+                                        <div class="col-sm-9 d-flex">
+                                            <select class="form-control mr-2">
+                                                <option>Ngày</option>
+                                                <option>1</option><option>2</option>
+                                            </select>
+                                            <select class="form-control mr-2">
+                                                <option>Tháng</option>
+                                                <option>1</option><option>2</option>
+                                            </select>
+                                            <select class="form-control">
+                                                <option>Năm</option>
+                                                <option>2000</option><option>2001</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row mt-4">
+                                        <div class="col-sm-9 offset-sm-3">
+                                            <button type="button" class="btn btn-save">Lưu</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="avatar-upload text-center border-left">
+                                    <div class="avatar-preview">
+                                        <img src="https://placehold.co/100x100" class="rounded-circle" alt="Avatar">
+                                    </div>
+                                    <button class="btn btn-light btn-sm mt-3 border">Chọn Ảnh</button>
+                                    <div class="avatar-note mt-3 text-muted">
+                                        <small>Dụng lượng file tối đa 1 MB</small><br>
+                                        <small>Định dạng:.JPEG, .PNG</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     <footer class="lairai-footer">
         <div class="container">
@@ -325,6 +355,6 @@ $current_tab = isset($_GET['type']) ? $_GET['type'] : 'all';
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/homepage.js?v=4"></script>
+    <script src="../../js/homepage.js?v=4"></script>
 </body>
 </html>
