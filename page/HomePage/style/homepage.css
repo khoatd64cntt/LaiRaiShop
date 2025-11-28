@@ -23,8 +23,7 @@ body {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
-/* HEADER SECTION */
-/* Top Bar */
+/* Top bar */
 .top-bar {
     background: #135E4B;
     padding: 8px 0;
@@ -53,7 +52,6 @@ body {
 
 .top-bar a:hover { 
     opacity: 0.75; 
-    text-decoration: none; 
 }
 
 .top-bar p { 
@@ -61,9 +59,47 @@ body {
     margin-bottom: 0 !important; 
 }
 
-.top-bar span { 
-    color: rgba(255, 255, 255, 0.4); 
-    margin: 0 4px; 
+.top-bar-left > a, .top-bar-right > a {
+    position: relative;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    color: white;
+    text-decoration: none;
+    font-weight: 300;
+}
+
+.top-bar-left > a::after, .top-bar-right > a::after {
+    content: "";
+    position: absolute;
+    right: -5px; 
+    top: 50%;
+    transform: translateY(-50%); 
+    height: 14px;
+    width: 1px; 
+    background-color: hsla(0,0%,100%,.22);
+}
+
+.top-bar-right > a:last-child::after {
+    display: none;
+}
+
+.top-bar-connect {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-left: 10px;    
+}
+
+.top-bar-connect a {
+    padding: 0 !important;
+    display: flex;
+    align-items: center;
+}
+
+.top-bar-connect a:hover {
+    opacity: 0.8;
 }
 
 .top-bar .fas, .top-bar .fab { 
@@ -73,15 +109,6 @@ body {
 
 .top-bar-right .auth-link { 
     font-weight: 500; 
-}
-
-.top-bar-item {
-    position: relative;
-    display: flex;
-    align-items: center;
-    height: 100%;
-    padding-bottom: 10px; 
-    margin-bottom: -10px; 
 }
 
 /* Main Header */
@@ -178,7 +205,7 @@ body {
     color: white; 
 }
 
-/* Dropdowns (Notification, Language, Cart) */
+/* Dropdowns (Only Cart remains) */
 .lairai-dropdown-menu {
     visibility: hidden; 
     opacity: 0; 
@@ -204,93 +231,12 @@ body {
 .lairai-dropdown-menu::before {
     content: ''; 
     position: absolute;
-    /* Chỉnh kích thước là chiều cao của mũi tên */
     top: -7px;
     border-width: 0 15px 9px;
     border-style: solid;
     border-color: transparent transparent #fff;
     filter: drop-shadow(0 -1px 1px rgba(0,0,0,0.1));
     z-index: 1001;
-}
-
-.notification-dropdown { 
-    padding: 15px; 
-    text-align: center; 
-}
-
-.notification-dropdown::before {
-    right: 30px;
-}
-
-.notify-icon-wrapper {
-    width: 75px; 
-    height: 75px; 
-    border-radius: 50%; 
-    background-color: #CCDCDB; 
-    color: #135E4B;
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    font-size: 30px; 
-    margin: 10px auto;
-}
-
-.notification-dropdown p { 
-    color: #555; 
-    margin-bottom: 20px;
-    font-size: 14px; 
-}
-
-.dropdown-footer { 
-    display: flex; 
-    padding-top: 15px; 
-    margin: 0 -15px -15px -15px; 
-}
-
-.dropdown-footer a {
-    width: 50%; 
-    text-align: center; 
-    padding: 10px 0; 
-    color: #3D3D3D; 
-    font-size: 14px; 
-    text-decoration: none;
-}
-
-.dropdown-footer a:hover { 
-    background-color: #dedede; 
-    color: #ee3030; 
-}
-
-.dropdown-footer .btn-login { 
-    border-left: 1px solid #d5d5d5; 
-}
-
-.language-dropdown { 
-    width: 150px; 
-    padding: 5px 0; 
-}
-
-.language-dropdown ul { 
-    list-style: none; 
-    margin: 0; 
-    padding: 0; 
-}
-
-.language-dropdown ul li a { 
-    display: block; 
-    padding: 8px 15px; 
-    color: #3D3D3D; 
-    font-size: 14px; 
-    text-decoration: none; 
-}
-
-.language-dropdown ul li a:hover { 
-    background-color: #dedede; 
-    color: #ee3030; 
-}
-
-.language-dropdown::before {
-    right: 35px;
 }
 
 /* Cart Dropdown */
@@ -656,35 +602,6 @@ body {
     object-fit: cover;
 }
 
-.discount-badge {
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 4px 4.5px;
-    background-color: rgba(255, 240, 235, 0.95);
-    color: #ee4d2d;
-    font-size: 12px;
-    line-height: 1;
-    border-bottom-left-radius: 6px;
-}
-
-.img-overlay-badge {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    display: flex;
-}
-
-.badge-voucher {
-    background-color: #00bfa5;
-    color: white;
-    font-size: 10px;
-    font-weight: 500;
-    padding: 2px 4px;
-    border-top-right-radius: 2px;
-}
-
 .product-info {
     padding: 8px;
     flex: 1;
@@ -709,70 +626,6 @@ body {
     word-wrap: break-word;
 }
 
-.label-favorite {
-    display: inline-block;
-    background-color: #ee4d2d;
-    color: white;
-    font-size: 10px;
-    font-weight: 500;
-    padding: 0 3px;
-    border-radius: 2px;
-    vertical-align: middle;
-    line-height: 14px;
-    position: relative;
-    top: -1px;
-}
-
-.product-tags {
-    height: 18px;
-    margin-bottom: 4px;
-    display: flex;
-    align-items: center;
-}
-
-.tag-cheap {
-    border: 1px solid #ee4d2d;
-    color: #ee4d2d;
-    font-size: 10px;
-    padding: 0 4px;
-    line-height: 16px;
-    border-radius: 3px;
-}
-
-.tag-bestseller {
-    display: flex;
-    align-items: center;
-    height: 16px;
-    font-size: 10px;
-    line-height: 1;
-}
-
-.tag-bestseller i {
-    background: white;
-    color: #ee4d2d;
-    border: 1px solid #ee4d2d;
-    border-radius: 2px 0 0 2px;
-    padding: 0 3px;
-    font-size: 9px;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    z-index: 2;
-}
-
-.tag-bestseller span {
-    background: #ffbca3;
-    color: white;
-    text-shadow: 0 0 1px #ee4d2d;
-    border-left: none;
-    border-radius: 0 2px 2px 0;
-    padding: 0 4px;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    font-weight: 500;
-}
-
 .product-meta {
     display: flex;
     justify-content: space-between;
@@ -794,11 +647,6 @@ body {
     vertical-align: top;
     position: relative;
     top: 2px;
-}
-
-.product-sold {
-    font-size: 10px;
-    color: rgba(0,0,0,.54);
 }
 
 .find-similar-btn {
