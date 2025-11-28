@@ -1,5 +1,5 @@
 <?php
-session_start(); // Bắt buộc phải có dòng này
+session_start();
 require_once '../../db/db.php';
 ?>
 <!DOCTYPE html>
@@ -12,7 +12,7 @@ require_once '../../db/db.php';
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style/homepage.css?v=4">
-    <link rel="icon" href="../images/icon.png" />
+    <link rel="icon" href="../../images/icon.png" />
 </head>
 
 <body>
@@ -21,39 +21,22 @@ require_once '../../db/db.php';
         <div class="top-bar">
             <div class="container top-bar-content">
                 <div class="top-bar-left">
-                    <a href="../SellerPage/dashboard.php">Kênh Người Bán</a><span>|</span><a href="#">Trở thành Người bán</a><span>|</span>
+                    <a href="../SellerPage/dashboard.php">Kênh Người Bán</a>
+                    <a href="#">Trở thành Người bán</a>
                     <div class="top-bar-connect">
-                        <p>Kết nối</p> <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
-                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <p>Kết nối</p>
+                        <a href="https://www.facebook.com/ShopeeVN" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="https://www.instagram.com/Shopee_VN" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
                     </div>
                 </div>
 
                 <div class="top-bar-right">
-                    <div class="top-bar-item has-dropdown">
-                        <a href="#"><i class="fas fa-bell"></i> Thông Báo</a>
-                        <div class="lairai-dropdown-menu notification-dropdown">
-                            <div class="notify-icon-wrapper"><i class="fas fa-user-alt"></i></div>
-                            <p>Đăng nhập để xem Thông báo</p>
-                            <div class="dropdown-footer">
-                                <a href="SignupPage/signup.php" class="btn-register">Đăng ký</a>
-                                <a href="LoginPage/login.php" class="btn-login">Đăng nhập</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <a href="#"><i class="fas fa-question-circle"></i> Hỗ Trợ</a>
-
-                    <div class="top-bar-item has-dropdown">
-                        <a href="#"><i class="fas fa-globe"></i> Tiếng Việt <i class="fas fa-chevron-down icon-chevron"></i></a>
-                        <div class="lairai-dropdown-menu language-dropdown">
-                            <ul>
-                                <li><a href="#">Tiếng Việt</a></li>
-                                <li><a href="#">English</a></li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- <a href="SignupPage/signup.php" class="auth-link">Đăng Ký</a><span>|</span><a href="LoginPage/login.php" class="auth-link">Đăng Nhập</a> -->
+                    <a href="SignupPage/signup.php" class="auth-link">Đăng Ký</a>
+                    <a href="LoginPage/login.php" class="auth-link">Đăng Nhập</a>
                 </div>
             </div>
         </div>
@@ -194,50 +177,23 @@ require_once '../../db/db.php';
                         if (strpos($imgSrc, 'http') === false) {
                             $imgSrc = "." . $imgSrc;
                         }
-                        $randomDiscount = rand(5, 50);
+                        // Đã xóa biến $randomDiscount và logic liên quan
                 ?>
                         <a href="detail.php?id=<?php echo $row['pid']; ?>" class="product-card has-border">
                             <div class="product-img">
                                 <img src="<?php echo $imgSrc; ?>" alt="<?php echo $row['name']; ?>" onerror="this.onerror=null; this.src='https://placehold.co/300x300?text=No+Image';">
 
-                                <?php if ($randomDiscount > 0): ?>
-                                    <div class="discount-badge">
-                                        -<?php echo $randomDiscount; ?>%
-                                    </div>
-                                <?php endif; ?>
-
-                                <?php if (rand(1, 10) <= 5): ?>
-                                    <div class="img-overlay-badge">
-                                        <span class="badge-voucher">Voucher Xtra</span>
-                                    </div>
-                                <?php endif; ?>
                             </div>
 
                             <div class="product-info">
                                 <div class="product-name">
-                                    <?php if (rand(0, 1) == 1): ?>
-                                        <span class="label-favorite">Yêu thích</span>
-                                    <?php endif; ?>
                                     <?php echo $row['name']; ?>
-                                </div>
-
-                                <div class="product-tags">
-                                    <?php
-                                    $tagType = rand(0, 3);
-                                    if ($tagType == 1): ?>
-                                        <div class="tag-cheap">Rẻ Vô Địch</div>
-                                    <?php elseif ($tagType == 2): ?>
-                                        <div class="tag-bestseller">
-                                            <i class="fas fa-bolt"></i> <span>Đang bán chạy</span>
-                                        </div>
-                                    <?php endif; ?>
                                 </div>
 
                                 <div class="product-meta">
                                     <div class="product-price">
                                         <?php echo number_format($row['price'], 0, ',', '.'); ?><span class="currency">đ</span>
                                     </div>
-                                    <div class="product-sold">Đã bán <?php echo rand(10, 999); ?></div>
                                 </div>
                             </div>
 
