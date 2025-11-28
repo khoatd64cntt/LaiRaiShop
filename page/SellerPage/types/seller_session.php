@@ -4,11 +4,11 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once '../db/db.php'; // Kết nối CSDL
+require_once ('../../db/db.php'); // Kết nối CSDL
 
 // 1. Kiểm tra đăng nhập
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ../login.php");
+    header("Location: /LaiRaiShop/page/HomePage/LoginPage/login.php");
     exit();
 }
 
