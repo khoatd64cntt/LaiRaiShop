@@ -1,6 +1,6 @@
 <?php
 // BƯỚC 1: NHÚNG HEADER
-require_once '../include/header.php';
+require_once '../Layout/header.php';
 
 // BƯỚC 2: XỬ LÝ CẬP NHẬT TRẠNG THÁI
 $message = '';
@@ -171,5 +171,5 @@ $result = $conn->query($sql);
 
 <?php
 // BƯỚC 4: NHÚNG FOOTER
-include '../include/footer.php';
+include '../Layout/footer.php';
 ?>

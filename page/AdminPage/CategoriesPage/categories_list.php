@@ -1,6 +1,6 @@
 <?php
 // BƯỚC 1: NHÚNG HEADER & KẾT NỐI CSDL
-require_once '../include/header.php';
+require_once '../Layout/header.php';
 
 // BƯỚC 2: XỬ LÝ CRUD CHO DANH MỤC
 $message = '';
@@ -199,5 +199,5 @@ $parent_categories = $conn->query("SELECT cid, name FROM categories WHERE parent
 </script>
 
 <?php
-include '../include/footer.php';
+include '../Layout/footer.php';
 ?>
