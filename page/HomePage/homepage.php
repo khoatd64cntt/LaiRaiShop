@@ -208,7 +208,7 @@ require_once '../../db/db.php';
             </div>
 
             <div class="load-more">
-                <a href="login.php" style="text-decoration: none;">
+                <a href="../HomePage/LoginPage/login.php" style="text-decoration: none;">
                     <button>Đăng Nhập Để Xem Thêm</button>
                 </a>
             </div>
