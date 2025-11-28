@@ -1,0 +1,252 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    padding: 0;
+    margin: 0;
+    background-color: #f0f8ff;
+    box-sizing: border-box;
+}
+
+/* Toàn cục */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* HERO SECTION */
+.hero {
+    background: linear-gradient(180deg, #e1f5fe 0%, #b3e5fc 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    flex-direction: column;
+}
+
+/* Trang trí mây */
+.cloud {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.6;
+    filter: blur(10px);
+}
+
+.c1 {
+    width: 100px;
+    height: 100px;
+    top: 10%;
+    left: 10%;
+}
+
+.c2 {
+    width: 150px;
+    height: 150px;
+    bottom: 20%;
+    right: 5%;
+}
+
+.content-wrapper {
+    display: flex;
+    align-items: center;
+    max-width: 900px;
+    width: 100%;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0, 168, 232, 0.2);
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.text-side {
+    text-align: left;
+    max-width: 400px;
+}
+
+.logo {
+    color: #555;
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.logo span {
+    color: #fccf00;
+    font-size: 24px;
+}
+
+/* Màu vàng HDBank */
+h1 {
+    color: #e63946;
+    font-size: 32px;
+    margin: 10px 0;
+    font-weight: 800;
+}
+
+.highlight {
+    background: #ff3b3b;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 8px;
+    font-size: 40px;
+    display: inline-block;
+    box-shadow: 4px 4px 0 #bf0a1e;
+}
+
+.sub-text {
+    color: #0277bd;
+    font-weight: bold;
+    margin-top: 10px;
+    font-size: 18px;
+}
+
+.card-side {
+    position: relative;
+}
+
+/* Thẻ ATM giả lập */
+.atm-card {
+    width: 320px;
+    height: 200px;
+    background: linear-gradient(135deg, #333 0%, #000 100%);
+    border-radius: 15px;
+    color: #d4af37;
+    padding: 20px;
+    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.3);
+    transform: rotate(-10deg) translateY(-20px);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.5s;
+}
+
+.atm-card:hover {
+    transform: rotate(0deg) scale(1.05);
+}
+
+.chip {
+    width: 40px;
+    height: 30px;
+    background: #ffd700;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.card-number {
+    font-size: 18px;
+    letter-spacing: 2px;
+    text-shadow: 1px 1px 1px black;
+}
+
+.card-logo {
+    text-align: right;
+    font-weight: bold;
+    font-style: italic;
+}
+
+/* Nút CTA */
+.cta-btn {
+    background: #ff5722;
+    color: white;
+    padding: 15px 40px;
+    font-size: 18px;
+    border: none;
+    border-radius: 50px;
+    margin-top: 20px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(255, 87, 34, 0.4);
+    transition: transform 0.2s;
+}
+
+.cta-btn:hover {
+    transform: scale(1.05);
+    background: #e64a19;
+}
+
+/* Hiển thị modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.show {
+    display: flex;
+    opacity: 1;
+}
+
+.modal-box {
+    background: white;
+    width: 350px;
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transform: scale(0.8);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.show .modal-box {
+    transform: scale(1);
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    background: #0277bd;
+    color: white;
+    border-radius: 50%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 15px rgba(2, 119, 189, 0.4);
+}
+
+.modal-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.modal-desc {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.modal-btn {
+    background: #0277bd;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.2s;
+}
+
+.modal-btn:hover {
+    background: #01579b;
+}

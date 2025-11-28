@@ -104,8 +104,8 @@ require_once '../../db/db.php';
                 </div>
             </div>
             <div class="hero-banner-side">
-                <a href="#"><img src="https://down-vn.img.susercontent.com/file/sg-11134258-821gh-mh91gxeue8ei70@resize_w796_nl.webp"></a>
-                <a href="#"><img src="https://down-vn.img.susercontent.com/file/sg-11134258-821fr-mh91h4o61xxm9d@resize_w398_nl.webp"></a>
+                <a href="BannerPage/ad_banner1.php"><img src="https://down-vn.img.susercontent.com/file/sg-11134258-821gh-mh91gxeue8ei70@resize_w796_nl.webp"></a>
+                <a href="BannerPage/ad_banner2.php"><img src="https://down-vn.img.susercontent.com/file/sg-11134258-821fr-mh91h4o61xxm9d@resize_w398_nl.webp"></a>
             </div>
         </div>
 
@@ -291,9 +291,9 @@ require_once '../../db/db.php';
                             <img src="https://down-vn.img.susercontent.com/file/a5e589e8e118e937dc660f224b9a1472" alt="QR Code">
                         </div>
                         <div class="app-stores">
-                            <a href="#"><img src="https://down-vn.img.susercontent.com/file/ad01628e90ddf248076685f73497c163" alt="App Store"></a>
-                            <a href="#"><img src="https://down-vn.img.susercontent.com/file/ae7dced05f7243d0f3171f786e123def" alt="Google Play"></a>
-                            <a href="#"><img src="https://down-vn.img.susercontent.com/file/35352374f39bdd03b25e7b83542b2cb0" alt="App Gallery"></a>
+                            <a href="https://shopee.vn/web"><img src="https://down-vn.img.susercontent.com/file/ad01628e90ddf248076685f73497c163" alt="App Store"></a>
+                            <a href="https://shopee.vn/web"><img src="https://down-vn.img.susercontent.com/file/ae7dced05f7243d0f3171f786e123def" alt="Google Play"></a>
+                            <a href="https://shopee.vn/web"><img src="https://down-vn.img.susercontent.com/file/35352374f39bdd03b25e7b83542b2cb0" alt="App Gallery"></a>
                         </div>
                     </div>
                 </div>
@@ -340,7 +340,7 @@ require_once '../../db/db.php';
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/homepage.js?v=4"></script>
+    <script src="../../js/homepage.js?v=4"></script>
 </body>
 
 </html>
