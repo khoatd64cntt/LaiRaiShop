@@ -1,0 +1,251 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
+}
+
+/* BANNER QUẢNG CÁO */
+.ad-banner {
+    background: linear-gradient(135deg, #b31217 0%, #ff4d4d 50%, #b31217 100%);
+    color: white;
+    text-align: center;
+    padding: 80px 20px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Trang trí nền */
+.ad-banner::before,
+.ad-banner::after {
+    content: '';
+    position: absolute;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    z-index: 0;
+}
+
+.ad-banner::before {
+    width: 300px;
+    height: 300px;
+    top: -100px;
+    left: -100px;
+}
+
+.ad-banner::after {
+    width: 250px;
+    height: 250px;
+    bottom: -50px;
+    right: -50px;
+}
+
+.banner-content {
+    position: relative;
+    z-index: 1;
+}
+
+.brand-logo {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+    margin: 0;
+    font-size: 4rem;
+    text-transform: uppercase;
+    font-weight: 900;
+    line-height: 1.1;
+    text-shadow: 4px 4px 0px #8b0000;
+}
+
+h2 {
+    background-color: white;
+    color: #b31217;
+    display: inline-block;
+    padding: 10px 40px;
+    border-radius: 50px;
+    margin: 25px 0;
+    font-weight: bold;
+    font-size: 1.8rem;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Promo */
+.promo-container {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin: 40px 0;
+    flex-wrap: wrap;
+}
+
+.promo-box {
+    background: white;
+    color: #d0011b;
+    width: 150px;
+    height: 110px;
+    padding: 10px;
+    border: 3px solid rgba(255, 255, 255, 0.5);
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s;
+}
+
+.promo-box:hover {
+    transform: scale(1.1) rotate(-2deg);
+}
+
+.promo-box span.big {
+    font-size: 36px;
+    display: block;
+    line-height: 1;
+}
+
+.promo-box span.small {
+    font-size: 14px;
+    text-transform: uppercase;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+/* Nút CTA */
+.main-cta-btn {
+    background: #ffe600;
+    color: #d0011b;
+    font-size: 24px;
+    font-weight: 900;
+    padding: 18px 60px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: 0 6px 0 #cc9a00, 0 15px 20px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
+    margin-top: 10px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.main-cta-btn:active {
+    box-shadow: 0 2px 0 #cc9a00;
+    transform: translateY(4px);
+}
+
+/* Badge Freeship */
+.freeship-tag {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    background: #222;
+    color: #ffe600;
+    padding: 10px 20px;
+    font-weight: bold;
+    transform: rotate(15deg);
+    border: 2px dashed #ffe600;
+    z-index: 2;
+    box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.5);
+}
+
+.footer-note {
+    margin-top: 30px;
+    font-size: 14px;
+    opacity: 0.8;
+    font-style: italic;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Hiển thị modal */
+.modal-overlay.show {
+    display: flex;
+    opacity: 1;
+}
+
+.modal-box {
+    background: white;
+    width: 350px;
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transform: scale(0.8);
+    transition: transform 0.3s ease;
+    position: relative;
+}
+
+.modal-overlay.show .modal-box {
+    transform: scale(1);
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    background: #4CAF50;
+    color: white;
+    border-radius: 50%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+}
+
+.modal-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.modal-desc {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.modal-btn {
+    background: #d0011b;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.2s;
+}
+
+.modal-btn:hover {
+    background: #b31217;
+}
