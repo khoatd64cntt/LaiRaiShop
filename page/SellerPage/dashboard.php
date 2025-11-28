@@ -1,6 +1,6 @@
 <?php
 // seller/dashboard.php
-require_once 'types/seller_session.php'; // Bắt buộc phải có dòng này ở đầu
+require_once 'seller_session.php'; // Bắt buộc phải có dòng này ở đầu
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -20,7 +20,7 @@ require_once 'types/seller_session.php'; // Bắt buộc phải có dòng này �
                     <li class="nav-item"><a class="nav-link text-white active" href="dashboard.php">Tổng quan</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="products.php">Quản lý Sản phẩm</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="orders.php">Quản lý Đơn hàng</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="HomePage/homepage.php">Quay lại Web</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="../homepage.php">Quay lại Web</a></li>
                 </ul>
             </div>
 

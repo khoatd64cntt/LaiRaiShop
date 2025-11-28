@@ -1,7 +1,4 @@
-<?php
-session_start(); // Bắt buộc phải có dòng này
-require_once '../../db/db.php';
-?>
+<?php require_once 'db/db.php'; ?>
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -11,8 +8,8 @@ require_once '../../db/db.php';
     <title>LaiRaishop | Mua Sắm Trực Tuyến</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="style/homepage.css?v=4">
-    <link rel="icon" href="../images/icon.png" />
+    <link rel="stylesheet" href="css/homepage.css?v=4">
+    <link rel="icon" href="images/icon.png" />
 </head>
 
 <body>
@@ -21,7 +18,7 @@ require_once '../../db/db.php';
         <div class="top-bar">
             <div class="container top-bar-content">
                 <div class="top-bar-left">
-                    <a href="../SellerPage/dashboard.php">Kênh Người Bán</a><span>|</span><a href="#">Trở thành Người bán</a><span>|</span>
+                    <a href="seller/dashboard.php">Kênh Người Bán</a><span>|</span><a href="#">Trở thành Người bán</a><span>|</span>
                     <div class="top-bar-connect">
                         <p>Kết nối</p> <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
                         <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
@@ -35,8 +32,8 @@ require_once '../../db/db.php';
                             <div class="notify-icon-wrapper"><i class="fas fa-user-alt"></i></div>
                             <p>Đăng nhập để xem Thông báo</p>
                             <div class="dropdown-footer">
-                                <a href="SignupPage/signup.php" class="btn-register">Đăng ký</a>
-                                <a href="LoginPage/login.php" class="btn-login">Đăng nhập</a>
+                                <a href="register.php" class="btn-register">Đăng ký</a>
+                                <a href="login.php" class="btn-login">Đăng nhập</a>
                             </div>
                         </div>
                     </div>
@@ -53,13 +50,13 @@ require_once '../../db/db.php';
                         </div>
                     </div>
 
-                    <!-- <a href="SignupPage/signup.php" class="auth-link">Đăng Ký</a><span>|</span><a href="LoginPage/login.php" class="auth-link">Đăng Nhập</a> -->
+                    <a href="register.php" class="auth-link">Đăng Ký</a><span>|</span><a href="login.php" class="auth-link">Đăng Nhập</a>
                 </div>
             </div>
         </div>
         <header class="lairai-header">
             <div class="container header-content">
-                <div class="logo"><a href="#"><img src="../../images/logo.png" alt="LaiRaiShop Logo"></a></div>
+                <div class="logo"><a href="#"><img src="images/logo.png" alt="LaiRaiShop Logo"></a></div>
 
                 <div class="search-box">
                     <form action="search.php" method="GET">

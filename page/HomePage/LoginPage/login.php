@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../../../db/db.php';
+require_once 'db/db.php';
 
 $error = "";
 
@@ -26,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // ✅ Điều hướng theo role
             if ($user['role'] === "admin") {
-                header("Location: ../../AdminPage/dashboard.php");
+                header("Location: admin/dashboard.php");
                 exit;
             }
             elseif ($user['role'] === "seller") {
@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 exit;
             }
             elseif ($user['role'] === "user") {
-                header("Location: ../homepage.php");
+                header("Location: homepage.php");
                 exit;
             }
             else {
@@ -69,7 +69,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Đăng nhập tài khoản | LaiRaiShop</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="../style/login_style.css?v=1">
+    <link rel="stylesheet" href="css/login_style.css?v=1">
     <link rel="icon" href="images/icon.png" />
 </head>
 
@@ -79,7 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="header-content">
             <a href="homepage.php" class="header-left">
                 <div class="header-logo">
-                    <img src="../../images/logo2.png" alt="LaiRaiShop">
+                    <img src="images/logo2.png" alt="LaiRaiShop">
                 </div>
                 <span class="page-title">Đăng nhập</span>
             </a>
@@ -91,7 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="auth-container">
 
             <div class="auth-branding">
-                <img src="../../../images/big-logo.png" alt="Branding">
+                <img src="images/big-logo.png" alt="Branding">
                 <h3>Nền tảng thương mại điện tử<br>yêu thích ở Đông Nam Á</h3>
             </div>
 
@@ -133,7 +133,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
 
                 <div class="auth-footer-text">
-                    Bạn mới biết đến LaiRaiShop? <a href="../SignupPage/signup.php">Đăng ký</a>
+                    Bạn mới biết đến LaiRaiShop? <a href="register.php">Đăng ký</a>
                 </div>
             </div>
         </div>
