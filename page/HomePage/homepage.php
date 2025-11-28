@@ -161,7 +161,7 @@ require_once '../../db/db.php';
                 <div class="suggestion-header-wrapper">
                     <div class="suggestion-header">
                         <div class="suggestion-title">
-                            GỢI Ý HÔM NAY
+                            SẢN PHẨM GỢI Ý
                         </div>
                     </div>
                 </div>
