@@ -1,0 +1,127 @@
+/* Import Font chữ */
+@import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap');
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Container chính */
+.tutorial-container {
+    max-width: 800px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+h1 {
+    text-align: center;
+    color: #d0011b;
+    margin-bottom: 40px;
+    text-transform: uppercase;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 20px;
+}
+
+/* Các bước hướng dẫn */
+.step-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 40px;
+    border-bottom: 1px dashed #eee;
+    padding-bottom: 30px;
+}
+
+.step-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+/* Ảnh minh họa */
+.step-img {
+    width: 200px;
+    height: 150px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-right: 30px;
+    background-color: #ddd;
+}
+
+.step-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.step-img:hover img {
+    transform: scale(1.1);
+}
+
+/* Nội dung chữ */
+.step-content {
+    flex-grow: 1;
+}
+
+.step-number {
+    display: inline-block;
+    background: #d0011b;
+    color: #fff;
+    font-weight: bold;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.step-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    color: #222;
+}
+
+.step-desc {
+    color: #666;
+    margin: 0;
+}
+
+/* Nút quay về */
+.btn-back {
+    display: block;
+    width: fit-content;
+    margin: 30px auto 0;
+    padding: 10px 30px;
+    background: #333;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: 600;
+    transition: background 0.2s;
+    text-align: center;
+}
+
+.btn-back:hover {
+    background: #555;
+}
+
+/* Responsive cho điện thoại */
+@media (max-width: 600px) {
+    .step-item {
+        flex-direction: column;
+    }
+
+    .step-img {
+        width: 100%;
+        height: 200px;
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+}
