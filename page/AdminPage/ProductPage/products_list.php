@@ -1,6 +1,6 @@
 <?php
 // BƯỚC 1: NHÚNG HEADER & KẾT NỐI CSDL (Dùng require_once để an toàn)
-require_once '../include/header.php';
+require_once '../Layout/header.php';
 
 // BƯỚC 2: XỬ LÝ CẬP NHẬT TRẠNG THÁI KIỂM DUYỆT
 $message = '';
@@ -164,32 +164,33 @@ if (!$result) {
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body" id="productModalContent">
-                <div class="row">
-                    <div class="col-md-4"><img src="../images/placeholder.png" class="img-fluid" alt="Ảnh sản phẩm"></div>
-                    <div class="col-md-8">
-                        <h6>**Thông tin sản phẩm**</h6>
-                        <p><strong>Tên SP:</strong> <span id="modalName"></span></p>
-                        <p><strong>Giá:</strong> <span id="modalPrice"></span> | <strong>Tồn kho:</strong> <span id="modalStock"></span></p>
-                        <p><strong>Bán bởi:</strong> <span id="modalShop"></span></p>
-                        <hr>
-                        <p><strong>Mô tả:</strong> <span class="text-muted">Đang cập nhật...</span></p>
-                    </div>
+                <div class="col-md-4">
+                    <img src="../../../images/placeholder.png" class="img-fluid" alt="Ảnh sản phẩm">
+                </div>
+                <div class="col-md-8">
+                    <h6>**Thông tin sản phẩm**</h6>
+                    <p><strong>Tên SP:</strong> <span id="modalName"></span></p>
+                    <p><strong>Giá:</strong> <span id="modalPrice"></span> | <strong>Tồn kho:</strong> <span id="modalStock"></span></p>
+                    <p><strong>Bán bởi:</strong> <span id="modalShop"></span></p>
+                    <hr>
+                    <p><strong>Mô tả:</strong> <span class="text-muted">Đang cập nhật...</span></p>
                 </div>
             </div>
-            <div class="modal-footer">
-                <form method="POST" class="form-inline">
-                    <input type="hidden" name="pid" id="modalProductPid">
-                    <label class="mr-2">Cập nhật trạng thái:</label>
-                    <select name="new_status" id="modalProductStatus" class="form-control mr-2">
-                        <option value="pending">Chờ Kiểm duyệt</option>
-                        <option value="approved">Đã Duyệt</option>
-                        <option value="rejected">Bị Từ chối</option>
-                    </select>
-                    <button type="submit" name="update_product_status" class="btn btn-primary"><i class="fas fa-save"></i> Lưu</button>
-                </form>
-            </div>
+        </div>
+        <div class="modal-footer">
+            <form method="POST" class="form-inline">
+                <input type="hidden" name="pid" id="modalProductPid">
+                <label class="mr-2">Cập nhật trạng thái:</label>
+                <select name="new_status" id="modalProductStatus" class="form-control mr-2">
+                    <option value="pending">Chờ Kiểm duyệt</option>
+                    <option value="approved">Đã Duyệt</option>
+                    <option value="rejected">Bị Từ chối</option>
+                </select>
+                <button type="submit" name="update_product_status" class="btn btn-primary"><i class="fas fa-save"></i> Lưu</button>
+            </form>
         </div>
     </div>
+</div>
 </div>
 
 <script>
@@ -237,5 +238,5 @@ if (!$result) {
 </script>
 
 <?php
-include '../include/footer.php';
+include '../Layout/footer.php';
 ?>
