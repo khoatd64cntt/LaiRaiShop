@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap');
+
+body {
+    font-family: 'Quicksand', sans-serif;
+    background-color: #fff5f5;
+    margin: 0;
+    padding: 0;
+    color: #444;
+}
+
+.about-container {
+    max-width: 900px;
+    margin: 50px auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+/* Phần ảnh bìa */
+.hero-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+
+/* Nội dung chính */
+.content-box {
+    padding: 40px 60px;
+    text-align: center;
+}
+
+h1 {
+    color: #d0011b;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.slogan {
+    font-style: italic;
+    color: #888;
+    margin-bottom: 30px;
+    font-size: 1.1rem;
+}
+
+p {
+    line-height: 1.8;
+    margin-bottom: 20px;
+}
+
+/* Chữ ký */
+.signature {
+    margin-top: 10px;
+    font-family: 'Segoe UI', cursive;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* Nút về trang chủ */
+.btn-home {
+    display: inline-block;
+    margin-top: 30px;
+    padding: 12px 30px;
+    background: #333;
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn-home:hover {
+    background: #d0011b;
+}
