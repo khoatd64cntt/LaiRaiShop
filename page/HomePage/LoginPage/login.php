@@ -1,5 +1,6 @@
 <?php
 session_start();
+// Kết nối DB: Lùi 3 cấp ra thư mục gốc LaiRaiShop -> vào db
 require_once '../../../db/db.php';
 
 $error = "";
@@ -24,16 +25,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['role'] = $user['role'];
             $_SESSION['fullname'] = $user['afname'] . " " . $user['alname'];
 
-            // ✅ Điều hướng theo role
+            // ✅ Điều hướng theo role (SỬA ĐƯỜNG DẪN)
             if ($user['role'] === "admin") {
+                // Vào AdminPage (lùi 2 cấp: LoginPage -> HomePage -> page -> AdminPage)
                 header("Location: ../../AdminPage/dashboard.php");
                 exit;
             }
             elseif ($user['role'] === "seller") {
-                header("Location: seller.php");
+                // Vào SellerPage
+                header("Location: ../../SellerPage/dashboard.php");
                 exit;
             }
             elseif ($user['role'] === "user") {
+                // Về Homepage (lùi 1 cấp: LoginPage -> HomePage)
                 header("Location: ../homepage.php");
                 exit;
             }
@@ -44,12 +48,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $error = "Mật khẩu không đúng!";
         }
     } else {
-        // Ngoài DB không có nhưng check acc admin cứng
+        // Check acc admin cứng
         if ($username === "admin" && $password === "123456") {
             $_SESSION['aid'] = 0;
             $_SESSION['role'] = "admin";
             $_SESSION['fullname'] = "Administrator";
-            header("Location: admin/dashboard.php");
+            header("Location: ../../AdminPage/dashboard.php");
             exit;
         }
 
@@ -57,8 +61,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -69,17 +71,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Đăng nhập tài khoản | LaiRaiShop</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <link rel="stylesheet" href="../style/login_style.css?v=1">
-    <link rel="icon" href="images/icon.png" />
+    
+    <link rel="icon" href="../../../images/icon.png" />
 </head>
 
 <body>
 
     <div class="auth-header">
         <div class="header-content">
-            <a href="homepage.php" class="header-left">
+            <a href="../homepage.php" class="header-left">
                 <div class="header-logo">
-                    <img src="../../images/logo2.png" alt="LaiRaiShop">
+                    <img src="../../../images/logo2.png" alt="LaiRaiShop">
                 </div>
                 <span class="page-title">Đăng nhập</span>
             </a>
@@ -142,7 +146,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <footer class="lairai-footer">
         <div class="container">
             <div class="footer-content">
-
                 <div class="footer-column">
                     <h3>CHĂM SÓC KHÁCH HÀNG</h3>
                     <ul>
@@ -158,7 +161,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <li><a href="#">Chính Sách Bảo Hành</a></li>
                     </ul>
                 </div>
-
                 <div class="footer-column">
                     <h3>LAIRAISHOP VIỆT NAM</h3>
                     <ul>
@@ -172,7 +174,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <li><a href="#">Liên Hệ Truyền Thông</a></li>
                     </ul>
                 </div>
-
                 <div class="footer-column">
                     <h3>THANH TOÁN</h3>
                     <div class="payment-icons">
@@ -198,7 +199,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <img src="https://down-vn.img.susercontent.com/file/vn-50009109-ec3ae587db6309b791b78eb8af6793fd" alt="Ahamove">
                     </div>
                 </div>
-
                 <div class="footer-column">
                     <h3>THEO DÕI CHÚNG TÔI TRÊN</h3>
                     <ul class="social-links">
@@ -207,7 +207,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <li><a href="#"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
                     </ul>
                 </div>
-
                 <div class="footer-column">
                     <h3>TẢI ỨNG DỤNG LAIRAI</h3>
                     <div class="download-app">
@@ -222,27 +221,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                 </div>
             </div>
-
             <div class="footer-bottom">
-                <div class="copyright">
-                    © 2025 LaiRaiShop. Tất cả các quyền được bảo lưu.
-                </div>
-                <div class="country-list">
-                    Quốc gia & Khu vực:
-                    <a href="#">Việt Nam</a>
-                    | <a href="#">Lào</a>
-                    | <a href="#">Singapore</a>
-                    | <a href="#">Thái Lan</a>
-                    | <a href="#">Philippines</a>
-                    | <a href="#">Đông Timor</a>
-                    | <a href="#">Indonesia</a>
-                    | <a href="#">Malaysia</a>
-                    | <a href="#">Brunei</a>
-                    | <a href="#">Đài Loan</a>
-                </div>
+                <div class="copyright">© 2025 LaiRaiShop. Tất cả các quyền được bảo lưu.</div>
+                <div class="country-list">Quốc gia & Khu vực: <a href="#">Việt Nam</a>...</div>
             </div>
         </div>
-
         <div class="footer-policy">
             <div class="container">
                 <div class="policy-row">
@@ -254,14 +237,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="company-info">
                     <p>Địa chỉ: 2 Đ. Nguyễn Đình Chiểu, Phường Vĩnh Thọ, Thành phố Nha Trang, Tỉnh Khánh Hòa, Việt Nam</p>
                     <p>Chăm sóc khách hàng: Gọi tổng đài LaiRaiShop (miễn phí) hoặc trò chuyện với LaiRaiShop ngay trên trung tâm trợ giúp</p>
-                    <p>Chịu Trách Nhiệm Quản Lý Nội Dung: Trần Đăng Khoa</p>
                     <p>© 2025 - Bản quyền thuộc về Công ty TNHH LaiRai</p>
                 </div>
             </div>
         </div>
     </footer>
 
-    <script src="js/login.js?v=4"></script>
+    <script src="../../../js/login.js?v=4"></script>
 </body>
 
 </html>

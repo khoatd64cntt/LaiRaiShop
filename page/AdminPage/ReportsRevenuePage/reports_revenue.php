@@ -1,6 +1,6 @@
 <?php
 // BƯỚC 1: NHÚNG HEADER
-require_once '../include/header.php';
+require_once '../Layout/header.php';
 
 // BƯỚC 2: XỬ LÝ LỌC THỜI GIAN
 $current_year = date('Y');
@@ -166,5 +166,5 @@ $top_sellers_result = $conn->query($sql_top_sellers);
 </div>
 
 <?php
-include '../include/footer.php';
+include '../Layout/footer.php';
 ?>
