@@ -1,0 +1,86 @@
+/* Sidebar Styles (Copy lại để giống trang purchase) */
+.profile-card {
+    display: flex;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #efefef;
+    margin-bottom: 20px;
+}
+.profile-avatar img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 1px solid #e1e1e1;
+    margin-right: 15px;
+}
+.profile-name { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
+.profile-edit { color: #888; font-size: 12px; }
+.sidebar-menu { list-style: none; padding: 0; }
+.sidebar-menu li { margin-bottom: 15px; font-size: 14px; }
+.sidebar-menu a { color: #333; text-decoration: none; display: block; }
+.sidebar-menu a:hover { color: #ee4d2d; }
+.sidebar-menu .active > a { color: #ee4d2d; font-weight: 500; }
+.sidebar-submenu li { margin-bottom: 10px; margin-top: 10px; }
+.text-danger { color: #ee4d2d !important; }
+
+/* --- MAIN PROFILE CARD STYLES --- */
+.profile-main-card {
+    background: #fff;
+    padding: 30px;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.13);
+    border-radius: 2px;
+}
+
+.profile-header h3 {
+    font-size: 18px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 5px;
+}
+.profile-header p {
+    font-size: 14px;
+    color: #555;
+}
+
+/* Form Styles */
+.form-group label {
+    color: #555555cc; /* Màu xám nhạt giống Shopee */
+    font-size: 14px;
+}
+
+.form-control-plaintext {
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+}
+
+/* Nút Lưu màu cam */
+.btn-save {
+    background-color: #ee4d2d;
+    color: #fff;
+    padding: 8px 25px;
+    border-radius: 2px;
+    font-size: 14px;
+}
+.btn-save:hover {
+    background-color: #d73211;
+    color: #fff;
+}
+
+/* Avatar Column */
+.avatar-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    border-left: 1px solid #efefef;
+}
+.avatar-preview img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+.avatar-note {
+    font-size: 12px;
+}
