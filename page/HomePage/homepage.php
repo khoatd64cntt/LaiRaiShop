@@ -222,7 +222,7 @@ require_once '../../db/db.php';
                 <div class="footer-column">
                     <h3>CHĂM SÓC KHÁCH HÀNG</h3>
                     <ul>
-                        <li><a href="#">Trung Tâm Trợ Giúp</a></li>
+                        <li><a href="../HomePage/HelpPage/help_center.php">Trung Tâm Trợ Giúp</a></li>
                         <li><a href="#">LaiRai Blog</a></li>
                         <li><a href="#">LaiRai Mall</a></li>
                         <li><a href="#">Hướng Dẫn Mua Hàng/Đặt Hàng</a></li>
