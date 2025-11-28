@@ -30,18 +30,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Vào AdminPage (lùi 2 cấp: LoginPage -> HomePage -> page -> AdminPage)
                 header("Location: ../../AdminPage/dashboard.php");
                 exit;
-            }
-            elseif ($user['role'] === "seller") {
+            } elseif ($user['role'] === "seller") {
                 // Vào SellerPage
                 header("Location: ../../SellerPage/dashboard.php");
                 exit;
-            }
-            elseif ($user['role'] === "user") {
+            } elseif ($user['role'] === "user") {
                 // Về Homepage (lùi 1 cấp: LoginPage -> HomePage)
                 header("Location: ../homepage.php");
                 exit;
-            }
-            else {
+            } else {
                 $error = "Tài khoản không có role hợp lệ!";
             }
         } else {
@@ -71,9 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Đăng nhập tài khoản | LaiRaiShop</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <link rel="stylesheet" href="../style/login_style.css?v=1">
-    
+    <link rel="stylesheet" href="../style/login_style.css?v=2">
     <link rel="icon" href="../../../images/icon.png" />
 </head>
 
@@ -85,9 +80,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="header-logo">
                     <img src="../../../images/logo2.png" alt="LaiRaiShop">
                 </div>
-                <span class="page-title">Đăng nhập</span>
+                <span class="page-title">Đăng Nhập</span>
             </a>
-            <a href="#" class="help-link">Bạn cần giúp đỡ?</a>
+            <a href="../HelpPage/help_center.php" class="help-link">Bạn cần giúp đỡ?</a>
         </div>
     </div>
 
@@ -110,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <form method="POST" action="" autocomplete="off">
                     <div class="input-group">
-                        <input type="text" name="username" class="form-control" placeholder="Email/Số điện thoại/Tên đăng nhập" required autocomplete="new-password">
+                        <input type="text" name="username" class="form-control" placeholder="Tên đăng nhập" required autocomplete="new-password">
                     </div>
                     <div class="input-group">
                         <input type="password" name="password" id="loginPassword" class="form-control" placeholder="Mật khẩu" required autocomplete="new-password">
@@ -122,22 +117,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <button type="submit" class="btn-auth">ĐĂNG NHẬP</button>
                 </form>
 
-                <div class="auth-utils">
-                    <a href="#">Quên mật khẩu</a>
-                </div>
-
-                <div class="auth-divider">
-                    <span></span>
-                    <p>HOẶC</p><span></span>
-                </div>
-
-                <div class="social-login">
-                    <a href="#" class="btn-social"><i class="fab fa-facebook" style="color: #3b5998;"></i> Facebook</a>
-                    <a href="#" class="btn-social"><i class="fab fa-google" style="color: #db4437;"></i> Google</a>
-                </div>
-
                 <div class="auth-footer-text">
-                    Bạn mới biết đến LaiRaiShop? <a href="../SignupPage/signup.php">Đăng ký</a>
+                    Bạn mới biết đến LaiRaiShop?<a href="../SignupPage/signup.php">Đăng ký</a>
                 </div>
             </div>
         </div>
@@ -146,34 +127,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <footer class="lairai-footer">
         <div class="container">
             <div class="footer-content">
+
                 <div class="footer-column">
                     <h3>CHĂM SÓC KHÁCH HÀNG</h3>
                     <ul>
-                        <li><a href="#">Trung Tâm Trợ Giúp</a></li>
-                        <li><a href="#">LaiRai Blog</a></li>
-                        <li><a href="#">LaiRai Mall</a></li>
-                        <li><a href="#">Hướng Dẫn Mua Hàng/Đặt Hàng</a></li>
-                        <li><a href="#">Hướng Dẫn Bán Hàng</a></li>
-                        <li><a href="#">Ví Điện Tử</a></li>
-                        <li><a href="#">Đơn Hàng</a></li>
-                        <li><a href="#">Trả Hàng/Hoàn Tiền</a></li>
-                        <li><a href="#">Liên Hệ LaiRaiShop</a></li>
-                        <li><a href="#">Chính Sách Bảo Hành</a></li>
+                        <li><a href="../HomePage/HelpPage/help_center.php">Trung Tâm Trợ Giúp</a></li>
+                        <li><a href="../HomePage/ContentPage/tutorial1.php">Hướng Dẫn Mua Hàng/Đặt Hàng</a></li>
+                        <li><a href="../HomePage/ContentPage/tutorial2.php">Hướng Dẫn Bán Hàng</a></li>
                     </ul>
                 </div>
+
                 <div class="footer-column">
                     <h3>LAIRAISHOP VIỆT NAM</h3>
                     <ul>
-                        <li><a href="#">Về LaiRaiShop</a></li>
-                        <li><a href="#">Tuyển Dụng</a></li>
-                        <li><a href="#">Điều Khoản LaiRaiShop</a></li>
-                        <li><a href="#">Chính Sách Bảo Mật</a></li>
-                        <li><a href="#">Kênh Người Bán</a></li>
-                        <li><a href="#">Flash Sale</a></li>
-                        <li><a href="#">Tiếp Thị Liên Kết</a></li>
-                        <li><a href="#">Liên Hệ Truyền Thông</a></li>
+                        <li><a href="../HomePage/ContentPage/about.php">Về LaiRaiShop</a></li>
                     </ul>
                 </div>
+
                 <div class="footer-column">
                     <h3>THANH TOÁN</h3>
                     <div class="payment-icons">
@@ -199,14 +169,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <img src="https://down-vn.img.susercontent.com/file/vn-50009109-ec3ae587db6309b791b78eb8af6793fd" alt="Ahamove">
                     </div>
                 </div>
+
                 <div class="footer-column">
                     <h3>THEO DÕI CHÚNG TÔI TRÊN</h3>
                     <ul class="social-links">
-                        <li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li>
-                        <li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li>
-                        <li><a href="#"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
+                        <li><a href="https://www.facebook.com/ShopeeVN" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook"></i> Facebook</a></li>
+                        <li><a href="https://www.instagram.com/Shopee_VN" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i> Instagram</a></li>
+                        <li><a href="https://www.linkedin.com/company/shopee" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
                     </ul>
                 </div>
+
                 <div class="footer-column">
                     <h3>TẢI ỨNG DỤNG LAIRAI</h3>
                     <div class="download-app">
@@ -214,29 +186,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <img src="https://down-vn.img.susercontent.com/file/a5e589e8e118e937dc660f224b9a1472" alt="QR Code">
                         </div>
                         <div class="app-stores">
-                            <a href="#"><img src="https://down-vn.img.susercontent.com/file/ad01628e90ddf248076685f73497c163" alt="App Store"></a>
-                            <a href="#"><img src="https://down-vn.img.susercontent.com/file/ae7dced05f7243d0f3171f786e123def" alt="Google Play"></a>
-                            <a href="#"><img src="https://down-vn.img.susercontent.com/file/35352374f39bdd03b25e7b83542b2cb0" alt="App Gallery"></a>
+                            <a href="https://shopee.vn/web" target="_blank" rel="noopener noreferrer"><img src="https://down-vn.img.susercontent.com/file/ad01628e90ddf248076685f73497c163" alt="App Store"></a>
+                            <a href="https://shopee.vn/web" target="_blank" rel="noopener noreferrer"><img src="https://down-vn.img.susercontent.com/file/ae7dced05f7243d0f3171f786e123def" alt="Google Play"></a>
+                            <a href="https://shopee.vn/web" target="_blank" rel="noopener noreferrer"><img src="https://down-vn.img.susercontent.com/file/35352374f39bdd03b25e7b83542b2cb0" alt="App Gallery"></a>
                         </div>
                     </div>
                 </div>
             </div>
+
             <div class="footer-bottom">
-                <div class="copyright">© 2025 LaiRaiShop. Tất cả các quyền được bảo lưu.</div>
-                <div class="country-list">Quốc gia & Khu vực: <a href="#">Việt Nam</a>...</div>
+                <div class="copyright">
+                    © 2025 LaiRaiShop. Tất cả các quyền được bảo lưu.
+                </div>
+                <div class="country-list">
+                    Quốc gia & Khu vực:
+                    <a>Việt Nam</a>
+                    | <a>Lào</a>
+                    | <a>Singapore</a>
+                    | <a>Thái Lan</a>
+                    | <a>Philippines</a>
+                    | <a>Đông Timor</a>
+                    | <a>Indonesia</a>
+                    | <a>Malaysia</a>
+                    | <a>Brunei</a>
+                    | <a>Đài Loan</a>
+                </div>
             </div>
         </div>
+
         <div class="footer-policy">
             <div class="container">
                 <div class="policy-row">
-                    <a href="#">CHÍNH SÁCH BẢO MẬT</a>
-                    <a href="#">QUY CHẾ HOẠT ĐỘNG</a>
-                    <a href="#">CHÍNH SÁCH VẬN CHUYỂN</a>
-                    <a href="#">CHÍNH SÁCH TRẢ HÀNG VÀ HOÀN TIỀN</a>
+                    <a>CHÍNH SÁCH BẢO MẬT</a>
+                    <a>QUY CHẾ HOẠT ĐỘNG</a>
+                    <a>CHÍNH SÁCH VẬN CHUYỂN</a>
+                    <a>CHÍNH SÁCH TRẢ HÀNG VÀ HOÀN TIỀN</a>
                 </div>
                 <div class="company-info">
                     <p>Địa chỉ: 2 Đ. Nguyễn Đình Chiểu, Phường Vĩnh Thọ, Thành phố Nha Trang, Tỉnh Khánh Hòa, Việt Nam</p>
                     <p>Chăm sóc khách hàng: Gọi tổng đài LaiRaiShop (miễn phí) hoặc trò chuyện với LaiRaiShop ngay trên trung tâm trợ giúp</p>
+                    <p>Chịu Trách Nhiệm Quản Lý Nội Dung: Trần Đăng Khoa</p>
                     <p>© 2025 - Bản quyền thuộc về Công ty TNHH LaiRai</p>
                 </div>
             </div>

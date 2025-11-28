@@ -46,9 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Đăng Ký | LaiRaiShop</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <link rel="stylesheet" href="../style/register_style.css?v=2">
-    
+    <link rel="stylesheet" href="../style/signup_style.css?v=2">
     <link rel="icon" href="../../../images/icon.png" />
 </head>
 
@@ -62,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
                 <span class="page-title">Đăng Ký</span>
             </a>
-            <a href="#" class="help-link">Bạn cần giúp đỡ?</a>
+            <a href="../HelpPage/help_center.php" class="help-link">Bạn cần giúp đỡ?</a>
         </div>
     </div>
 
@@ -112,16 +110,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <button type="submit" class="btn-auth">ĐĂNG KÝ</button>
                 </form>
 
-                <div class="auth-divider">
-                    <span></span>
-                    <p>HOẶC</p><span></span>
-                </div>
-
-                <div class="social-login">
-                    <a href="#" class="btn-social"><i class="fab fa-facebook" style="color: #3b5998;"></i> Facebook</a>
-                    <a href="#" class="btn-social"><i class="fab fa-google" style="color: #db4437;"></i> Google</a>
-                </div>
-
                 <div class="auth-footer-text">
                     Bạn đã có tài khoản? <a href="../LoginPage/login.php">Đăng nhập</a>
                 </div>
@@ -132,33 +120,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <footer class="lairai-footer">
         <div class="container">
             <div class="footer-content">
+
                 <div class="footer-column">
                     <h3>CHĂM SÓC KHÁCH HÀNG</h3>
                     <ul>
-                        <li><a href="#">Trung Tâm Trợ Giúp</a></li>
-                        <li><a href="#">LaiRai Blog</a></li>
-                        <li><a href="#">LaiRai Mall</a></li>
-                        <li><a href="#">Hướng Dẫn Mua Hàng/Đặt Hàng</a></li>
-                        <li><a href="#">Hướng Dẫn Bán Hàng</a></li>
-                        <li><a href="#">Ví Điện Tử</a></li>
-                        <li><a href="#">Đơn Hàng</a></li>
-                        <li><a href="#">Trả Hàng/Hoàn Tiền</a></li>
-                        <li><a href="#">Liên Hệ LaiRaiShop</a></li>
-                        <li><a href="#">Chính Sách Bảo Hành</a></li>
+                        <li><a href="../HomePage/HelpPage/help_center.php">Trung Tâm Trợ Giúp</a></li>
+                        <li><a href="../HomePage/ContentPage/tutorial1.php">Hướng Dẫn Mua Hàng/Đặt Hàng</a></li>
+                        <li><a href="../HomePage/ContentPage/tutorial2.php">Hướng Dẫn Bán Hàng</a></li>
                     </ul>
                 </div>
 
                 <div class="footer-column">
                     <h3>LAIRAISHOP VIỆT NAM</h3>
                     <ul>
-                        <li><a href="#">Về LaiRaiShop</a></li>
-                        <li><a href="#">Tuyển Dụng</a></li>
-                        <li><a href="#">Điều Khoản LaiRaiShop</a></li>
-                        <li><a href="#">Chính Sách Bảo Mật</a></li>
-                        <li><a href="#">Kênh Người Bán</a></li>
-                        <li><a href="#">Flash Sale</a></li>
-                        <li><a href="#">Tiếp Thị Liên Kết</a></li>
-                        <li><a href="#">Liên Hệ Truyền Thông</a></li>
+                        <li><a href="../HomePage/ContentPage/about.php">Về LaiRaiShop</a></li>
                     </ul>
                 </div>
 
@@ -191,9 +166,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="footer-column">
                     <h3>THEO DÕI CHÚNG TÔI TRÊN</h3>
                     <ul class="social-links">
-                        <li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li>
-                        <li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li>
-                        <li><a href="#"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
+                        <li><a href="https://www.facebook.com/ShopeeVN" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook"></i> Facebook</a></li>
+                        <li><a href="https://www.instagram.com/Shopee_VN" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i> Instagram</a></li>
+                        <li><a href="https://www.linkedin.com/company/shopee" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
                     </ul>
                 </div>
 
@@ -204,9 +179,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <img src="https://down-vn.img.susercontent.com/file/a5e589e8e118e937dc660f224b9a1472" alt="QR Code">
                         </div>
                         <div class="app-stores">
-                            <a href="#"><img src="https://down-vn.img.susercontent.com/file/ad01628e90ddf248076685f73497c163" alt="App Store"></a>
-                            <a href="#"><img src="https://down-vn.img.susercontent.com/file/ae7dced05f7243d0f3171f786e123def" alt="Google Play"></a>
-                            <a href="#"><img src="https://down-vn.img.susercontent.com/file/35352374f39bdd03b25e7b83542b2cb0" alt="App Gallery"></a>
+                            <a href="https://shopee.vn/web" target="_blank" rel="noopener noreferrer"><img src="https://down-vn.img.susercontent.com/file/ad01628e90ddf248076685f73497c163" alt="App Store"></a>
+                            <a href="https://shopee.vn/web" target="_blank" rel="noopener noreferrer"><img src="https://down-vn.img.susercontent.com/file/ae7dced05f7243d0f3171f786e123def" alt="Google Play"></a>
+                            <a href="https://shopee.vn/web" target="_blank" rel="noopener noreferrer"><img src="https://down-vn.img.susercontent.com/file/35352374f39bdd03b25e7b83542b2cb0" alt="App Gallery"></a>
                         </div>
                     </div>
                 </div>
@@ -218,16 +193,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
                 <div class="country-list">
                     Quốc gia & Khu vực:
-                    <a href="#">Việt Nam</a>
-                    | <a href="#">Lào</a>
-                    | <a href="#">Singapore</a>
-                    | <a href="#">Thái Lan</a>
-                    | <a href="#">Philippines</a>
-                    | <a href="#">Đông Timor</a>
-                    | <a href="#">Indonesia</a>
-                    | <a href="#">Malaysia</a>
-                    | <a href="#">Brunei</a>
-                    | <a href="#">Đài Loan</a>
+                    <a>Việt Nam</a>
+                    | <a>Lào</a>
+                    | <a>Singapore</a>
+                    | <a>Thái Lan</a>
+                    | <a>Philippines</a>
+                    | <a>Đông Timor</a>
+                    | <a>Indonesia</a>
+                    | <a>Malaysia</a>
+                    | <a>Brunei</a>
+                    | <a>Đài Loan</a>
                 </div>
             </div>
         </div>
@@ -235,10 +210,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="footer-policy">
             <div class="container">
                 <div class="policy-row">
-                    <a href="#">CHÍNH SÁCH BẢO MẬT</a>
-                    <a href="#">QUY CHẾ HOẠT ĐỘNG</a>
-                    <a href="#">CHÍNH SÁCH VẬN CHUYỂN</a>
-                    <a href="#">CHÍNH SÁCH TRẢ HÀNG VÀ HOÀN TIỀN</a>
+                    <a>CHÍNH SÁCH BẢO MẬT</a>
+                    <a>QUY CHẾ HOẠT ĐỘNG</a>
+                    <a>CHÍNH SÁCH VẬN CHUYỂN</a>
+                    <a>CHÍNH SÁCH TRẢ HÀNG VÀ HOÀN TIỀN</a>
                 </div>
                 <div class="company-info">
                     <p>Địa chỉ: 2 Đ. Nguyễn Đình Chiểu, Phường Vĩnh Thọ, Thành phố Nha Trang, Tỉnh Khánh Hòa, Việt Nam</p>
