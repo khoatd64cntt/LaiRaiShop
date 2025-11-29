@@ -1,21 +1,32 @@
 <?php
 session_start();
 
-// Kết nối database (Dùng __DIR__ để định vị chính xác từ thư mục hiện tại lùi ra)
-// Giả sử homepage.php nằm trong thư mục 'page' hoặc 'page/HomePage'
-// Bạn có thể giữ nguyên require_once cũ nếu nó đang chạy đúng, hoặc dùng dòng dưới cho chắc chắn
-require_once __DIR__ . '/../../db/db.php'; 
+// --- [MỚI] 1. CHẶN CACHE TRÌNH DUYỆT (Để sửa lỗi nút Back) ---
+// Giúp trình duyệt không lưu trang này vào bộ nhớ đệm. 
+// Khi logout xong bấm Back, trình duyệt buộc phải tải lại trang -> Session đã mất -> Hiện giao diện khách.
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
 
-// --- LOGIC XỬ LÝ LINK KÊNH NGƯỜI BÁN ---
-$sellerLink = "LoginPage/login.php"; // Mặc định: Chưa đăng nhập thì bắt đăng nhập
+// Kết nối Config & DB (Giữ nguyên)
+require_once __DIR__ . '/../../config.php';
+require_once ROOT_PATH . '/db/db.php'; 
+
+// --- [MỚI] 2. CHẶN ADMIN (Cách 1: Strict Mode) ---
+// Nếu là Admin -> Đá ngay về Dashboard, không cho xem Homepage
+if (isset($_SESSION['aid']) && $_SESSION['role'] === 'admin') {
+    header("Location: " . BASE_URL . "/page/AdminPage/dashboard.php");
+    exit();
+}
+
+// --- LOGIC XỬ LÝ LINK KÊNH NGƯỜI BÁN (Giữ nguyên) ---
+$sellerLink = BASE_URL . "/page/HomePage/LoginPage/login.php"; 
 
 if (isset($_SESSION['aid'])) {
     if ($_SESSION['role'] === 'seller') {
-        // Nếu là người bán -> Vào Dashboard
-        $sellerLink = "../SellerPage/dashboard.php"; 
+        $sellerLink = BASE_URL . "/page/SellerPage/dashboard.php"; 
     } elseif ($_SESSION['role'] === 'user') {
-        // Nếu là khách -> Vào trang Đăng ký mở Shop
-        $sellerLink = "../SellerPage/CreateSellerPage/create_shop.php"; 
+        $sellerLink = BASE_URL . "/page/SellerPage/CreateSellerPage/create_shop.php"; 
     }
 }
 ?>
@@ -29,8 +40,8 @@ if (isset($_SESSION['aid'])) {
     <title>LaiRaishop | Mua Sắm Trực Tuyến</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="style/homepage.css?v=4">
-    <link rel="icon" href="../../images/icon.png" />
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/page/HomePage/style/homepage.css?v=4">
+    <link rel="icon" href="<?php echo BASE_URL; ?>/images/icon.png" />
 </head>
 
 <body>
@@ -59,17 +70,21 @@ if (isset($_SESSION['aid'])) {
                             Xin chào, <strong><?php echo htmlspecialchars($_SESSION['fullname']); ?></strong>
                         </span>
                         <span style="color: white; margin: 0 5px;">|</span>
-                        <a href="LoginPage/logout.php" class="auth-link">Đăng Xuất</a>
+                        <a href="<?php echo BASE_URL; ?>/page/HomePage/LoginPage/logout.php" class="auth-link">Đăng Xuất</a>
                     <?php else: ?>
-                        <a href="SignupPage/signup.php" class="auth-link">Đăng Ký</a>
-                        <a href="LoginPage/login.php" class="auth-link">Đăng Nhập</a>
+                        <a href="<?php echo BASE_URL; ?>/page/HomePage/SignupPage/signup.php" class="auth-link">Đăng Ký</a>
+                        <a href="<?php echo BASE_URL; ?>/page/HomePage/LoginPage/login.php" class="auth-link">Đăng Nhập</a>
                     <?php endif; ?>
                 </div>
             </div>
         </div>
         <header class="lairai-header">
             <div class="container header-content">
-                <div class="logo"><a href="#"><img src="../../images/logo.png" alt="LaiRaiShop Logo"></a></div>
+                <div class="logo">
+                    <a href="<?php echo BASE_URL; ?>/page/HomePage/homepage.php">
+                        <img src="<?php echo BASE_URL; ?>/images/logo.png" alt="LaiRaiShop Logo">
+                    </a>
+                </div>
 
                 <div class="search-box">
                     <form action="search.php" method="GET">
@@ -202,7 +217,8 @@ if (isset($_SESSION['aid'])) {
                     while ($row = $result->fetch_assoc()) {
                         $imgSrc = $row['main_image'];
                         if (strpos($imgSrc, 'http') === false) {
-                            $imgSrc = "." . $imgSrc;
+                            $cleanPath = ltrim($imgSrc, '.'); 
+                            $imgSrc = BASE_URL . $cleanPath;
                         }
                 ?>
                         <a href="detail.php?id=<?php echo $row['pid']; ?>" class="product-card has-border">
@@ -234,7 +250,7 @@ if (isset($_SESSION['aid'])) {
             </div>
 
             <div class="load-more">
-                <a href="../HomePage/LoginPage/login.php" style="text-decoration: none;">
+                <a href="<?php echo BASE_URL; ?>/page/HomePage/LoginPage/login.php" style="text-decoration: none;">
                     <button>Đăng Nhập Để Xem Thêm</button>
                 </a>
             </div>
@@ -248,16 +264,16 @@ if (isset($_SESSION['aid'])) {
                 <div class="footer-column">
                     <h3>CHĂM SÓC KHÁCH HÀNG</h3>
                     <ul>
-                        <li><a href="../HomePage/HelpPage/help_center.php">Trung Tâm Trợ Giúp</a></li>
-                        <li><a href="../HomePage/ContentPage/tutorial1.php">Hướng Dẫn Mua Hàng/Đặt Hàng</a></li>
-                        <li><a href="../HomePage/ContentPage/tutorial2.php">Hướng Dẫn Bán Hàng</a></li>
+                        <li><a href="<?php echo BASE_URL; ?>/page/HomePage/HelpPage/help_center.php">Trung Tâm Trợ Giúp</a></li>
+                        <li><a href="<?php echo BASE_URL; ?>/page/HomePage/ContentPage/tutorial1.php">Hướng Dẫn Mua Hàng/Đặt Hàng</a></li>
+                        <li><a href="<?php echo BASE_URL; ?>/page/HomePage/ContentPage/tutorial2.php">Hướng Dẫn Bán Hàng</a></li>
                     </ul>
                 </div>
 
                 <div class="footer-column">
                     <h3>LAIRAISHOP VIỆT NAM</h3>
                     <ul>
-                        <li><a href="../HomePage/ContentPage/about.php">Về LaiRaiShop</a></li>
+                        <li><a href="<?php echo BASE_URL; ?>/page/HomePage/ContentPage/about.php">Về LaiRaiShop</a></li>
                     </ul>
                 </div>
 
@@ -352,7 +368,7 @@ if (isset($_SESSION['aid'])) {
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../../js/homepage.js?v=4"></script>
+    <script src="<?php echo BASE_URL; ?>/js/homepage.js?v=4"></script>
 </body>
 
 </html>
