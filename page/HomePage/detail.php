@@ -25,18 +25,18 @@ if (!empty($product['main_image'])) {
 }
 $sql_images = "SELECT img_url FROM product_images WHERE pid = $pid";
 $result_images = $conn->query($sql_images);
-while($row = $result_images->fetch_assoc()) {
+while ($row = $result_images->fetch_assoc()) {
     $image_list[] = $row['img_url'];
 }
 if (empty($image_list)) {
-    $image_list[] = 'placeholder.png'; 
+    $image_list[] = 'placeholder.png';
 }
 
 // 4. TRUY VẤN ĐÁNH GIÁ
 $sql_reviews = "SELECT AVG(rating) as avg_rating, COUNT(*) as total_reviews FROM reviews WHERE pid = $pid";
 $result_reviews = $conn->query($sql_reviews);
 $review_data = $result_reviews->fetch_assoc();
-$avg_rating = round($review_data['avg_rating'], 1); 
+$avg_rating = round($review_data['avg_rating'], 1);
 $total_reviews = $review_data['total_reviews'];
 
 // 5. [MỚI] TÍNH TỔNG SỐ LƯỢNG ĐÃ BÁN (Từ bảng order_items)
@@ -46,11 +46,13 @@ $sold_data = $result_sold->fetch_assoc();
 $total_sold = $sold_data['total_sold'] ? $sold_data['total_sold'] : 0;
 
 // HÀM HỖ TRỢ
-function formatMoney($number) {
+function formatMoney($number)
+{
     return number_format($number, 0, ',', '.') . '₫';
 }
 
-function getImgUrl($path) {
+function getImgUrl($path)
+{
     if (strpos($path, 'http') === 0) return $path;
     // Xử lý đường dẫn ảnh local: lùi 2 cấp về root rồi vào images
     $clean_path = ltrim($path, '/');
@@ -64,13 +66,10 @@ function getImgUrl($path) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($product['name']) ?></title>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-    
     <link rel="stylesheet" href="style/homepage.css?v=4">
-    <link rel="stylesheet" href="style/detail.css?v=1"> 
-    
+    <link rel="stylesheet" href="style/detail.css?v=1">
     <link rel="icon" href="../../images/icon.png" />
 </head>
 
@@ -130,22 +129,22 @@ function getImgUrl($path) {
     </div>
 
     <div class="container">
-        
+
         <div class="product-wrapper">
-            
+
             <div class="product-gallery">
                 <div class="main-image">
                     <img id="current-img" src="<?= getImgUrl($image_list[0]) ?>" alt="Ảnh sản phẩm">
                 </div>
-                
+
                 <?php if (count($image_list) > 1): ?>
-                <div class="thumbnail-list">
-                    <?php foreach($image_list as $index => $img): ?>
-                        <div class="thumb-item <?= $index === 0 ? 'active' : '' ?>" onclick="changeImage(this, '<?= getImgUrl($img) ?>')">
-                            <img src="<?= getImgUrl($img) ?>" alt="thumb">
-                        </div>
-                    <?php endforeach; ?>
-                </div>
+                    <div class="thumbnail-list">
+                        <?php foreach ($image_list as $index => $img): ?>
+                            <div class="thumb-item <?= $index === 0 ? 'active' : '' ?>" onclick="changeImage(this, '<?= getImgUrl($img) ?>')">
+                                <img src="<?= getImgUrl($img) ?>" alt="thumb">
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
                 <?php endif; ?>
 
                 <div class="shop-info">
@@ -170,19 +169,19 @@ function getImgUrl($path) {
                     <div class="rating">
                         <span class="score"><?= $avg_rating ?: '5.0' ?></span>
                         <div class="stars">
-                            <?php 
-                                $stars = $avg_rating ?: 5; 
-                                for($i=1; $i<=5; $i++) echo ($i <= $stars) ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>';
+                            <?php
+                            $stars = $avg_rating ?: 5;
+                            for ($i = 1; $i <= 5; $i++) echo ($i <= $stars) ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>';
                             ?>
                         </div>
                     </div>
                     <div class="separator"></div>
-                    
+
                     <div class="reviews">
                         <span class="num"><?= $total_reviews ?></span> Đánh Giá
                     </div>
                     <div class="separator"></div>
-                    
+
                     <div class="sold">
                         <span class="num"><?= $total_sold ?></span> Đã Bán
                     </div>
@@ -346,13 +345,13 @@ function getImgUrl($path) {
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/homepage.js?v=4"></script>
-    
+
     <script>
         // Đổi ảnh khi click thumbnail
         function changeImage(element, src) {
             document.getElementById('current-img').src = src;
             const thumbs = document.querySelectorAll('.thumb-item');
-            if(thumbs.length > 0) {
+            if (thumbs.length > 0) {
                 thumbs.forEach(i => i.classList.remove('active'));
                 element.classList.add('active');
             }
