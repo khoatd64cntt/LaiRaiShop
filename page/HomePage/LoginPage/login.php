@@ -23,7 +23,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Lưu session
             $_SESSION['aid'] = $user['aid'];
             $_SESSION['role'] = $user['role'];
-            $_SESSION['fullname'] = $user['afname'] . " " . $user['alname'];
+            // Kiểm tra xem có Họ tên không, nếu không thì lấy Username
+$fullName = trim($user['afname'] . " " . $user['alname']);
+if (empty($fullName)) {
+    $_SESSION['fullname'] = $user['username']; // Dùng tên đăng nhập nếu chưa cập nhật tên thật
+} else {
+    $_SESSION['fullname'] = $fullName;
+}
 
             // ✅ Điều hướng theo role (SỬA ĐƯỜNG DẪN)
             if ($user['role'] === "admin") {
