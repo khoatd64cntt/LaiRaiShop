@@ -1,7 +1,25 @@
 <?php
 session_start();
-require_once '../../db/db.php';
+
+// Kết nối database (Dùng __DIR__ để định vị chính xác từ thư mục hiện tại lùi ra)
+// Giả sử homepage.php nằm trong thư mục 'page' hoặc 'page/HomePage'
+// Bạn có thể giữ nguyên require_once cũ nếu nó đang chạy đúng, hoặc dùng dòng dưới cho chắc chắn
+require_once __DIR__ . '/../../db/db.php'; 
+
+// --- LOGIC XỬ LÝ LINK KÊNH NGƯỜI BÁN ---
+$sellerLink = "LoginPage/login.php"; // Mặc định: Chưa đăng nhập thì bắt đăng nhập
+
+if (isset($_SESSION['aid'])) {
+    if ($_SESSION['role'] === 'seller') {
+        // Nếu là người bán -> Vào Dashboard
+        $sellerLink = "../SellerPage/dashboard.php"; 
+    } elseif ($_SESSION['role'] === 'user') {
+        // Nếu là khách -> Vào trang Đăng ký mở Shop
+        $sellerLink = "../SellerPage/CreateSellerPage/create_shop.php"; 
+    }
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -21,7 +39,8 @@ require_once '../../db/db.php';
         <div class="top-bar">
             <div class="container top-bar-content">
                 <div class="top-bar-left">
-                    <a href="../SellerPage/dashboard.php">Kênh Người Bán</a>
+                    <a href="<?php echo $sellerLink; ?>">Kênh Người Bán</a>
+                    
                     <a href="#">Trở thành Người bán</a>
                     <div class="top-bar-connect">
                         <p>Kết nối</p>
@@ -35,8 +54,16 @@ require_once '../../db/db.php';
                 </div>
 
                 <div class="top-bar-right">
-                    <a href="SignupPage/signup.php" class="auth-link">Đăng Ký</a>
-                    <a href="LoginPage/login.php" class="auth-link">Đăng Nhập</a>
+                    <?php if (isset($_SESSION['aid'])): ?>
+                        <span class="auth-link" style="color: white;">
+                            Xin chào, <strong><?php echo htmlspecialchars($_SESSION['fullname']); ?></strong>
+                        </span>
+                        <span style="color: white; margin: 0 5px;">|</span>
+                        <a href="LoginPage/logout.php" class="auth-link">Đăng Xuất</a>
+                    <?php else: ?>
+                        <a href="SignupPage/signup.php" class="auth-link">Đăng Ký</a>
+                        <a href="LoginPage/login.php" class="auth-link">Đăng Nhập</a>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -177,7 +204,6 @@ require_once '../../db/db.php';
                         if (strpos($imgSrc, 'http') === false) {
                             $imgSrc = "." . $imgSrc;
                         }
-                        // Đã xóa biến $randomDiscount và logic liên quan
                 ?>
                         <a href="detail.php?id=<?php echo $row['pid']; ?>" class="product-card has-border">
                             <div class="product-img">
