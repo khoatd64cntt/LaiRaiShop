@@ -297,3 +297,104 @@
     .product-gallery, .product-info { width: 100%; }
     .main-image img { height: auto; }
 }
+/* CSS cho Popup Giỏ Hàng */
+.cart-dropdown {
+    /* Đảm bảo dropdown nằm đúng vị trí */
+    display: none; /* Mặc định ẩn */
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: #fff;
+    width: 400px; /* Độ rộng giống hình mẫu */
+    box-shadow: 0 1px 10px rgba(0,0,0,0.1);
+    border-radius: 2px;
+    z-index: 1000;
+    padding: 10px;
+    border: 1px solid #e5e5e5;
+}
+
+/* Class để hiện popup khi JS gọi */
+.cart-dropdown.show-popup,
+.cart-icon:hover .cart-dropdown {
+    display: block;
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+/* Tam giác mũi tên trỏ lên (nếu cần) */
+.cart-dropdown::before {
+    content: "";
+    position: absolute;
+    right: 20px;
+    top: -10px;
+    border-width: 0 10px 10px;
+    border-style: solid;
+    border-color: transparent transparent #fff;
+}
+
+/* Nội dung bên trong popup */
+.popup-title {
+    color: #999;
+    font-size: 14px;
+    margin-bottom: 10px;
+    padding-left: 10px;
+}
+
+.popup-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #f8f8f8; /* Màu nền nhẹ cho sp mới */
+}
+
+.popup-img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border: 1px solid #e5e5e5;
+    margin-right: 10px;
+}
+
+.popup-info {
+    flex: 1;
+    overflow: hidden;
+}
+
+.popup-name {
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.popup-price {
+    color: #ee4d2d; /* Màu cam Shopee */
+    font-size: 14px;
+}
+
+.popup-action {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.btn-view-cart {
+    background-color: #ee4d2d;
+    color: #fff;
+    padding: 8px 15px;
+    text-decoration: none;
+    border-radius: 2px;
+    font-size: 14px;
+}
+
+.btn-view-cart:hover {
+    background-color: #d73211;
+    color: #fff;
+    text-decoration: none;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; top: 120%; }
+    to { opacity: 1; top: 100%; }
+}
