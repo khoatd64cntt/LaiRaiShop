@@ -1,12 +1,14 @@
 <?php
-// 1. Gọi Header
-include 'Layout/header.php';
+// File: page/AdminPage/dashboard.php
 
-// Giả lập số liệu
+// 1. Gọi Header (Dùng require_once để đảm bảo load Config chuẩn)
+require_once 'Layout/header.php';
+
+// Giả lập số liệu (Sau này bạn có thể thay bằng query database)
 $revenue = 5600000;
 $orders = 15;
 
-// HÀM HỖ TRỢ: Nếu file header.php chưa có hàm này, ta định nghĩa tạm ở đây để tránh lỗi
+// HÀM HỖ TRỢ: Kiểm tra để tránh lỗi nếu header đã có hàm này rồi
 if (!function_exists('formatCurrency')) {
     function formatCurrency($n)
     {
@@ -28,7 +30,9 @@ if (!function_exists('formatCurrency')) {
                             <?php echo formatCurrency($revenue); ?>
                         </div>
                     </div>
-                    <div class="col-auto"><i class="fas fa-dong-sign fa-2x text-gray-300"></i></div>
+                    <div class="col-auto">
+                        <i class="fas fa-dong-sign fa-2x text-gray-300"></i>
+                    </div>
                 </div>
             </div>
         </div>
@@ -42,7 +46,9 @@ if (!function_exists('formatCurrency')) {
                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Đơn hàng mới</div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $orders; ?></div>
                     </div>
-                    <div class="col-auto"><i class="fas fa-receipt fa-2x text-gray-300"></i></div>
+                    <div class="col-auto">
+                        <i class="fas fa-receipt fa-2x text-gray-300"></i>
+                    </div>
                 </div>
             </div>
         </div>
@@ -65,6 +71,6 @@ if (!function_exists('formatCurrency')) {
 </div>
 
 <?php
-// 3. Gọi Footer
-include 'Layout/footer.php';
+// 3. Gọi Footer (Dùng require_once)
+require_once 'Layout/footer.php';
 ?>
