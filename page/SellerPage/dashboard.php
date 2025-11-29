@@ -1,3 +1,4 @@
+
 <?php 
 // 1. KẾT NỐI SESSION
 $session_path = $_SERVER['DOCUMENT_ROOT'] . '/LaiRaiShop/page/SellerPage/types/seller_session.php';
@@ -80,7 +81,6 @@ $sql_recent = "SELECT o.oid, acc.username, o.order_date, o.status,
                ORDER BY o.order_date DESC LIMIT 5";
 $recent_orders = $conn->query($sql_recent);
 ?>
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -327,3 +327,4 @@ $recent_orders = $conn->query($sql_recent);
 
 </body>
 </html>
+
