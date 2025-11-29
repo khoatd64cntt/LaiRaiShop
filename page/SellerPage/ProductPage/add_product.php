@@ -1,6 +1,10 @@
 <?php 
-$session_path = $_SERVER['DOCUMENT_ROOT'] . '/LaiRaiShop/page/SellerPage/types/seller_session.php';
+// FILE: page/SellerPage/ProductPage/add_product.php
+
+// 1. KẾT NỐI SESSION (SỬA PATH)
+$session_path = __DIR__ . '/../types/seller_session.php';
 if (file_exists($session_path)) require_once $session_path;
+else die("Lỗi: Không tìm thấy file session.");
 
 $sid = $_SESSION['shop_id'];
 $msg = "";
@@ -16,8 +20,9 @@ if (isset($_POST['submit_add'])) {
     $stock = $_POST['stock'];
     $desc = $_POST['description'];
     
-    // Xử lý upload ảnh
-    $target_dir = $_SERVER['DOCUMENT_ROOT'] . "/LaiRaiShop/images/products/"; // Nơi lưu ảnh vật lý
+    // 2. XỬ LÝ UPLOAD ẢNH (SỬA ĐƯỜNG DẪN)
+    // Dùng __DIR__ để đi ra thư mục gốc images/products
+    $target_dir = __DIR__ . "/../../../images/products/"; 
     
     // Tạo thư mục nếu chưa có
     if (!file_exists($target_dir)) { mkdir($target_dir, 0777, true); }

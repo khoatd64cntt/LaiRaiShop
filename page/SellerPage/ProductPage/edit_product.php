@@ -1,6 +1,10 @@
 <?php 
-$session_path = $_SERVER['DOCUMENT_ROOT'] . '/LaiRaiShop/page/SellerPage/types/seller_session.php';
+// FILE: page/SellerPage/ProductPage/edit_product.php
+
+// 1. KẾT NỐI SESSION (SỬA PATH)
+$session_path = __DIR__ . '/../types/seller_session.php';
 if (file_exists($session_path)) require_once $session_path;
+else die("Lỗi kết nối session");
 
 $sid = $_SESSION['shop_id'];
 $pid = $_GET['id'];
@@ -28,7 +32,9 @@ if (isset($_POST['submit_edit'])) {
     $db_image_path = $product['main_image']; // Mặc định giữ ảnh cũ
 
     if (!empty($_FILES["image"]["name"])) {
-        $target_dir = $_SERVER['DOCUMENT_ROOT'] . "/LaiRaiShop/images/products/";
+        // 2. SỬA ĐƯỜNG DẪN UPLOAD ẢNH (QUAN TRỌNG)
+        $target_dir = __DIR__ . "/../../../images/products/";
+
         if (!file_exists($target_dir)) { mkdir($target_dir, 0777, true); }
 
         $new_filename = time() . "_" . basename($_FILES["image"]["name"]);

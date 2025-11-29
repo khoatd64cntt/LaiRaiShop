@@ -1,21 +1,25 @@
 <?php 
-// 1. KẾT NỐI SESSION
-// Sử dụng đường dẫn tuyệt đối
-$session_path = $_SERVER['DOCUMENT_ROOT'] . '/LaiRaiShop/page/SellerPage/types/seller_session.php';
-if (file_exists($session_path)) require_once $session_path;
-else die("Lỗi: Không tìm thấy file session tại $session_path");
+// FILE: page/SellerPage/orders.php
+
+// 1. KẾT NỐI SESSION (ĐÃ SỬA PATH)
+// Dùng __DIR__ để gọi file nằm trong thư mục 'types' cùng cấp
+$session_path = __DIR__ . '/types/seller_session.php';
+
+if (file_exists($session_path)) {
+    require_once $session_path;
+} else {
+    die("Lỗi: Không tìm thấy file session tại: " . $session_path);
+}
 
 $sid = $_SESSION['shop_id'];
 $shop_name = $_SESSION['shop_name'];
 
-// 2. XỬ LÝ CẬP NHẬT TRẠNG THÁI (Nếu có POST)
-// Lưu ý: Vì không có bảng sub_orders, việc đổi trạng thái ở đây sẽ đổi trạng thái của CẢ ĐƠN HÀNG LỚN.
+// 2. XỬ LÝ CẬP NHẬT TRẠNG THÁI (Giữ nguyên)
 if(isset($_POST['update_status'])) {
     $order_id = $_POST['oid'];
     $new_status = $_POST['status'];
     
     // Chỉ cho phép cập nhật nếu đơn hàng đó thực sự có chứa sản phẩm của shop mình
-    // (Check bảo mật nhẹ)
     $check = $conn->query("SELECT 1 FROM order_items oi JOIN products p ON oi.pid = p.pid WHERE oi.oid = $order_id AND p.sid = $sid");
     
     if($check->num_rows > 0) {
@@ -29,9 +33,7 @@ if(isset($_POST['update_status'])) {
     }
 }
 
-// 3. LẤY DANH SÁCH ĐƠN HÀNG
-// Logic: Lấy tất cả đơn hàng có chứa sản phẩm của Shop này.
-// Tính tổng tiền riêng của Shop trong đơn hàng đó (shop_total)
+// 3. LẤY DANH SÁCH ĐƠN HÀNG (Giữ nguyên)
 $sql = "SELECT 
             o.oid, 
             o.order_date, 
