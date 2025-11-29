@@ -1,5 +1,8 @@
 <?php
-$session_path = $_SERVER['DOCUMENT_ROOT'] . '/LaiRaiShop/page/SellerPage/types/seller_session.php';
+// FILE: page/SellerPage/ProductPage/delete_product.php
+
+// 1. KẾT NỐI SESSION (SỬA PATH)
+$session_path = __DIR__ . '/../types/seller_session.php';
 if (file_exists($session_path)) require_once $session_path;
 
 if (isset($_GET['id'])) {

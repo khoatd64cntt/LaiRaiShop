@@ -1,13 +1,20 @@
 <?php 
-// 1. KẾT NỐI SESSION
-$session_path = $_SERVER['DOCUMENT_ROOT'] . '/LaiRaiShop/page/SellerPage/types/seller_session.php';
-if (file_exists($session_path)) require_once $session_path;
-else die("Lỗi: Không tìm thấy file session.");
+// FILE: page/SellerPage/ProductPage/products.php
+
+// 1. KẾT NỐI SESSION (ĐÃ SỬA PATH)
+// Dùng __DIR__ và lùi ra 1 cấp (..) để tìm thấy folder 'types'
+$session_path = __DIR__ . '/../types/seller_session.php';
+
+if (file_exists($session_path)) {
+    require_once $session_path;
+} else {
+    die("Lỗi: Không tìm thấy file session.");
+}
 
 $sid = $_SESSION['shop_id'];
 $shop_name = $_SESSION['shop_name'];
 
-// 2. LẤY DANH SÁCH SẢN PHẨM (Kèm tên danh mục)
+// 2. LẤY DANH SÁCH SẢN PHẨM (Giữ nguyên)
 $sql = "SELECT p.*, c.name as cat_name 
         FROM products p 
         LEFT JOIN categories c ON p.cid = c.cid 
