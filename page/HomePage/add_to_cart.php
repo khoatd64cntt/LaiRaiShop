@@ -1,10 +1,14 @@
 <?php
 session_start();
+require_once __DIR__ . '/../../config.php';
+require_once ROOT_PATH . '/db/db.php';
+
+
+
 // Đặt header JSON để trả về dữ liệu cho AJAX
 header('Content-Type: application/json; charset=utf-8');
 
-// Kết nối Database (Lùi 2 cấp thư mục giống detail.php)
-require_once '../../db/db.php'; 
+
 
 // 1. KIỂM TRA PHƯƠNG THỨC GỬI
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
