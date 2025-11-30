@@ -5,7 +5,7 @@ require_once ROOT_PATH . '/db/db.php';
 
 // 1. NHẬN PARAM
 $keyword = isset($_GET['keyword']) ? trim($_GET['keyword']) : '';
-$cat_id = isset($_GET['category']) ? intval($_GET['category']) : '';
+$cat_input = isset($_GET['category']) ? $_GET['category'] : '';
 $price_min = isset($_GET['price_min']) ? intval($_GET['price_min']) : '';
 $price_max = isset($_GET['price_max']) ? intval($_GET['price_max']) : '';
 $sort = isset($_GET['sort']) ? $_GET['sort'] : 'newest';
@@ -28,10 +28,20 @@ if (!empty($keyword)) {
     $params[] = "%$keyword%";
     $types .= "s";
 }
-if (!empty($cat_id)) {
-    $sql .= " AND p.cid = ?";
-    $params[] = $cat_id;
-    $types .= "i";
+if (!empty($cat_input)) {
+    // Tách chuỗi ID danh mục thành mảng
+    $id_array = explode(',', $cat_input);
+    // Ép kiểu từng phần tử thành số nguyên để tránh SQL Injection
+    $id_array = array_map('intval', $id_array);
+    // Loại bỏ các giá trị không hợp lệ (nếu có)
+    $id_array = array_filter($id_array);
+
+    if (!empty($id_array)) {
+        // Nối lại thành chuỗi để dùng trong câu lệnh SQL
+        $ids_string = implode(',', $id_array);
+        // Dùng IN để lọc nhiều danh mục
+        $sql .= " AND p.cid IN ($ids_string) ";
+    }
 }
 if (!empty($price_min)) {
     $sql .= " AND p.price >= ?";
@@ -176,8 +186,8 @@ if (isset($_SESSION['aid'])) {
                     <form id="priceFilterForm" method="GET" action="search.php">
                         <input type="hidden" name="keyword" value="<?php echo htmlspecialchars($keyword); ?>">
                         <input type="hidden" name="sort" value="<?php echo htmlspecialchars($sort); ?>">
-                        <?php if ($cat_id): ?>
-                            <input type="hidden" name="category" value="<?php echo $cat_id; ?>">
+                        <?php if (!empty($cat_input)): ?>
+                            <input type="hidden" name="category" value="<?php echo htmlspecialchars($cat_input); ?>">
                         <?php endif; ?>
 
                         <div class="price-inputs">
