@@ -1,9 +1,7 @@
-<?php
-// FILE: page/SellerPage/dashboard.php
 
-// 1. KẾT NỐI SESSION (ĐÃ SỬA LỖI)
-// Dùng __DIR__ để lấy đúng đường dẫn hiện tại bất kể tên thư mục dự án là gì
-$session_path = __DIR__ . '/types/seller_session.php';
+<?php 
+// 1. KẾT NỐI SESSION
+$session_path = $_SERVER['DOCUMENT_ROOT'] . '/LaiRaiShop/page/SellerPage/types/seller_session.php';
 
 if (file_exists($session_path)) {
     require_once $session_path;
@@ -11,17 +9,8 @@ if (file_exists($session_path)) {
     die("Lỗi: Không tìm thấy file session tại: " . $session_path);
 }
 
-// 2. KẾT NỐI DB DỰ PHÒNG (Nếu file session chưa load được db)
-if (!isset($conn)) {
-    $db_path = __DIR__ . '/../../db/db.php';
-    if (file_exists($db_path)) {
-        require_once $db_path;
-    }
-}
-
-// Lấy thông tin session an toàn
-$sid = $_SESSION['shop_id'] ?? 0;
-$shop_name = $_SESSION['shop_name'] ?? 'Shop của tôi';
+$sid = $_SESSION['shop_id']; 
+$shop_name = $_SESSION['shop_name'];
 $msg = "";
 
 // --- XỬ LÝ CẬP NHẬT THÔNG TIN SHOP ---

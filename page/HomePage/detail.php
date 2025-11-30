@@ -25,18 +25,18 @@ if (!empty($product['main_image'])) {
 }
 $sql_images = "SELECT img_url FROM product_images WHERE pid = $pid";
 $result_images = $conn->query($sql_images);
-while($row = $result_images->fetch_assoc()) {
+while ($row = $result_images->fetch_assoc()) {
     $image_list[] = $row['img_url'];
 }
 if (empty($image_list)) {
-    $image_list[] = 'placeholder.png'; 
+    $image_list[] = 'placeholder.png';
 }
 
 // 4. TRUY VẤN ĐÁNH GIÁ
 $sql_reviews = "SELECT AVG(rating) as avg_rating, COUNT(*) as total_reviews FROM reviews WHERE pid = $pid";
 $result_reviews = $conn->query($sql_reviews);
 $review_data = $result_reviews->fetch_assoc();
-$avg_rating = round($review_data['avg_rating'], 1); 
+$avg_rating = round($review_data['avg_rating'], 1);
 $total_reviews = $review_data['total_reviews'];
 
 // 5. [MỚI] TÍNH TỔNG SỐ LƯỢNG ĐÃ BÁN (Từ bảng order_items)
@@ -46,11 +46,13 @@ $sold_data = $result_sold->fetch_assoc();
 $total_sold = $sold_data['total_sold'] ? $sold_data['total_sold'] : 0;
 
 // HÀM HỖ TRỢ
-function formatMoney($number) {
+function formatMoney($number)
+{
     return number_format($number, 0, ',', '.') . '₫';
 }
 
-function getImgUrl($path) {
+function getImgUrl($path)
+{
     if (strpos($path, 'http') === 0) return $path;
     // Xử lý đường dẫn ảnh local: lùi 2 cấp về root rồi vào images
     $clean_path = ltrim($path, '/');
@@ -64,13 +66,10 @@ function getImgUrl($path) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($product['name']) ?></title>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-    
     <link rel="stylesheet" href="style/homepage.css?v=4">
-    <link rel="stylesheet" href="style/detail.css?v=1"> 
-    
+    <link rel="stylesheet" href="style/detail.css?v=1">
     <link rel="icon" href="../../images/icon.png" />
 </head>
 
@@ -120,32 +119,66 @@ function getImgUrl($path) {
 
                 <div class="cart-icon has-dropdown">
                     <i class="fas fa-shopping-cart"></i>
+                    
+                    <?php 
+                    // Tính tổng số lượng để hiện Badge (số màu đỏ)
+                    $total_qty_header = 0;
+                    if (isset($_SESSION['cart'])) {
+                        foreach ($_SESSION['cart'] as $c_item) {
+                            $total_qty_header += $c_item['qty'];
+                        }
+                    }
+                    ?>
+                    <?php if($total_qty_header > 0): ?>
+                        <span class="cart-badge" style="position: absolute; top: -5px; right: -8px; background: #ee4d2d; color: #fff; border-radius: 50%; padding: 0 5px; font-size: 12px; line-height: 16px;"><?= $total_qty_header ?></span>
+                    <?php endif; ?>
+
                     <div class="lairai-dropdown-menu cart-dropdown">
-                        <div class="cart-empty-icon-wrapper"><i class="fas fa-shopping-bag"></i></div>
-                        <p>Chưa Có Sản Phẩm</p>
+                        <?php if (!empty($_SESSION['cart'])): ?>
+                            <div class="cart-list-wrapper" style="max-height: 300px; overflow-y: auto;">
+                                <p style="padding: 10px; color: #999; margin: 0; font-size: 14px;">Sản phẩm mới thêm</p>
+                                <?php foreach ($_SESSION['cart'] as $cart_id => $cart_item): ?>
+                                    <div class="popup-item" style="display: flex; padding: 10px; align-items: center;">
+                                        <img src="<?= getImgUrl($cart_item['image']) ?>" alt="img" style="width: 40px; height: 40px; border: 1px solid #e5e5e5; margin-right: 10px; object-fit: cover;">
+                                        <div class="popup-info" style="flex: 1; overflow: hidden;">
+                                            <div class="popup-name" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13px; color: #333;"><?= htmlspecialchars($cart_item['name']) ?></div>
+                                            <div class="popup-price" style="color: #ee4d2d; font-size: 13px;">
+                                                <?= formatMoney($cart_item['price']) ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <div class="popup-action" style="padding: 10px; text-align: right; background: #f8f8f8;">
+                                <a href="cart.php" class="btn-view-cart" style="background: #ee4d2d; color: #fff; padding: 8px 15px; text-decoration: none; font-size: 14px; border-radius: 2px;">Xem Giỏ Hàng</a>
+                            </div>
+                        <?php else: ?>
+                            <div class="cart-empty-icon-wrapper"><i class="fas fa-shopping-bag"></i></div>
+                            <p>Chưa Có Sản Phẩm</p>
+                        <?php endif; ?>
                     </div>
                 </div>
-            </div>
+                </div>
         </header>
     </div>
 
     <div class="container">
-        
+
         <div class="product-wrapper">
-            
+
             <div class="product-gallery">
                 <div class="main-image">
                     <img id="current-img" src="<?= getImgUrl($image_list[0]) ?>" alt="Ảnh sản phẩm">
                 </div>
-                
+
                 <?php if (count($image_list) > 1): ?>
-                <div class="thumbnail-list">
-                    <?php foreach($image_list as $index => $img): ?>
-                        <div class="thumb-item <?= $index === 0 ? 'active' : '' ?>" onclick="changeImage(this, '<?= getImgUrl($img) ?>')">
-                            <img src="<?= getImgUrl($img) ?>" alt="thumb">
-                        </div>
-                    <?php endforeach; ?>
-                </div>
+                    <div class="thumbnail-list">
+                        <?php foreach ($image_list as $index => $img): ?>
+                            <div class="thumb-item <?= $index === 0 ? 'active' : '' ?>" onclick="changeImage(this, '<?= getImgUrl($img) ?>')">
+                                <img src="<?= getImgUrl($img) ?>" alt="thumb">
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
                 <?php endif; ?>
 
                 <div class="shop-info">
@@ -170,19 +203,19 @@ function getImgUrl($path) {
                     <div class="rating">
                         <span class="score"><?= $avg_rating ?: '5.0' ?></span>
                         <div class="stars">
-                            <?php 
-                                $stars = $avg_rating ?: 5; 
-                                for($i=1; $i<=5; $i++) echo ($i <= $stars) ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>';
+                            <?php
+                            $stars = $avg_rating ?: 5;
+                            for ($i = 1; $i <= 5; $i++) echo ($i <= $stars) ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>';
                             ?>
                         </div>
                     </div>
                     <div class="separator"></div>
-                    
+
                     <div class="reviews">
                         <span class="num"><?= $total_reviews ?></span> Đánh Giá
                     </div>
                     <div class="separator"></div>
-                    
+
                     <div class="sold">
                         <span class="num"><?= $total_sold ?></span> Đã Bán
                     </div>
@@ -342,23 +375,23 @@ function getImgUrl($path) {
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/homepage.js?v=4"></script>
-    
+
     <script>
         // Đổi ảnh khi click thumbnail
         function changeImage(element, src) {
             document.getElementById('current-img').src = src;
             const thumbs = document.querySelectorAll('.thumb-item');
-            if(thumbs.length > 0) {
+            if (thumbs.length > 0) {
                 thumbs.forEach(i => i.classList.remove('active'));
                 element.classList.add('active');
             }
         }
 
-        // Tăng giảm số lượng (Có check tồn kho từ PHP)
+        // Tăng giảm số lượng
         function updateQty(change) {
             const input = document.getElementById('qty');
             let newVal = parseInt(input.value) + change;
@@ -371,6 +404,88 @@ function getImgUrl($path) {
             }
         }
     </script>
-</body>
 
+    <script>
+        // Hàm định dạng tiền tệ
+        function formatMoney(amount) {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+        }
+
+        // Xử lý đường dẫn ảnh
+        function getImgUrlJS(path) {
+            if (!path) return '';
+            if (path.indexOf('http') === 0) return path;
+            return "../../" + path.replace(/^\//, '');
+        }
+
+        $(document).ready(function() {
+            $('.btn-add-cart').click(function(e) {
+                e.preventDefault(); 
+
+                var pid = <?= isset($pid) ? $pid : 0 ?>; 
+                var qty = parseInt($('#qty').val());
+
+                if (pid === 0) {
+                    alert("Lỗi: Không lấy được ID sản phẩm.");
+                    return;
+                }
+
+                $.ajax({
+                    url: 'add_to_cart.php',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { 
+                        pid: pid,
+                        quantity: qty
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            
+                            // [SỬA 2] Cập nhật Badge (số màu đỏ trên giỏ hàng)
+                            var badgeHtml = `<span class="cart-badge" style="position: absolute; top: -5px; right: -8px; background: #ee4d2d; color: #fff; border-radius: 50%; padding: 0 5px; font-size: 12px; line-height: 16px;">${response.total_items}</span>`;
+                            if ($('.cart-icon .cart-badge').length) {
+                                $('.cart-icon .cart-badge').text(response.total_items);
+                            } else {
+                                $('.cart-icon .fa-shopping-cart').after(badgeHtml);
+                            }
+
+                            // Tạo popup (Giữ nguyên)
+                            var product = response.data;
+                            var popupHtml = `
+                                <div class="cart-popup-content">
+                                    <div class="popup-title">Sản Phẩm Mới Thêm</div>
+                                    <div class="popup-item">
+                                        <img src="${getImgUrlJS(product.image)}" class="popup-img">
+                                        <div class="popup-info">
+                                            <div class="popup-name">${product.name}</div>
+                                            <div class="popup-price">${formatMoney(product.price)}</div>
+                                        </div>
+                                    </div>
+                                    <div class="popup-action">
+                                        <a href="add_to_cart.php" class="btn-view-cart">Xem Giỏ Hàng</a>
+                                    </div>
+                                </div>
+                            `;
+                            
+                            // Hiển thị popup
+                            $('.cart-dropdown').html(popupHtml).addClass('show-popup');
+                            
+                            // Tự động ẩn sau 3 giây
+                            setTimeout(function(){ 
+                                $('.cart-dropdown').removeClass('show-popup'); 
+                            }, 3000);
+
+                        } else {
+                            alert(response.msg); 
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(xhr.responseText);
+                        alert('Lỗi kết nối server.');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
 </html>
