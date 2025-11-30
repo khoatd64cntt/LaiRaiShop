@@ -1,13 +1,20 @@
-<?php 
+<?php
 // FILE: page/SellerPage/orders.php
 
-// 1. KẾT NỐI SESSION
+// 1. KẾT NỐI SESSION VÀ CONFIG
 $session_path = __DIR__ . '/types/seller_session.php';
+$config_path  = __DIR__ . '/../../config.php';
 
 if (file_exists($session_path)) {
     require_once $session_path;
 } else {
-    die("Lỗi: Không tìm thấy file session tại: " . $session_path);
+    $session_path_alt = __DIR__ . '/../types/seller_session.php';
+    if (file_exists($session_path_alt)) require_once $session_path_alt;
+    else die("Lỗi: Không tìm thấy file session.");
+}
+
+if (file_exists($config_path)) {
+    require_once $config_path;
 }
 
 $sid = $_SESSION['shop_id'];
@@ -18,10 +25,10 @@ $msg = "";
 if (isset($_POST['update_shop_info'])) {
     $new_name = $_POST['shop_name'];
     $new_desc = $_POST['shop_desc'];
-    
+
     $stmt = $conn->prepare("UPDATE shops SET shop_name = ?, description = ? WHERE sid = ?");
     $stmt->bind_param("ssi", $new_name, $new_desc, $sid);
-    
+
     if ($stmt->execute()) {
         $_SESSION['shop_name'] = $new_name;
         $shop_name = $new_name;
@@ -37,16 +44,17 @@ $res_info = $conn->query($sql_shop_info);
 $current_shop = $res_info->fetch_assoc();
 
 // 2. XỬ LÝ CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG
-if(isset($_POST['update_status'])) {
+if (isset($_POST['update_status'])) {
     $order_id = $_POST['oid'];
     $new_status = $_POST['status'];
-    
+
     $check = $conn->query("SELECT 1 FROM order_items oi JOIN products p ON oi.pid = p.pid WHERE oi.oid = $order_id AND p.sid = $sid");
-    
-    if($check->num_rows > 0) {
+
+    if ($check->num_rows > 0) {
         $stmt = $conn->prepare("UPDATE orders SET status = ? WHERE oid = ?");
         $stmt->bind_param("si", $new_status, $order_id);
-        if($stmt->execute()) {
+        if ($stmt->execute()) {
+            // Nếu chuyển thành Completed -> Nó sẽ tự biến mất khỏi trang này
             echo "<script>alert('Cập nhật trạng thái thành công!'); window.location.href='orders.php';</script>";
         } else {
             echo "<script>alert('Lỗi cập nhật');</script>";
@@ -54,7 +62,8 @@ if(isset($_POST['update_status'])) {
     }
 }
 
-// 3. LẤY DANH SÁCH ĐƠN HÀNG
+// 3. LẤY DANH SÁCH ĐƠN HÀNG (CHỈ ĐƠN CHƯA HOÀN THÀNH)
+// Thêm điều kiện: o.status != 'completed'
 $sql = "SELECT 
             o.oid, 
             o.order_date, 
@@ -66,7 +75,7 @@ $sql = "SELECT
         JOIN order_items oi ON o.oid = oi.oid
         JOIN products p ON oi.pid = p.pid
         JOIN acc a ON o.aid = a.aid
-        WHERE p.sid = $sid
+        WHERE p.sid = $sid AND o.status != 'completed'
         GROUP BY o.oid, o.order_date, o.status, a.username, a.phone
         ORDER BY o.order_date DESC";
 
@@ -75,83 +84,378 @@ $result = $conn->query($sql);
 
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
-    <title>Quản lý đơn hàng</title>
+    <title>Đơn hàng cần xử lý</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
     <style>
         /* --- CSS STYLE ĐỒNG BỘ --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { display: flex; min-height: 100vh; background-color: #f4f6f9; color: #333; }
-        a { text-decoration: none; }
-        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            background-color: #f4f6f9;
+            color: #333;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
         /* Sidebar */
-        .sidebar { width: 260px; background: #fff; border-right: 1px solid #e1e1e1; position: fixed; height: 100%; top: 0; left: 0; z-index: 100; }
-        .sidebar-header { padding: 25px 20px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; gap: 10px; }
-        .sidebar-header i { font-size: 24px; color: #088178; }
-        .sidebar-header h2 { font-size: 20px; color: #088178; font-weight: 700; }
-        
-        .user-profile { padding: 20px; text-align: center; background: #f9f9f9; border-bottom: 1px solid #eee; position: relative; }
-        .user-profile img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 2px solid #088178; }
-        .user-profile h4 { font-size: 16px; margin-bottom: 5px; }
-        .user-profile p { font-size: 12px; color: #777; }
-        
-        .sidebar-menu { list-style: none; padding: 10px 0; flex: 1; }
-        .sidebar-menu li a { display: flex; align-items: center; padding: 12px 25px; color: #555; font-weight: 500; transition: 0.3s; font-size: 15px; border-left: 4px solid transparent; }
-        .sidebar-menu li a:hover, .sidebar-menu li a.active { background-color: #e8f6ea; color: #088178; border-left-color: #088178; }
-        .sidebar-menu li a i { margin-right: 15px; width: 20px; text-align: center; font-size: 16px; }
+        .sidebar {
+            width: 260px;
+            background: #fff;
+            border-right: 1px solid #e1e1e1;
+            position: fixed;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-header i {
+            font-size: 24px;
+            color: #088178;
+        }
+
+        .sidebar-header h2 {
+            font-size: 20px;
+            color: #088178;
+            font-weight: 700;
+        }
+
+        .user-profile {
+            padding: 20px;
+            text-align: center;
+            background: #f9f9f9;
+            border-bottom: 1px solid #eee;
+            position: relative;
+        }
+
+        .user-profile img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+            border: 2px solid #088178;
+        }
+
+        .user-profile h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .user-profile p {
+            font-size: 12px;
+            color: #777;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 10px 0;
+            flex: 1;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            padding: 12px 25px;
+            color: #555;
+            font-weight: 500;
+            transition: 0.3s;
+            font-size: 15px;
+            border-left: 4px solid transparent;
+        }
+
+        .sidebar-menu li a:hover,
+        .sidebar-menu li a.active {
+            background-color: #e8f6ea;
+            color: #088178;
+            border-left-color: #088178;
+        }
+
+        .sidebar-menu li a i {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
 
         /* Main Content */
-        .main-content { flex: 1; margin-left: 260px; padding: 30px; }
-        .page-header { margin-bottom: 30px; }
-        .page-header h2 { font-size: 24px; color: #333; margin-bottom: 5px; }
-        .page-header p { color: #777; font-size: 14px; }
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 30px;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h2 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .page-header p {
+            color: #777;
+            font-size: 14px;
+        }
 
         /* Order Card */
-        .order-card { background: white; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); margin-bottom: 20px; border: 1px solid #f0f0f0; overflow: hidden; transition: 0.3s; }
-        .order-card:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .order-header { background: #f8f9fa; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
-        .order-id { font-weight: 700; color: #333; }
-        .order-date { font-size: 13px; color: #777; margin-left: 10px; }
-        .order-body { padding: 20px; }
-        .customer-info { margin-bottom: 15px; font-size: 14px; color: #555; border-bottom: 1px solid #f4f4f4; padding-bottom: 10px; }
-        .customer-info i { width: 20px; color: #088178; }
-        .item-list { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
-        .item-list td { padding: 10px 0; border-bottom: 1px solid #f9f9f9; font-size: 14px; }
-        .item-img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #eee; margin-right: 15px; }
-        .item-name { font-weight: 500; }
-        .order-footer { background: #fff; padding: 15px 20px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        .total-price { font-size: 18px; color: #d35400; font-weight: 700; }
-        
+        .order-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+            margin-bottom: 20px;
+            border: 1px solid #f0f0f0;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+
+        .order-card:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .order-header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .order-id {
+            font-weight: 700;
+            color: #333;
+        }
+
+        .order-date {
+            font-size: 13px;
+            color: #777;
+            margin-left: 10px;
+        }
+
+        .order-body {
+            padding: 20px;
+        }
+
+        .customer-info {
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #555;
+            border-bottom: 1px solid #f4f4f4;
+            padding-bottom: 10px;
+        }
+
+        .customer-info i {
+            width: 20px;
+            color: #088178;
+        }
+
+        .item-list {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        .item-list td {
+            padding: 10px 0;
+            border-bottom: 1px solid #f9f9f9;
+            font-size: 14px;
+        }
+
+        .item-img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #eee;
+            margin-right: 15px;
+        }
+
+        .item-name {
+            font-weight: 500;
+        }
+
+        .order-footer {
+            background: #fff;
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-price {
+            font-size: 18px;
+            color: #d35400;
+            font-weight: 700;
+        }
+
         /* Badges */
-        .badge { padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-        .st-pending { background: #fff3cd; color: #856404; }
-        .st-completed { background: #d4edda; color: #155724; }
-        .st-shipped { background: #cce5ff; color: #004085; }
-        .st-cancelled { background: #f8d7da; color: #721c24; }
-        .st-paid { background: #d1ecf1; color: #0c5460; }
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .st-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .st-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .st-shipped {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .st-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .st-paid {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
 
         /* Form */
-        .status-form { display: flex; gap: 10px; align-items: center; }
-        .status-select { padding: 5px; border-radius: 4px; border: 1px solid #ddd; font-size: 13px; outline: none; }
-        .btn-update { padding: 6px 15px; background: #088178; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600; }
-        .btn-update:hover { background: #066e67; }
+        .status-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .status-select {
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .btn-update {
+            padding: 6px 15px;
+            background: #088178;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .btn-update:hover {
+            background: #066e67;
+        }
 
         /* Modal Styles */
-        .btn-edit-shop { margin-top: 10px; font-size: 12px; color: #088178; cursor: pointer; text-decoration: underline; border: none; background: none; }
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
-        .modal-content { background-color: #fff; padding: 25px; border-radius: 8px; width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); position: relative; }
-        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 20px; cursor: pointer; color: #aaa; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
-        .form-group input, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
-        .btn-save { width: 100%; padding: 10px; background: #088178; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-edit-shop {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #088178;
+            cursor: pointer;
+            text-decoration: underline;
+            border: none;
+            background: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            width: 400px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 20px;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .btn-save {
+            width: 100%;
+            padding: 10px;
+            background: #088178;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
     </style>
 </head>
+
 <body>
 
     <div class="sidebar">
-        <div class="sidebar-header"><i class="fas fa-shopping-bag"></i> <h2>Kênh Người Bán</h2></div>
+        <div class="sidebar-header"><i class="fas fa-shopping-bag"></i>
+            <h2>Kênh Người Bán</h2>
+        </div>
         <div class="user-profile">
             <img src="https://ui-avatars.com/api/?name=<?= urlencode($shop_name) ?>&background=088178&color=fff" alt="Shop Logo">
             <h4><?= htmlspecialchars($shop_name) ?></h4>
@@ -162,10 +466,15 @@ $result = $conn->query($sql);
             <li><a href="dashboard.php"><i class="fas fa-th-large"></i> Tổng quan</a></li>
             <li><a href="ProductPage/products.php"><i class="fas fa-box"></i> Sản phẩm</a></li>
             <li><a href="ProductPage/add_product.php"><i class="fas fa-plus-circle"></i> Thêm mới</a></li>
-            <li><a href="orders.php" class="active"><i class="fas fa-file-invoice-dollar"></i> Đơn hàng</a></li>
+
+            <li><a href="orders.php" class="active"><i class="fas fa-clipboard-list"></i> Đơn cần xử lý</a></li>
+
+            <li><a href="orders_history.php"><i class="fas fa-history"></i> Lịch sử đơn hàng</a></li>
+
             <li style="border-top: 1px solid #eee; margin-top: 20px;">
-                <a href="/LaiRaiShop/page/HomePage/homepage.php"><i class="fas fa-home"></i> Xem Shop (Client)</a>
+                <a href="<?php echo BASE_URL; ?>/page/HomePage/homepage.php"><i class="fas fa-home"></i> Xem Shop (Client)</a>
             </li>
+
             <li>
                 <a href="../HomePage/LoginPage/logout.php" onclick="return confirm('Bạn muốn đăng xuất?');" style="color: #e74c3c;">
                     <i class="fas fa-sign-out-alt"></i> Đăng xuất
@@ -176,72 +485,65 @@ $result = $conn->query($sql);
 
     <div class="main-content">
         <div class="page-header">
-            <h2>Quản lý Đơn hàng</h2>
-            <p>Danh sách các đơn hàng đã đặt sản phẩm của shop.</p>
+            <h2 style="color: #088178;">Đơn Hàng Cần Xử Lý</h2>
+            <p>Danh sách các đơn hàng chưa hoàn thành (Pending, Shipped, Paid...).</p>
         </div>
 
-        <?php if($result->num_rows > 0): ?>
-            <?php while($order = $result->fetch_assoc()): ?>
+        <?php if ($result->num_rows > 0): ?>
+            <?php while ($order = $result->fetch_assoc()): ?>
                 <div class="order-card">
                     <div class="order-header">
                         <div>
                             <span class="order-id">Đơn hàng #<?= $order['oid'] ?></span>
                             <span class="order-date"><i class="far fa-clock"></i> <?= date('d/m/Y H:i', strtotime($order['order_date'])) ?></span>
                         </div>
-                        <span class="badge st-<?= $order['status'] ?>"><?= ucfirst($order['status']) ?></span>
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            <span class="badge st-<?= $order['status'] ?>"><?= ucfirst($order['status']) ?></span>
+                            <a href="order_detail.php?oid=<?= $order['oid'] ?>" class="btn-action">
+                                <i class="fas fa-eye"></i> Xem Chi Tiết
+                            </a>
+                        </div>
                     </div>
-                    
+
                     <div class="order-body">
                         <div class="customer-info">
-                            <i class="fas fa-user"></i> Khách hàng: <b><?= htmlspecialchars($order['username']) ?></b> &nbsp;|&nbsp; 
+                            <i class="fas fa-user"></i> Khách hàng: <b><?= htmlspecialchars($order['username']) ?></b> &nbsp;|&nbsp;
                             <i class="fas fa-phone"></i> SĐT: <?= htmlspecialchars($order['phone']) ?>
                         </div>
 
                         <table class="item-list">
-                            <?php 
-                                $oid = $order['oid'];
-                                $sql_items = "SELECT oi.*, p.name, p.main_image 
+                            <?php
+                            $oid = $order['oid'];
+                            $sql_items = "SELECT oi.*, p.name, p.main_image 
                                               FROM order_items oi 
                                               JOIN products p ON oi.pid = p.pid 
                                               WHERE oi.oid = $oid AND p.sid = $sid";
-                                $items = $conn->query($sql_items);
-                                while($item = $items->fetch_assoc()):
+                            $items = $conn->query($sql_items);
+                            while ($item = $items->fetch_assoc()):
                             ?>
-                            <tr>
-                                <td style="width: 70px;">
-                                    <?php 
-                                        // --- LOGIC XỬ LÝ ẢNH (ĐÃ SỬA) ---
+                                <tr>
+                                    <td style="width: 70px;">
+                                        <?php
                                         $imgSrc = $item['main_image'];
-                                        
-                                        if (empty($imgSrc)) {
-                                            $displayImg = 'https://via.placeholder.com/50?text=No+Img';
+                                        if (function_exists('getImage')) {
+                                            $displayImg = getImage($imgSrc);
                                         } else {
-                                            // Xóa dấu / ở đầu để kiểm tra http chuẩn hơn
-                                            $cleanPath = ltrim($imgSrc, '/');
-
-                                            // Kiểm tra xem có phải link online không
-                                            if (strpos($cleanPath, 'http') === 0) {
-                                                $displayImg = $cleanPath;
-                                            } else {
-                                                // Nếu là ảnh local -> Thêm đường dẫn gốc
-                                                if (strpos($imgSrc, '/') !== 0) {
-                                                    $imgSrc = '/' . $imgSrc;
-                                                }
-                                                $displayImg = '/LaiRaiShop' . $imgSrc;
-                                            }
+                                            if (empty($imgSrc)) $displayImg = 'https://via.placeholder.com/50';
+                                            elseif (strpos($imgSrc, 'http') === 0) $displayImg = $imgSrc;
+                                            else $displayImg = BASE_URL . '/' . ltrim($imgSrc, '/');
                                         }
-                                    ?>
-                                    <img src="<?= $displayImg ?>" class="item-img" loading="lazy" onerror="this.src='https://via.placeholder.com/50?text=Error'">
-                                </td>
-                                <td>
-                                    <div class="item-name"><?= htmlspecialchars($item['name']) ?></div>
-                                    <small style="color: #888;">Đơn giá: <?= number_format($item['price']) ?>đ</small>
-                                </td>
-                                <td style="text-align: right; font-weight: bold;">x<?= $item['quantity'] ?></td>
-                                <td style="text-align: right; width: 120px; font-weight: 500;">
-                                    <?= number_format($item['price'] * $item['quantity']) ?>đ
-                                </td>
-                            </tr>
+                                        ?>
+                                        <img src="<?= $displayImg ?>" class="item-img" loading="lazy" onerror="this.src='https://via.placeholder.com/50?text=Err'">
+                                    </td>
+                                    <td>
+                                        <div class="item-name"><?= htmlspecialchars($item['name']) ?></div>
+                                        <small style="color: #888;">Đơn giá: <?= number_format($item['price']) ?>đ</small>
+                                    </td>
+                                    <td style="text-align: right; font-weight: bold;">x<?= $item['quantity'] ?></td>
+                                    <td style="text-align: right; width: 120px; font-weight: 500;">
+                                        <?= number_format($item['price'] * $item['quantity']) ?>đ
+                                    </td>
+                                </tr>
                             <?php endwhile; ?>
                         </table>
                     </div>
@@ -251,10 +553,10 @@ $result = $conn->query($sql);
                             <form method="POST">
                                 <input type="hidden" name="oid" value="<?= $order['oid'] ?>">
                                 <select name="status" class="status-select">
-                                    <option value="pending" <?= $order['status']=='pending'?'selected':'' ?>>Pending (Chờ duyệt)</option>
-                                    <option value="shipped" <?= $order['status']=='shipped'?'selected':'' ?>>Shipped (Đang giao)</option>
-                                    <option value="completed" <?= $order['status']=='completed'?'selected':'' ?>>Completed (Hoàn thành)</option>
-                                    <option value="cancelled" <?= $order['status']=='cancelled'?'selected':'' ?>>Cancelled (Hủy)</option>
+                                    <option value="pending" <?= $order['status'] == 'pending' ? 'selected' : '' ?>>Pending (Chờ duyệt)</option>
+                                    <option value="shipped" <?= $order['status'] == 'shipped' ? 'selected' : '' ?>>Shipped (Đang giao)</option>
+                                    <option value="completed">Completed (Hoàn thành)</option>
+                                    <option value="cancelled" <?= $order['status'] == 'cancelled' ? 'selected' : '' ?>>Cancelled (Hủy)</option>
                                 </select>
                                 <button type="submit" name="update_status" class="btn-update">Cập nhật</button>
                             </form>
@@ -267,8 +569,9 @@ $result = $conn->query($sql);
             <?php endwhile; ?>
         <?php else: ?>
             <div style="text-align: center; color: #888; margin-top: 50px;">
-                <i class="fas fa-box-open" style="font-size: 50px; margin-bottom: 20px;"></i>
-                <p>Shop chưa có đơn hàng nào.</p>
+                <i class="fas fa-clipboard-check" style="font-size: 50px; margin-bottom: 20px;"></i>
+                <p>Tuyệt vời! Bạn không có đơn hàng nào cần xử lý.</p>
+                <p style="font-size: 13px;">(Kiểm tra <a href="orders_history.php">Lịch sử đơn hàng</a> để xem đơn đã xong)</p>
             </div>
         <?php endif; ?>
 
@@ -278,7 +581,6 @@ $result = $conn->query($sql);
         <div class="modal-content">
             <span class="close-btn" onclick="closeShopModal()">&times;</span>
             <h3 style="color: #088178; text-align: center; margin-bottom: 20px;">Sửa Thông Tin Shop</h3>
-            
             <form method="POST">
                 <div class="form-group">
                     <label>Tên Shop:</label>
@@ -297,6 +599,7 @@ $result = $conn->query($sql);
         function openShopModal() {
             document.getElementById("shopModal").style.display = "flex";
         }
+
         function closeShopModal() {
             document.getElementById("shopModal").style.display = "none";
         }
@@ -309,4 +612,5 @@ $result = $conn->query($sql);
     </script>
 
 </body>
+
 </html>

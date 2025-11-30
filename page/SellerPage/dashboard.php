@@ -1,15 +1,30 @@
 <?php
-// 1. KẾT NỐI SESSION
-$session_path = $_SERVER['DOCUMENT_ROOT'] . '/LaiRaiShop/page/SellerPage/types/seller_session.php';
+// FILE: page/SellerPage/dashboard.php
+
+// 1. KẾT NỐI SESSION VÀ DB
+$session_path = __DIR__ . '/types/seller_session.php';
+$config_path  = __DIR__ . '/../../config.php'; // Đường dẫn tới config để có BASE_URL
 
 if (file_exists($session_path)) {
     require_once $session_path;
 } else {
-    die("Lỗi: Không tìm thấy file session tại: " . $session_path);
+    $session_path_alt = __DIR__ . '/../types/seller_session.php';
+    if (file_exists($session_path_alt)) {
+        require_once $session_path_alt;
+    } else {
+        die("Lỗi: Không tìm thấy file session.");
+    }
 }
 
-$sid = $_SESSION['shop_id']; 
-$shop_name = $_SESSION['shop_name'];
+if (file_exists($config_path)) require_once $config_path;
+
+if (!isset($conn)) {
+    $db_path = __DIR__ . '/../../db/db.php';
+    if (file_exists($db_path)) require_once $db_path;
+}
+
+$sid = $_SESSION['shop_id'] ?? 0;
+$shop_name = $_SESSION['shop_name'] ?? 'Shop';
 $msg = "";
 
 // --- XỬ LÝ CẬP NHẬT THÔNG TIN SHOP ---
@@ -17,12 +32,10 @@ if (isset($_POST['update_shop_info'])) {
     $new_name = $_POST['shop_name'];
     $new_desc = $_POST['shop_desc'];
 
-    // Update vào CSDL
     $stmt = $conn->prepare("UPDATE shops SET shop_name = ?, description = ? WHERE sid = ?");
     $stmt->bind_param("ssi", $new_name, $new_desc, $sid);
 
     if ($stmt->execute()) {
-        // Cập nhật lại session và biến hiển thị
         $_SESSION['shop_name'] = $new_name;
         $shop_name = $new_name;
         $msg = "<script>alert('Cập nhật thông tin Shop thành công!');</script>";
@@ -31,13 +44,14 @@ if (isset($_POST['update_shop_info'])) {
     }
 }
 
-// --- LẤY THÔNG TIN CHI TIẾT SHOP (Để điền vào form sửa) ---
-$sql_shop_info = "SELECT * FROM shops WHERE sid = $sid";
-$res_info = $conn->query($sql_shop_info);
-$current_shop = $res_info->fetch_assoc();
+// --- LẤY THÔNG TIN CHI TIẾT SHOP ---
+$stmt_info = $conn->prepare("SELECT * FROM shops WHERE sid = ?");
+$stmt_info->bind_param("i", $sid);
+$stmt_info->execute();
+$current_shop = $stmt_info->get_result()->fetch_assoc();
 
 // --- TÍNH TOÁN THỐNG KÊ ---
-// 1. Tổng doanh thu
+// 1. Doanh thu
 $sql_rev = "SELECT SUM(oi.quantity * oi.price) as total_revenue 
             FROM order_items oi
             JOIN products p ON oi.pid = p.pid
@@ -46,7 +60,7 @@ $sql_rev = "SELECT SUM(oi.quantity * oi.price) as total_revenue
 $res_rev = $conn->query($sql_rev);
 $revenue = $res_rev->fetch_assoc()['total_revenue'] ?? 0;
 
-// 2. Tổng số đơn hàng
+// 2. Tổng đơn
 $sql_orders = "SELECT COUNT(DISTINCT oi.oid) as total_orders 
                FROM order_items oi
                JOIN products p ON oi.pid = p.pid
@@ -85,11 +99,10 @@ $recent_orders = $conn->query($sql_recent);
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kênh Người Bán - Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
     <style>
-        /* CSS Cũ */
+        /* CSS dùng chung */
         * {
             margin: 0;
             padding: 0;
@@ -145,7 +158,6 @@ $recent_orders = $conn->query($sql_recent);
             text-align: center;
             background: #f9f9f9;
             border-bottom: 1px solid #eee;
-            position: relative;
         }
 
         .user-profile img {
@@ -168,8 +180,8 @@ $recent_orders = $conn->query($sql_recent);
         }
 
         .sidebar-menu {
-            padding: 10px 0;
             list-style: none;
+            padding: 10px 0;
             flex: 1;
         }
 
@@ -229,13 +241,7 @@ $recent_orders = $conn->query($sql_recent);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: 0.3s;
             border: 1px solid #f0f0f0;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
         }
 
         .card-info h3 {
@@ -364,7 +370,7 @@ $recent_orders = $conn->query($sql_recent);
             background: #066e67;
         }
 
-        /* --- CSS MỚI CHO MODAL --- */
+        /* Modal & Form */
         .btn-edit-shop {
             margin-top: 10px;
             font-size: 12px;
@@ -393,7 +399,6 @@ $recent_orders = $conn->query($sql_recent);
             padding: 25px;
             border-radius: 8px;
             width: 400px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             position: relative;
         }
 
@@ -403,11 +408,6 @@ $recent_orders = $conn->query($sql_recent);
             right: 15px;
             font-size: 20px;
             cursor: pointer;
-            color: #aaa;
-        }
-
-        .close-btn:hover {
-            color: #333;
         }
 
         .form-group {
@@ -439,10 +439,6 @@ $recent_orders = $conn->query($sql_recent);
             cursor: pointer;
             font-weight: bold;
         }
-
-        .btn-save:hover {
-            background: #066e67;
-        }
     </style>
 </head>
 
@@ -450,26 +446,23 @@ $recent_orders = $conn->query($sql_recent);
     <?= $msg ?>
 
     <div class="sidebar">
-        <div class="sidebar-header">
-            <i class="fas fa-shopping-bag"></i>
+        <div class="sidebar-header"><i class="fas fa-shopping-bag"></i>
             <h2>Kênh Người Bán</h2>
         </div>
-
         <div class="user-profile">
             <img src="https://ui-avatars.com/api/?name=<?= urlencode($shop_name) ?>&background=088178&color=fff" alt="Shop Logo">
             <h4><?= htmlspecialchars($shop_name) ?></h4>
             <p>ID Shop: #<?= $sid ?></p>
-
             <button onclick="openModal()" class="btn-edit-shop"><i class="fas fa-pen"></i> Sửa thông tin</button>
         </div>
-
         <ul class="sidebar-menu">
             <li><a href="dashboard.php" class="active"><i class="fas fa-th-large"></i> Tổng quan</a></li>
             <li><a href="ProductPage/products.php"><i class="fas fa-box"></i> Sản phẩm</a></li>
             <li><a href="ProductPage/add_product.php"><i class="fas fa-plus-circle"></i> Thêm mới</a></li>
             <li><a href="orders.php"><i class="fas fa-file-invoice-dollar"></i> Đơn hàng</a></li>
+
             <li style="margin-top: 20px; border-top: 1px solid #eee;">
-                <a href="/LaiRaiShop/page/HomePage/homepage.php"><i class="fas fa-home"></i> Xem Shop (Client)</a>
+                <a href="<?php echo BASE_URL; ?>/page/HomePage/homepage.php"><i class="fas fa-home"></i> Xem Shop (Client)</a>
             </li>
             <li>
                 <a href="../HomePage/LoginPage/logout.php" onclick="return confirm('Bạn muốn đăng xuất?');" style="color: #e74c3c;">
@@ -541,7 +534,11 @@ $recent_orders = $conn->query($sql_recent);
                                 <td><?= htmlspecialchars($row['username']) ?></td>
                                 <td style="font-weight: bold; color: #088178;"><?= number_format($row['shop_total'], 0, ',', '.') ?>đ</td>
                                 <td><span class="badge st-<?= $row['status'] ?>"><?= ucfirst($row['status']) ?></span></td>
-                                <td style="text-align: right;"><a href="orders.php?id=<?= $row['oid'] ?>" class="btn-action">Xem</a></td>
+
+                                <td style="text-align: right;">
+                                    <a href="order_detail.php?oid=<?= $row['oid'] ?>" class="btn-action">Xem</a>
+                                </td>
+
                             </tr>
                         <?php endwhile; ?>
                     </tbody>
@@ -559,7 +556,6 @@ $recent_orders = $conn->query($sql_recent);
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal()">&times;</span>
             <h3 style="color: #088178; text-align: center; margin-bottom: 20px;">Sửa Thông Tin Shop</h3>
-
             <form method="POST">
                 <div class="form-group">
                     <label>Tên Shop:</label>
@@ -575,20 +571,16 @@ $recent_orders = $conn->query($sql_recent);
     </div>
 
     <script>
-        // Mở modal
         function openModal() {
             document.getElementById("shopModal").style.display = "flex";
         }
-        // Đóng modal
+
         function closeModal() {
             document.getElementById("shopModal").style.display = "none";
         }
-        // Đóng khi click ra ngoài
         window.onclick = function(event) {
             var modal = document.getElementById("shopModal");
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
+            if (event.target == modal) modal.style.display = "none";
         }
     </script>
 

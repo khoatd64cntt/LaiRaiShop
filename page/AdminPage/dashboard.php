@@ -4,52 +4,54 @@
 // 1. Gọi Header
 require_once 'Layout/header.php';
 
+// --- HÀM ĐỊNH DẠNG SỐ LIỆU (HIỂN THỊ ĐẦY ĐỦ) ---
+function fullCurrency($number)
+{
+    // Chỉ thêm dấu chấm phân cách, không rút gọn thành chữ
+    return number_format($number, 0, ',', '.') . ' đ';
+}
+
 // --- PHẦN 1: TRUY VẤN SỐ LIỆU THỐNG KÊ (KPIs) ---
 
-// 1.1. Tính Tổng Doanh Thu (Chỉ tính đơn 'completed' hoặc 'paid')
-// Lưu ý: Dữ liệu mẫu của bạn đang ở năm 2025, nên mình lấy All-time hoặc theo năm hiện tại của máy chủ.
-// Ở đây mình lấy TOÀN BỘ để bạn thấy số liệu ngay.
+// 1.1. TỔNG DOANH THU (Chỉ tính đơn 'completed')
 $sql_revenue = "SELECT SUM(total_amount) as total FROM orders WHERE status = 'completed'";
 $res_revenue = $conn->query($sql_revenue);
 $row_revenue = $res_revenue->fetch_assoc();
 $revenue = $row_revenue['total'] ?? 0;
 
-// 1.2. Đơn hàng Chờ Xử Lý (Pending) - Cần Admin xử lý gấp
+// 1.2. Đơn hàng Chờ Xử Lý
 $sql_pending_orders = "SELECT COUNT(*) as count FROM orders WHERE status = 'pending'";
 $res_pending_orders = $conn->query($sql_pending_orders);
 $pending_orders = $res_pending_orders->fetch_assoc()['count'] ?? 0;
 
-// 1.3. Sản phẩm Chờ Duyệt (Pending)
+// 1.3. Sản phẩm Chờ Duyệt
 $sql_pending_products = "SELECT COUNT(*) as count FROM products WHERE status = 'pending'";
 $res_pending_products = $conn->query($sql_pending_products);
 $pending_products = $res_pending_products->fetch_assoc()['count'] ?? 0;
 
-// 1.4. Tổng số User (Khách hàng)
+// 1.4. Tổng số User
 $sql_users = "SELECT COUNT(*) as count FROM acc WHERE role = 'user'";
 $res_users = $conn->query($sql_users);
 $total_users = $res_users->fetch_assoc()['count'] ?? 0;
 
 
-// --- PHẦN 2: CHUẨN BỊ DỮ LIỆU CHO BIỂU ĐỒ (6 THÁNG GẦN NHẤT) ---
+// --- PHẦN 2: DỮ LIỆU BIỂU ĐỒ (6 THÁNG) ---
 $chart_labels = [];
 $chart_data = [];
 
-// Lấy tháng hiện tại và 5 tháng trước đó
 for ($i = 5; $i >= 0; $i--) {
-    $month = date('m', strtotime("-$i months")); // VD: 11
-    $year = date('Y', strtotime("-$i months"));  // VD: 2025
-    
-    // Nếu trong CSDL mẫu của bạn toàn bộ dữ liệu ở tháng 11/2025, 
-    // mà máy tính bạn đang ở năm 2024 thì biểu đồ sẽ trống.
-    // Để demo đẹp với dữ liệu mẫu 2025, bạn có thể hardcode $year = 2025 ở đây.
-    // Nhưng code dưới đây là code chuẩn theo thời gian thực:
-    
+    $month = date('m', strtotime("-$i months"));
+    $year = date('Y', strtotime("-$i months"));
+
+    // Nếu muốn test dữ liệu tương lai (2025), hãy mở comment dòng dưới:
+    // $year = 2025; 
+
     $sql_chart = "SELECT SUM(total_amount) as total 
                   FROM orders 
                   WHERE status = 'completed' 
                   AND MONTH(order_date) = '$month' 
                   AND YEAR(order_date) = '$year'";
-    
+
     $query_chart = $conn->query($sql_chart);
     $data = $query_chart->fetch_assoc()['total'] ?? 0;
 
@@ -57,7 +59,6 @@ for ($i = 5; $i >= 0; $i--) {
     $chart_data[] = $data;
 }
 
-// Chuyển mảng PHP sang JSON để dùng trong Javascript
 $json_labels = json_encode($chart_labels);
 $json_data = json_encode($chart_data);
 ?>
@@ -72,7 +73,7 @@ $json_data = json_encode($chart_data);
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Tổng Doanh thu (Đã xong)</div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">
-                            <?php echo formatCurrency($revenue); ?>
+                            <?php echo fullCurrency($revenue); ?>
                         </div>
                     </div>
                     <div class="col-auto">
@@ -150,54 +151,52 @@ $json_data = json_encode($chart_data);
     </div>
 </div>
 
-<?php
-// 3. Gọi Footer
-require_once 'Layout/footer.php';
-?>
+<?php require_once 'Layout/footer.php'; ?>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         var ctx = document.getElementById('monthlyRevenueChart');
         if (ctx) {
-            // Lấy dữ liệu từ PHP biến sang JS
             var labels = <?php echo $json_labels; ?>;
             var data = <?php echo $json_data; ?>;
 
             new Chart(ctx.getContext('2d'), {
-                type: 'line', // Hoặc 'bar' nếu muốn biểu đồ cột
+                type: 'line',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Doanh thu (VND)',
+                        label: 'Doanh thu',
                         data: data,
-                        backgroundColor: 'rgba(19, 94, 75, 0.1)', // Màu nền mờ
-                        borderColor: '#135E4B',                   // Màu đường kẻ (Xanh Admin)
+                        backgroundColor: 'rgba(19, 94, 75, 0.1)',
+                        borderColor: '#135E4B',
                         borderWidth: 2,
-                        pointBackgroundColor: '#fff',
-                        pointBorderColor: '#135E4B',
-                        pointRadius: 5,
-                        fill: true
+                        fill: true,
+                        pointRadius: 4
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    tooltips: {
+                        callbacks: {
+                            label: function(tooltipItem, data) {
+                                return new Intl.NumberFormat('vi-VN', {
+                                    style: 'currency',
+                                    currency: 'VND'
+                                }).format(tooltipItem.yLabel);
+                            }
+                        }
+                    },
                     scales: {
                         yAxes: [{
                             ticks: {
                                 beginAtZero: true,
+                                // Hiển thị số liệu đầy đủ trên trục Y
                                 callback: function(value) {
-                                    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+                                    return new Intl.NumberFormat('vi-VN').format(value) + ' đ';
                                 }
                             }
                         }]
-                    },
-                    tooltips: {
-                        callbacks: {
-                            label: function(item) {
-                                return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.yLabel);
-                            }
-                        }
                     }
                 }
             });
