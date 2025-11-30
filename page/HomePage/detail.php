@@ -1,7 +1,7 @@
 <?php
 session_start();
-// Kết nối Database (Lùi 2 cấp thư mục)
-require_once '../../db/db.php';
+require_once __DIR__ . '/../../config.php';
+require_once ROOT_PATH . '/db/db.php';
 
 // 1. LẤY ID TỪ URL
 $pid = isset($_GET['id']) ? (int)$_GET['id'] : 11;
@@ -100,7 +100,7 @@ function getImgUrl($path)
         </div>
         <header class="lairai-header">
             <div class="container header-content">
-                <div class="logo"><a href="#"><img src="../../images/logo.png" alt="LaiRaiShop Logo"></a></div>
+                <div class="logo"><a href="homepage.php"><img src="../../images/logo.png" alt="LaiRaiShop Logo"></a></div>
 
                 <div class="search-box">
                     <form action="search.php" method="GET">
