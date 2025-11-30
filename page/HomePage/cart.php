@@ -10,14 +10,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $pid = $_POST['pid'];
         unset($_SESSION['cart'][$pid]);
     }
-    // 2. Xóa nhiều sản phẩm (MỚI THÊM)
+    // 2. Xóa nhiều sản phẩm
     if (isset($_POST['action']) && $_POST['action'] == 'delete_selected') {
         if(isset($_POST['pids']) && is_array($_POST['pids'])){
             foreach($_POST['pids'] as $pid_to_del){
                 unset($_SESSION['cart'][$pid_to_del]);
             }
         }
-        exit; // Trả về cho JS
+        exit; 
     }
     // 3. Cập nhật số lượng
     if (isset($_POST['action']) && $_POST['action'] == 'update_qty') {
@@ -215,9 +215,7 @@ function getImgUrl($path) {
                 <div class="footer-left">
                     <input type="checkbox" id="check-all-bot" onchange="toggleAll(this)">
                     <span class="ml-2 mr-3">Chọn Tất Cả (<span id="count-items">0</span>)</span>
-                    
                     <span class="mr-3" style="cursor: pointer;" onclick="deleteSelected()">Xóa</span>
-                    
                     <span style="color: #ee4d2d; cursor: pointer;">Lưu vào mục Đã thích</span>
                 </div>
                 <div class="footer-right">
@@ -228,7 +226,7 @@ function getImgUrl($path) {
                         </div>
                         <div style="font-size: 12px; color: #ee4d2d;">Tiết kiệm ₫0</div>
                     </div>
-                    <button class="btn-checkout">Mua Hàng</button>
+                    <button class="btn-checkout" onclick="processCheckout()">Mua Hàng</button>
                 </div>
             </div>
 
@@ -408,7 +406,7 @@ function getImgUrl($path) {
             document.getElementById('count-items-2').innerText = count;
         }
 
-        // Tăng giảm số lượng (Có AJAX cập nhật session ngầm)
+        // Tăng giảm số lượng
         function changeQty(pid, change) {
             var input = document.getElementById('qty-' + pid);
             var currentQty = parseInt(input.value);
@@ -418,22 +416,17 @@ function getImgUrl($path) {
 
             input.value = newQty;
             
-            // Cập nhật attribute data-qty cho checkbox để tính lại tổng
             var checkbox = document.querySelector(`.item-check[value="${pid}"]`);
             checkbox.setAttribute('data-qty', newQty);
             
-            // Cập nhật tiền từng món (Item Total)
             var price = parseInt(checkbox.getAttribute('data-price'));
             document.getElementById('total-' + pid).innerText = formatMoneyJS(price * newQty);
 
-            // Gọi AJAX cập nhật Session
             $.post('cart.php', { action: 'update_qty', pid: pid, qty: newQty });
-
-            // Tính lại tổng tiền
             updateTotal();
         }
 
-        // [MỚI] Hàm xóa các sản phẩm đã chọn
+        // Hàm xóa sản phẩm đã chọn
         function deleteSelected() {
             var checks = document.querySelectorAll('.item-check:checked');
             if(checks.length === 0) {
@@ -448,10 +441,27 @@ function getImgUrl($path) {
                 });
 
                 $.post('cart.php', { action: 'delete_selected', pids: pids }, function(response) {
-                    // Sau khi xóa thành công thì reload trang
                     location.reload();
                 });
             }
+        }
+
+        // [MỚI] Hàm xử lý thanh toán (Mua Hàng)
+        function processCheckout() {
+            var checks = document.querySelectorAll('.item-check:checked');
+            
+            if(checks.length === 0) {
+                alert("Vui lòng chọn ít nhất một sản phẩm để mua!");
+                return;
+            }
+
+            var selectedIds = [];
+            checks.forEach(function(checkbox) {
+                selectedIds.push(checkbox.value);
+            });
+
+            // Chuyển hướng sang trang thanh toán kèm theo danh sách ID sản phẩm
+            window.location.href = 'checkout.php?ids=' + selectedIds.join(',');
         }
     </script>
 </body>

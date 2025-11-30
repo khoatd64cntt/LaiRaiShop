@@ -501,7 +501,7 @@ function getImgUrl($path)
                     },
                     error: function(xhr, status, error) {
                         console.log(xhr.responseText);
-                        alert('Lỗi kết nối server.');
+                        alert('Lỗi kết nối server.A');
                     }
                 });
             });
