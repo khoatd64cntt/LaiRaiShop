@@ -135,7 +135,7 @@ $result = $conn->query($sql);
                 <a href="/LaiRaiShop/page/HomePage/homepage.php"><i class="fas fa-home"></i> Xem Shop (Client)</a>
             </li>
             <li>
-                <a href="../HomePage/LoginPage/logout.php" onclick="return confirm('Bạn muốn đăng xuất?');" style="color: #e74c3c;">
+                <a href="../../HomePage/LoginPage/logout.php" onclick="return confirm('Bạn muốn đăng xuất?');" style="color: #e74c3c;">
                     <i class="fas fa-sign-out-alt"></i> Đăng xuất
                 </a>
             </li>
