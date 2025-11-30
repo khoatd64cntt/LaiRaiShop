@@ -202,7 +202,8 @@ if (isset($_SESSION['aid'])) {
 
             <div class="product-grid">
                 <?php
-                $sql = "SELECT * FROM products ORDER BY pid DESC LIMIT 12";
+                // Chỉ lấy những sản phẩm có status là 'approved'
+                $sql = "SELECT * FROM products WHERE status = 'approved' ORDER BY pid DESC LIMIT 12";
                 $result = $conn->query($sql);
                 if ($result && $result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
