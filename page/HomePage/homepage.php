@@ -227,8 +227,6 @@ if (isset($_SESSION['aid'])) {
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="find-similar-btn">Tìm sản phẩm tương tự</div>
                         </a>
                 <?php
                     }
@@ -236,12 +234,6 @@ if (isset($_SESSION['aid'])) {
                     echo "<div class='empty-state'>Chưa có sản phẩm nào để hiển thị.</div>";
                 }
                 ?>
-            </div>
-
-            <div class="load-more">
-                <a href="<?php echo BASE_URL; ?>/page/HomePage/LoginPage/login.php" style="text-decoration: none;">
-                    <button>Đăng Nhập Để Xem Thêm</button>
-                </a>
             </div>
         </div>
     </div>

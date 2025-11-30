@@ -656,46 +656,18 @@ body {
     top: 2px;
 }
 
-.find-similar-btn {
-    position: absolute;
-    bottom: -30px;
-    left: -1px;
-    width: calc(100% + 2px);
-    background: #4CB572;
-    color: white;
+.empty-state {
+    grid-column: 1 / -1;
     text-align: center;
-    padding: 6px 0;
-    font-size: 12px;
-    display: none;
-    border-bottom-left-radius: 2px;
-    border-bottom-right-radius: 2px;
-    z-index: 10;
-}
-
-.product-card:hover .find-similar-btn {
-    display: block;
-}
-
-.load-more {
-    text-align: center;
-    margin-top: 20px;
-    margin-bottom: 40px;
-}
-
-.load-more button {
-    background: white;
-    border: 1px solid rgba(0, 0, 0, .09);
-    padding: 10px 50px;
-    color: #555;
-    cursor: pointer;
-    transition: all 0.1s;
-    font-size: 14px;
-}
-
-.load-more button:hover {
-    background: #f4f4f4;
-    border-color: #999;
-    color: #555;
+    padding: 50px 0;
+    font-size: 16px;
+    color: #757575;
+    background-color: white;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
 }
 
 /* FOOTER SECTION */
