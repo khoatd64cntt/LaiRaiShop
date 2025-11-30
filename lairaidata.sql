@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th10 25, 2025 lúc 03:28 PM
--- Phiên bản máy phục vụ: 10.4.32-MariaDB
--- Phiên bản PHP: 8.2.12
+-- Host: 127.0.0.1
+-- Generation Time: Nov 30, 2025 at 10:27 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Cơ sở dữ liệu: `lairaidata`
+-- Database: `lairaidata`
 --
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `acc`
+-- Table structure for table `acc`
 --
 
 CREATE TABLE `acc` (
@@ -39,7 +39,7 @@ CREATE TABLE `acc` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `acc`
+-- Dumping data for table `acc`
 --
 
 INSERT INTO `acc` (`aid`, `afname`, `alname`, `email`, `phone`, `username`, `password`, `role`) VALUES
@@ -55,7 +55,7 @@ INSERT INTO `acc` (`aid`, `afname`, `alname`, `email`, `phone`, `username`, `pas
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `cart`
+-- Table structure for table `cart`
 --
 
 CREATE TABLE `cart` (
@@ -65,7 +65,7 @@ CREATE TABLE `cart` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `cart`
+-- Dumping data for table `cart`
 --
 
 INSERT INTO `cart` (`aid`, `pid`, `quantity`) VALUES
@@ -81,7 +81,7 @@ INSERT INTO `cart` (`aid`, `pid`, `quantity`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `categories`
+-- Table structure for table `categories`
 --
 
 CREATE TABLE `categories` (
@@ -91,7 +91,7 @@ CREATE TABLE `categories` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `categories`
+-- Dumping data for table `categories`
 --
 
 INSERT INTO `categories` (`cid`, `name`, `parent_id`) VALUES
@@ -113,7 +113,7 @@ INSERT INTO `categories` (`cid`, `name`, `parent_id`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `messages`
+-- Table structure for table `messages`
 --
 
 CREATE TABLE `messages` (
@@ -125,7 +125,7 @@ CREATE TABLE `messages` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `messages`
+-- Dumping data for table `messages`
 --
 
 INSERT INTO `messages` (`msg_id`, `sender_id`, `receiver_id`, `content`, `sent_at`) VALUES
@@ -144,7 +144,7 @@ INSERT INTO `messages` (`msg_id`, `sender_id`, `receiver_id`, `content`, `sent_a
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `orders`
+-- Table structure for table `orders`
 --
 
 CREATE TABLE `orders` (
@@ -156,7 +156,7 @@ CREATE TABLE `orders` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `orders`
+-- Dumping data for table `orders`
 --
 
 INSERT INTO `orders` (`oid`, `aid`, `order_date`, `total_amount`, `status`) VALUES
@@ -169,7 +169,7 @@ INSERT INTO `orders` (`oid`, `aid`, `order_date`, `total_amount`, `status`) VALU
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `order_items`
+-- Table structure for table `order_items`
 --
 
 CREATE TABLE `order_items` (
@@ -180,7 +180,7 @@ CREATE TABLE `order_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `order_items`
+-- Dumping data for table `order_items`
 --
 
 INSERT INTO `order_items` (`oid`, `pid`, `quantity`, `price`) VALUES
@@ -195,7 +195,7 @@ INSERT INTO `order_items` (`oid`, `pid`, `quantity`, `price`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `products`
+-- Table structure for table `products`
 --
 
 CREATE TABLE `products` (
@@ -211,34 +211,34 @@ CREATE TABLE `products` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `products`
+-- Dumping data for table `products`
 --
 
 INSERT INTO `products` (`pid`, `sid`, `cid`, `name`, `description`, `price`, `stock`, `status`, `main_image`) VALUES
-(1, 1, 5, 'iPhone 15 Pro Max 256GB', 'Chip A17 Pro, Camera 48MP, Titanium, Dynamic Island, Màn hình 6.7 inch Super Retina XDR', 29990000.00, 15, 'pending', '/images/iphone15.jpg'),
-(2, 1, 5, 'Samsung Galaxy S24 Ultra', 'Snapdragon 8 Gen 3, Camera 200MP, Bút S Pen, Màn hình 6.8 inch AMOLED 2X', 27990000.00, 20, 'pending', '/images/samsung-s24.jpg'),
-(3, 1, 6, 'MacBook Air M3 13 inch', 'Chip M3 8-core, RAM 16GB, SSD 512GB, Màn hình Liquid Retina 13.6 inch', 32990000.00, 10, 'pending', '/images/macbook-air.jpg'),
-(4, 1, 6, 'Dell XPS 15 9530', 'Intel Core i7-13700H, RTX 4060, RAM 32GB, SSD 1TB, Màn hình 15.6 inch OLED 3.5K', 45990000.00, 8, 'pending', '/images/dell-xps15.jpg'),
-(5, 1, 7, 'AirPods Pro 2', 'Chống ồn chủ động, Chip H2, USB-C, Âm thanh Spatial Audio', 5990000.00, 50, 'pending', '/images/logitech-mx.jpg'),
-(6, 1, 7, 'Chuột Logitech MX Master 3S', 'Wireless, Bluetooth + USB-C, 8000 DPI, Pin 70 ngày', 2390000.00, 30, 'pending', '/images/shirt-oxford.jpg'),
-(7, 2, 8, 'Áo sơ mi nam Oxford', '100% cotton, form slim fit, nhiều màu sắc, phong cách công sở', 350000.00, 100, 'pending', '/images/tshirt-basic.jpg'),
-(8, 2, 8, 'Áo thun nam basic Uniqlo', 'Vải voan nhẹ, họa tiết hoa nhí, thiết kế xòe nhẹ, phong cách vintage', 199000.00, 200, 'pending', '/images/dress-maxi.jpg'),
-(9, 2, 9, 'Váy maxi hoa nữ', 'Vải voan nhẹ, họa tiết hoa nhí, thiết kế xòe nhẹ, phong cách vintage', 450000.00, 80, 'pending', '/images/blazer-women.jpg'),
-(10, 2, 9, 'Áo blazer nữ công sở', 'Chất liệu cao cấp, form chuẩn, phù hợp môi trường văn phòng', 890000.00, 45, 'pending', '/images/nike-af1.jpg'),
-(11, 2, 10, 'Giày sneaker Nike Air Force 1', 'Da cao cấp, đế cao su bền, phong cách streetwear cổ điển', 2990000.00, 60, 'pending', '/images/adidas-slides.jpg'),
-(12, 2, 10, 'Dép Adidas Adilette', 'Dép quai ngang, êm ái, chống nước, phù hợp đi biển, bể bơi', 890000.00, 120, 'pending', '/images/bag-ck.jpg'),
-(13, 2, 11, 'Túi xách nữ Charles & Keith', 'Da PU cao cấp, nhiều ngăn, quai xách + đeo chéo, size 25x18cm', 1590000.00, 35, 'pending', '/images/desk-wood.jpg'),
-(14, 3, 12, 'Bàn làm việc gỗ tự nhiên', 'Gỗ sồi 1.2m x 0.6m, thiết kế tối giản Scandinavian, chống trầy xước', 3990000.00, 12, 'pending', '/images/desk-wood.jpg'),
-(15, 3, 12, 'Ghế gaming DXRacer', 'Da PU cao cấp, nâng hạ khí nén, tựa lưng 135 độ, tải trọng 150kg', 5490000.00, 18, 'pending', '/images/gaming-chair.jpg'),
-(16, 3, 13, 'Nồi cơm điện Panasonic 1.8L', 'Công nghệ nấu IH, lòng nồi chống dính, 6 chế độ nấu, hẹn giờ 24h', 2890000.00, 25, 'pending', '/images/rice-cooker.jpg'),
-(17, 3, 13, 'Bộ nồi inox 304 Happycook', 'Inox 3 đáy, 5 món, dùng được bếp từ, tặng kèm vá múc', 1690000.00, 40, 'pending', '/images/pot-set.jpg'),
-(18, 3, 14, 'Cây kim ngân', 'Chiều cao 40-50cm, dễ chăm sóc, hợp phong thủy, tặng chậu sứ', 250000.00, 100, 'pending', '/images/plant-kim-ngan.jpg'),
-(19, 3, 14, 'Cây lưỡi hổ', 'Lọc không khí, chịu hạn tốt, chiều cao 30-40cm, chậu nhựa composite', 180000.00, 150, 'pending', '/images/plant-snake.jpg');
+(1, 1, 5, 'iPhone 15 Pro Max 256GB', 'Chip A17 Pro, Camera 48MP, Titanium, Dynamic Island, Màn hình 6.7 inch Super Retina XDR', 29990000.00, 15, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img1.png'),
+(2, 1, 5, 'Samsung Galaxy S24 Ultra', 'Snapdragon 8 Gen 3, Camera 200MP, Bút S Pen, Màn hình 6.8 inch AMOLED 2X', 27990000.00, 20, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img2.jpg'),
+(3, 1, 6, 'MacBook Air M3 13 inch', 'Chip M3 8-core, RAM 16GB, SSD 512GB, Màn hình Liquid Retina 13.6 inch', 32990000.00, 10, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img3.jpg'),
+(4, 1, 6, 'Dell XPS 15 9530', 'Intel Core i7-13700H, RTX 4060, RAM 32GB, SSD 1TB, Màn hình 15.6 inch OLED 3.5K', 45990000.00, 8, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img4.jpg'),
+(5, 1, 7, 'AirPods Pro 2', 'Chống ồn chủ động, Chip H2, USB-C, Âm thanh Spatial Audio', 5990000.00, 50, 'pending', '/https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img5.jpg'),
+(6, 1, 7, 'Chuột Logitech MX Master 3S', 'Wireless, Bluetooth + USB-C, 8000 DPI, Pin 70 ngày', 2390000.00, 30, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img6.jpg'),
+(7, 2, 8, 'Áo sơ mi nam Oxford', '100% cotton, form slim fit, nhiều màu sắc, phong cách công sở', 350000.00, 100, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img7.jpg'),
+(8, 2, 8, 'Áo thun nam basic Uniqlo', 'Vải voan nhẹ, họa tiết hoa nhí, thiết kế xòe nhẹ, phong cách vintage', 199000.00, 200, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img8.jpg'),
+(9, 2, 9, 'Váy maxi hoa nữ', 'Vải voan nhẹ, họa tiết hoa nhí, thiết kế xòe nhẹ, phong cách vintage', 450000.00, 80, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img9.jpg'),
+(10, 2, 9, 'Áo blazer nữ công sở', 'Chất liệu cao cấp, form chuẩn, phù hợp môi trường văn phòng', 890000.00, 45, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img10.jpg'),
+(11, 2, 10, 'Giày sneaker Nike Air Force 1', 'abc', 2990000.00, 60, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img11.jpg'),
+(12, 2, 10, 'Dép Adidas Adilette', 'Dép quai ngang, êm ái, chống nước, phù hợp đi biển, bể bơi', 890000.00, 120, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img12.jpg'),
+(13, 2, 11, 'Túi xách nữ Charles & Keith', 'Da PU cao cấp, nhiều ngăn, quai xách + đeo chéo, size 25x18cm', 1590000.00, 35, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img13.jpg'),
+(14, 3, 12, 'Bàn làm việc gỗ tự nhiên', 'Gỗ sồi 1.2m x 0.6m, thiết kế tối giản Scandinavian, chống trầy xước', 3990000.00, 12, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img14.jpg'),
+(15, 3, 12, 'Ghế gaming DXRacer', 'Da PU cao cấp, nâng hạ khí nén, tựa lưng 135 độ, tải trọng 150kg', 5490000.00, 18, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img15.jpg'),
+(16, 3, 13, 'Nồi cơm điện Panasonic 1.8L', 'Công nghệ nấu IH, lòng nồi chống dính, 6 chế độ nấu, hẹn giờ 24h', 2890000.00, 25, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img16.jpg'),
+(17, 3, 13, 'Bộ nồi inox 304 Happycook', 'Inox 3 đáy, 5 món, dùng được bếp từ, tặng kèm vá múc', 1690000.00, 40, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img17.jpg'),
+(18, 3, 14, 'Cây kim ngân', 'Chiều cao 40-50cm, dễ chăm sóc, hợp phong thủy, tặng chậu sứ', 250000.00, 100, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img18.jpg'),
+(19, 3, 14, 'Cây lưỡi hổ', 'Lọc không khí, chịu hạn tốt, chiều cao 30-40cm, chậu nhựa composite', 180000.00, 150, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img19.jpg');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `product_images`
+-- Table structure for table `product_images`
 --
 
 CREATE TABLE `product_images` (
@@ -248,26 +248,26 @@ CREATE TABLE `product_images` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `product_images`
+-- Dumping data for table `product_images`
 --
 
 INSERT INTO `product_images` (`img_id`, `pid`, `img_url`) VALUES
-(1, 1, '/images/iphone15-1.jpg'),
-(2, 1, '/images/iphone15-2.jpg'),
-(3, 1, '/images/iphone15-3.jpg'),
-(4, 3, '/images/macbook-air-1.jpg'),
-(5, 3, '/images/macbook-air-2.jpg'),
-(6, 7, '/images/shirt-oxford-blue.jpg'),
-(7, 7, '/images/shirt-oxford-white.jpg'),
-(8, 11, '/images/nike-af1-black.jpg'),
-(9, 11, '/images/nike-af1-detail.jpg'),
-(10, 14, '/images/desk-wood-1.jpg'),
-(11, 14, '/images/desk-wood-2.jpg');
+(1, 1, 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img1.png'),
+(2, 1, 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img1_1.jpg'),
+(3, 1, 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img1_2.jpg'),
+(4, 3, 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img3.jpg'),
+(5, 3, 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img3_1.jpg'),
+(6, 7, 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img7.jpg'),
+(7, 7, 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img7_1.png'),
+(8, 11, 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img11.jpg'),
+(9, 11, 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img11_1.jpeg'),
+(10, 14, 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img14.jpg'),
+(11, 14, 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img14_1.jpg');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `reviews`
+-- Table structure for table `reviews`
 --
 
 CREATE TABLE `reviews` (
@@ -280,7 +280,7 @@ CREATE TABLE `reviews` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `reviews`
+-- Dumping data for table `reviews`
 --
 
 INSERT INTO `reviews` (`review_id`, `pid`, `aid`, `rating`, `comment`, `review_date`) VALUES
@@ -298,7 +298,7 @@ INSERT INTO `reviews` (`review_id`, `pid`, `aid`, `rating`, `comment`, `review_d
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `shops`
+-- Table structure for table `shops`
 --
 
 CREATE TABLE `shops` (
@@ -309,7 +309,7 @@ CREATE TABLE `shops` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `shops`
+-- Dumping data for table `shops`
 --
 
 INSERT INTO `shops` (`sid`, `aid`, `shop_name`, `description`) VALUES
@@ -320,7 +320,7 @@ INSERT INTO `shops` (`sid`, `aid`, `shop_name`, `description`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `wishlist`
+-- Table structure for table `wishlist`
 --
 
 CREATE TABLE `wishlist` (
@@ -329,7 +329,7 @@ CREATE TABLE `wishlist` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `wishlist`
+-- Dumping data for table `wishlist`
 --
 
 INSERT INTO `wishlist` (`aid`, `pid`) VALUES
@@ -348,11 +348,11 @@ INSERT INTO `wishlist` (`aid`, `pid`) VALUES
 (8, 7);
 
 --
--- Chỉ mục cho các bảng đã đổ
+-- Indexes for dumped tables
 --
 
 --
--- Chỉ mục cho bảng `acc`
+-- Indexes for table `acc`
 --
 ALTER TABLE `acc`
   ADD PRIMARY KEY (`aid`),
@@ -361,21 +361,21 @@ ALTER TABLE `acc`
   ADD UNIQUE KEY `username` (`username`);
 
 --
--- Chỉ mục cho bảng `cart`
+-- Indexes for table `cart`
 --
 ALTER TABLE `cart`
   ADD PRIMARY KEY (`aid`,`pid`),
   ADD KEY `_PK_cart_products` (`pid`);
 
 --
--- Chỉ mục cho bảng `categories`
+-- Indexes for table `categories`
 --
 ALTER TABLE `categories`
   ADD PRIMARY KEY (`cid`),
   ADD KEY `_PK_categories_categories` (`parent_id`);
 
 --
--- Chỉ mục cho bảng `messages`
+-- Indexes for table `messages`
 --
 ALTER TABLE `messages`
   ADD PRIMARY KEY (`msg_id`),
@@ -383,21 +383,21 @@ ALTER TABLE `messages`
   ADD KEY `_PK_messages_receiver` (`receiver_id`);
 
 --
--- Chỉ mục cho bảng `orders`
+-- Indexes for table `orders`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`oid`),
   ADD KEY `_PK_orders_acc` (`aid`);
 
 --
--- Chỉ mục cho bảng `order_items`
+-- Indexes for table `order_items`
 --
 ALTER TABLE `order_items`
   ADD PRIMARY KEY (`oid`,`pid`),
   ADD KEY `_PK_order_items_products` (`pid`);
 
 --
--- Chỉ mục cho bảng `products`
+-- Indexes for table `products`
 --
 ALTER TABLE `products`
   ADD PRIMARY KEY (`pid`),
@@ -405,14 +405,14 @@ ALTER TABLE `products`
   ADD KEY `_PK_products_categories` (`cid`);
 
 --
--- Chỉ mục cho bảng `product_images`
+-- Indexes for table `product_images`
 --
 ALTER TABLE `product_images`
   ADD PRIMARY KEY (`img_id`),
   ADD KEY `_PK_product_images_products` (`pid`);
 
 --
--- Chỉ mục cho bảng `reviews`
+-- Indexes for table `reviews`
 --
 ALTER TABLE `reviews`
   ADD PRIMARY KEY (`review_id`),
@@ -420,136 +420,136 @@ ALTER TABLE `reviews`
   ADD KEY `_PK_reviews_products` (`pid`);
 
 --
--- Chỉ mục cho bảng `shops`
+-- Indexes for table `shops`
 --
 ALTER TABLE `shops`
   ADD PRIMARY KEY (`sid`),
   ADD KEY `_PK_shops_acc` (`aid`);
 
 --
--- Chỉ mục cho bảng `wishlist`
+-- Indexes for table `wishlist`
 --
 ALTER TABLE `wishlist`
   ADD PRIMARY KEY (`aid`,`pid`),
   ADD KEY `_PK_wishlist_products` (`pid`);
 
 --
--- AUTO_INCREMENT cho các bảng đã đổ
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT cho bảng `acc`
+-- AUTO_INCREMENT for table `acc`
 --
 ALTER TABLE `acc`
   MODIFY `aid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT cho bảng `categories`
+-- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
   MODIFY `cid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
--- AUTO_INCREMENT cho bảng `messages`
+-- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
   MODIFY `msg_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
--- AUTO_INCREMENT cho bảng `orders`
+-- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
   MODIFY `oid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT cho bảng `products`
+-- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
   MODIFY `pid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
--- AUTO_INCREMENT cho bảng `product_images`
+-- AUTO_INCREMENT for table `product_images`
 --
 ALTER TABLE `product_images`
   MODIFY `img_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
--- AUTO_INCREMENT cho bảng `reviews`
+-- AUTO_INCREMENT for table `reviews`
 --
 ALTER TABLE `reviews`
   MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT cho bảng `shops`
+-- AUTO_INCREMENT for table `shops`
 --
 ALTER TABLE `shops`
   MODIFY `sid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- Các ràng buộc cho các bảng đã đổ
+-- Constraints for dumped tables
 --
 
 --
--- Các ràng buộc cho bảng `cart`
+-- Constraints for table `cart`
 --
 ALTER TABLE `cart`
   ADD CONSTRAINT `_PK_cart_acc` FOREIGN KEY (`aid`) REFERENCES `acc` (`aid`) ON DELETE CASCADE,
   ADD CONSTRAINT `_PK_cart_products` FOREIGN KEY (`pid`) REFERENCES `products` (`pid`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `categories`
+-- Constraints for table `categories`
 --
 ALTER TABLE `categories`
   ADD CONSTRAINT `_PK_categories_categories` FOREIGN KEY (`parent_id`) REFERENCES `categories` (`cid`) ON DELETE SET NULL;
 
 --
--- Các ràng buộc cho bảng `messages`
+-- Constraints for table `messages`
 --
 ALTER TABLE `messages`
   ADD CONSTRAINT `_PK_messages_accounts` FOREIGN KEY (`sender_id`) REFERENCES `acc` (`aid`) ON DELETE CASCADE,
   ADD CONSTRAINT `_PK_messages_receiver` FOREIGN KEY (`receiver_id`) REFERENCES `acc` (`aid`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `orders`
+-- Constraints for table `orders`
 --
 ALTER TABLE `orders`
   ADD CONSTRAINT `_PK_orders_acc` FOREIGN KEY (`aid`) REFERENCES `acc` (`aid`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `order_items`
+-- Constraints for table `order_items`
 --
 ALTER TABLE `order_items`
   ADD CONSTRAINT `_PK_order_items_orders` FOREIGN KEY (`oid`) REFERENCES `orders` (`oid`) ON DELETE CASCADE,
   ADD CONSTRAINT `_PK_order_items_products` FOREIGN KEY (`pid`) REFERENCES `products` (`pid`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `products`
+-- Constraints for table `products`
 --
 ALTER TABLE `products`
   ADD CONSTRAINT `_PK_products_categories` FOREIGN KEY (`cid`) REFERENCES `categories` (`cid`) ON DELETE SET NULL,
   ADD CONSTRAINT `_PK_products_shops` FOREIGN KEY (`sid`) REFERENCES `shops` (`sid`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `product_images`
+-- Constraints for table `product_images`
 --
 ALTER TABLE `product_images`
   ADD CONSTRAINT `_PK_product_images_products` FOREIGN KEY (`pid`) REFERENCES `products` (`pid`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `reviews`
+-- Constraints for table `reviews`
 --
 ALTER TABLE `reviews`
   ADD CONSTRAINT `_PK_reviews_accounts` FOREIGN KEY (`aid`) REFERENCES `acc` (`aid`) ON DELETE CASCADE,
   ADD CONSTRAINT `_PK_reviews_products` FOREIGN KEY (`pid`) REFERENCES `products` (`pid`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `shops`
+-- Constraints for table `shops`
 --
 ALTER TABLE `shops`
   ADD CONSTRAINT `_PK_shops_acc` FOREIGN KEY (`aid`) REFERENCES `acc` (`aid`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `wishlist`
+-- Constraints for table `wishlist`
 --
 ALTER TABLE `wishlist`
   ADD CONSTRAINT `_PK_wishlist_acc` FOREIGN KEY (`aid`) REFERENCES `acc` (`aid`) ON DELETE CASCADE,
