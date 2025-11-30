@@ -1,10 +1,12 @@
+
 <?php
-session_start();
+session_start(); // BẮT BUỘC: Khởi động session ngay đầu file
+
 require_once __DIR__ . '/../../config.php';
 require_once ROOT_PATH . '/db/db.php';
 
 // 1. LẤY ID TỪ URL
-$pid = isset($_GET['id']) ? (int)$_GET['id'] : 11;
+$pid = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 // 2. TRUY VẤN SẢN PHẨM & SHOP
 $sql_product = "SELECT p.*, s.shop_name, s.aid as shop_owner_id
@@ -13,7 +15,7 @@ $sql_product = "SELECT p.*, s.shop_name, s.aid as shop_owner_id
                 WHERE p.pid = $pid";
 $result_product = $conn->query($sql_product);
 
-if ($result_product->num_rows == 0) {
+if (!$result_product || $result_product->num_rows == 0) {
     die("Sản phẩm không tồn tại hoặc đã bị xóa.");
 }
 $product = $result_product->fetch_assoc();
@@ -29,7 +31,7 @@ while ($row = $result_images->fetch_assoc()) {
     $image_list[] = $row['img_url'];
 }
 if (empty($image_list)) {
-    $image_list[] = 'placeholder.png';
+    $image_list[] = 'placeholder.png'; 
 }
 
 // 4. TRUY VẤN ĐÁNH GIÁ
@@ -39,7 +41,7 @@ $review_data = $result_reviews->fetch_assoc();
 $avg_rating = round($review_data['avg_rating'], 1);
 $total_reviews = $review_data['total_reviews'];
 
-// 5. [MỚI] TÍNH TỔNG SỐ LƯỢNG ĐÃ BÁN (Từ bảng order_items)
+// 5. TÍNH TỔNG SỐ LƯỢNG ĐÃ BÁN
 $sql_sold = "SELECT SUM(quantity) as total_sold FROM order_items WHERE pid = $pid";
 $result_sold = $conn->query($sql_sold);
 $sold_data = $result_sold->fetch_assoc();
@@ -54,7 +56,6 @@ function formatMoney($number)
 function getImgUrl($path)
 {
     if (strpos($path, 'http') === 0) return $path;
-    // Xử lý đường dẫn ảnh local: lùi 2 cấp về root rồi vào images
     $clean_path = ltrim($path, '/');
     return "../../" . $clean_path;
 }
@@ -93,11 +94,20 @@ function getImgUrl($path)
                 </div>
 
                 <div class="top-bar-right">
-                    <a href="SignupPage/signup.php" class="auth-link">Đăng Ký</a>
-                    <a href="LoginPage/login.php" class="auth-link">Đăng Nhập</a>
+                    <?php if (isset($_SESSION['aid'])): ?>
+                        <span class="auth-link" style="color: white;">
+                            Xin chào, <strong><?php echo htmlspecialchars($_SESSION['fullname'] ?? $_SESSION['username'] ?? 'User'); ?></strong>
+                        </span>
+                        <span style="color: white; margin: 0 5px;">|</span>
+                        <a href="LoginPage/logout.php" class="auth-link">Đăng Xuất</a>
+                    <?php else: ?>
+                        <a href="SignupPage/signup.php" class="auth-link">Đăng Ký</a>
+                        <a href="LoginPage/login.php" class="auth-link">Đăng Nhập</a>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
+        
         <header class="lairai-header">
             <div class="container header-content">
                 <div class="logo"><a href="homepage.php"><img src="../../images/logo.png" alt="LaiRaiShop Logo"></a></div>
@@ -121,7 +131,6 @@ function getImgUrl($path)
                     <i class="fas fa-shopping-cart"></i>
                     
                     <?php 
-                    // Tính tổng số lượng để hiện Badge (số màu đỏ)
                     $total_qty_header = 0;
                     if (isset($_SESSION['cart'])) {
                         foreach ($_SESSION['cart'] as $c_item) {
@@ -158,7 +167,7 @@ function getImgUrl($path)
                         <?php endif; ?>
                     </div>
                 </div>
-                </div>
+            </div>
         </header>
     </div>
 
@@ -186,7 +195,7 @@ function getImgUrl($path)
                         <i class="fas fa-store"></i>
                     </div>
                     <div>
-                        <div class="shop-name"><?= htmlspecialchars($product['shop_name']) ?></div>
+                        <div class="shop-name"><?= htmlspecialchars($product['shop_name'] ?? 'Shop Lai Rai') ?></div>
                         <div class="shop-status">Online vài phút trước</div>
                     </div>
                     <a href="#" class="shop-btn"><i class="fas fa-store"></i> Xem Shop</a>
@@ -418,9 +427,20 @@ function getImgUrl($path)
             return "../../" + path.replace(/^\//, '');
         }
 
+        // [SỬA] CHECK LOGIN STATUS BẰNG PHP -> JS
+        var isLoggedIn = <?php echo isset($_SESSION['aid']) ? 'true' : 'false'; ?>;
+
         $(document).ready(function() {
             $('.btn-add-cart').click(function(e) {
                 e.preventDefault(); 
+
+                // Kiểm tra đăng nhập trước
+                if (!isLoggedIn) {
+                    if (confirm("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng. Bạn có muốn đăng nhập ngay không?")) {
+                        window.location.href = "LoginPage/login.php";
+                    }
+                    return; 
+                }
 
                 var pid = <?= isset($pid) ? $pid : 0 ?>; 
                 var qty = parseInt($('#qty').val());
@@ -441,7 +461,7 @@ function getImgUrl($path)
                     success: function(response) {
                         if (response.status === 'success') {
                             
-                            // [SỬA 2] Cập nhật Badge (số màu đỏ trên giỏ hàng)
+                            // Cập nhật Badge
                             var badgeHtml = `<span class="cart-badge" style="position: absolute; top: -5px; right: -8px; background: #ee4d2d; color: #fff; border-radius: 50%; padding: 0 5px; font-size: 12px; line-height: 16px;">${response.total_items}</span>`;
                             if ($('.cart-icon .cart-badge').length) {
                                 $('.cart-icon .cart-badge').text(response.total_items);
@@ -449,7 +469,7 @@ function getImgUrl($path)
                                 $('.cart-icon .fa-shopping-cart').after(badgeHtml);
                             }
 
-                            // Tạo popup (Giữ nguyên)
+                            // Tạo popup
                             var product = response.data;
                             var popupHtml = `
                                 <div class="cart-popup-content">
@@ -462,7 +482,7 @@ function getImgUrl($path)
                                         </div>
                                     </div>
                                     <div class="popup-action">
-                                        <a href="add_to_cart.php" class="btn-view-cart">Xem Giỏ Hàng</a>
+                                        <a href="cart.php" class="btn-view-cart">Xem Giỏ Hàng</a>
                                     </div>
                                 </div>
                             `;
@@ -489,3 +509,4 @@ function getImgUrl($path)
     </script>
 </body>
 </html>
+
