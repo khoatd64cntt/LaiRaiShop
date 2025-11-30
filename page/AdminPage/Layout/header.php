@@ -1,29 +1,29 @@
 <?php
-// File: page/AdminPage/Layout/header.php
+// FILE: page/AdminPage/Layout/header.php
 
-// 1. KẾT NỐI CONFIG (Đi ngược ra 3 cấp: Layout -> AdminPage -> page -> LaiRaiShop)
+// 1. KẾT NỐI CONFIG (Đi ngược 3 cấp để tìm config.php)
 require_once __DIR__ . '/../../../config.php';
 
-// 2. KẾT NỐI DATABASE (Dùng ROOT_PATH tuyệt đối từ config)
-require_once ROOT_PATH . '/db/db.php';
+// Lưu ý: Không cần require 'db.php' nữa vì đã gộp vào config.php ở trên
+// Nếu bạn vẫn muốn tách riêng db.php thì giữ nguyên dòng require cũ, nhưng nhớ bỏ phần kết nối trong config.php đi.
 
-// 3. KHỞI TẠO SESSION
+// 2. KHỞI TẠO SESSION
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// 4. KIỂM TRA QUYỀN ADMIN
+// 3. KIỂM TRA QUYỀN ADMIN
 if (!isset($_SESSION['aid']) || $_SESSION['role'] !== 'admin') {
     header("Location: " . BASE_URL . "/page/HomePage/LoginPage/login.php");
     exit();
 }
 
-// 5. ĐỊNH NGHĨA URL TIỆN ÍCH (Dùng BASE_URL)
+// 4. ĐỊNH NGHĨA URL TIỆN ÍCH
 $url_admin = BASE_URL . '/page/AdminPage/';
-$url_login = BASE_URL . '/page/HomePage/LoginPage/';
-$url_img   = BASE_URL . '/images/';
+// Fix: Trỏ thẳng vào file logout.php thay vì login.php?logout=true
+$url_logout = BASE_URL . '/page/HomePage/LoginPage/logout.php';
 
-// 6. HÀM HỖ TRỢ FORMAT TIỀN
+// 5. HÀM HỖ TRỢ FORMAT TIỀN
 if (!function_exists('formatCurrency')) {
     function formatCurrency($amount)
     {
@@ -105,31 +105,18 @@ if (!function_exists('formatCurrency')) {
 </head>
 
 <body>
-
     <div class="d-flex" id="wrapper">
         <div id="sidebar-wrapper">
             <div class="sidebar-heading"><i class="fas fa-wine-bottle mr-2"></i>LaiRai Admin</div>
             <div class="list-group list-group-flush">
-                <a href="<?php echo $url_admin; ?>dashboard.php" class="list-group-item">
-                    <i class="fas fa-tachometer-alt mr-2"></i> Tổng quan
-                </a>
-                <a href="<?php echo $url_admin; ?>CategoriesPage/categories_list.php" class="list-group-item">
-                    <i class="fas fa-list mr-2"></i> Danh mục
-                </a>
-                <a href="<?php echo $url_admin; ?>ProductPage/products_list.php" class="list-group-item">
-                    <i class="fas fa-box mr-2"></i> Sản phẩm
-                </a>
-                <a href="<?php echo $url_admin; ?>OrderPage/orders_list.php" class="list-group-item">
-                    <i class="fas fa-file-invoice-dollar mr-2"></i> Đơn hàng
-                </a>
-                <a href="<?php echo $url_admin; ?>UserPage/users_list.php" class="list-group-item">
-                    <i class="fas fa-users mr-2"></i> Người dùng
-                </a>
-                <a href="<?php echo $url_admin; ?>ReportsRevenuePage/reports_revenue.php" class="list-group-item">
-                    <i class="fas fa-chart-line mr-2"></i> Báo cáo
-                </a>
+                <a href="<?php echo $url_admin; ?>dashboard.php" class="list-group-item"><i class="fas fa-tachometer-alt mr-2"></i> Tổng quan</a>
+                <a href="<?php echo $url_admin; ?>CategoriesPage/categories_list.php" class="list-group-item"><i class="fas fa-list mr-2"></i> Danh mục</a>
+                <a href="<?php echo $url_admin; ?>ProductPage/products_list.php" class="list-group-item"><i class="fas fa-box mr-2"></i> Sản phẩm</a>
+                <a href="<?php echo $url_admin; ?>OrderPage/orders_list.php" class="list-group-item"><i class="fas fa-file-invoice-dollar mr-2"></i> Đơn hàng</a>
+                <a href="<?php echo $url_admin; ?>UserPage/users_list.php" class="list-group-item"><i class="fas fa-users mr-2"></i> Người dùng</a>
+                <a href="<?php echo $url_admin; ?>ReportsRevenuePage/reports_revenue.php" class="list-group-item"><i class="fas fa-chart-line mr-2"></i> Báo cáo</a>
                 <div class="dropdown-divider border-secondary"></div>
-                <a href="<?php echo $url_login; ?>login.php?logout=true" class="list-group-item text-warning font-weight-bold">
+                <a href="<?php echo $url_logout; ?>" class="list-group-item text-warning font-weight-bold" onclick="return confirm('Đăng xuất ngay?');">
                     <i class="fas fa-sign-out-alt mr-2"></i> Đăng xuất
                 </a>
             </div>
@@ -145,5 +132,4 @@ if (!function_exists('formatCurrency')) {
                     </li>
                 </ul>
             </nav>
-
             <div class="container-fluid p-4">
