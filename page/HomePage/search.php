@@ -255,15 +255,6 @@ if (isset($_SESSION['aid'])) {
                     </div>
                 <?php endif; ?>
             </div>
-
-            <?php if (!isset($_SESSION['aid'])): ?>
-                <div class="load-more">
-                    <a href="<?php echo BASE_URL; ?>/page/HomePage/LoginPage/login.php" style="text-decoration: none;">
-                        <button>Đăng Nhập Để Xem Thêm</button>
-                    </a>
-                </div>
-            <?php endif; ?>
-
         </main>
     </div>
 
