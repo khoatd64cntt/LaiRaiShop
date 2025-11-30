@@ -12,8 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
     // 2. Xóa nhiều sản phẩm (MỚI THÊM)
     if (isset($_POST['action']) && $_POST['action'] == 'delete_selected') {
-        if(isset($_POST['pids']) && is_array($_POST['pids'])){
-            foreach($_POST['pids'] as $pid_to_del){
+        if (isset($_POST['pids']) && is_array($_POST['pids'])) {
+            foreach ($_POST['pids'] as $pid_to_del) {
                 unset($_SESSION['cart'][$pid_to_del]);
             }
         }
@@ -23,15 +23,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['action']) && $_POST['action'] == 'update_qty') {
         $pid = $_POST['pid'];
         $qty = $_POST['qty'];
-        if($qty > 0) $_SESSION['cart'][$pid]['qty'] = $qty;
+        if ($qty > 0) $_SESSION['cart'][$pid]['qty'] = $qty;
         exit;
     }
 }
 
-function formatMoney($number) {
+function formatMoney($number)
+{
     return number_format($number, 0, ',', '.') . '₫';
 }
-function getImgUrl($path) {
+function getImgUrl($path)
+{
     if (strpos($path, 'http') === 0) return $path;
     return "../../" . ltrim($path, '/');
 }
@@ -39,6 +41,7 @@ function getImgUrl($path) {
 
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -46,16 +49,15 @@ function getImgUrl($path) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="style/homepage.css?v=4">
-    <link rel="stylesheet" href="style/cart.css?v=1"> 
+    <link rel="stylesheet" href="style/cart.css?v=1">
 </head>
 
 <body>
-<div class="sticky-header-wrapper">
+    <div class="sticky-header-wrapper">
         <div class="top-bar">
             <div class="container top-bar-content">
                 <div class="top-bar-left">
                     <a href="../SellerPage/dashboard.php">Kênh Người Bán</a>
-                    <a href="#">Trở thành Người bán</a>
                     <div class="top-bar-connect">
                         <p>Kết nối</p>
                         <a href="https://www.facebook.com/ShopeeVN" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
@@ -102,8 +104,8 @@ function getImgUrl($path) {
 
                 <div class="cart-icon has-dropdown">
                     <i class="fas fa-shopping-cart"></i>
-                    
-                    <?php 
+
+                    <?php
                     $total_qty_header = 0;
                     if (isset($_SESSION['cart'])) {
                         foreach ($_SESSION['cart'] as $c_item) {
@@ -111,7 +113,7 @@ function getImgUrl($path) {
                         }
                     }
                     ?>
-                    <?php if($total_qty_header > 0): ?>
+                    <?php if ($total_qty_header > 0): ?>
                         <span class="cart-badge" style="position: absolute; top: -5px; right: -8px; background: #ee4d2d; color: #fff; border-radius: 50%; padding: 0 5px; font-size: 12px; line-height: 16px;"><?= $total_qty_header ?></span>
                     <?php endif; ?>
 
@@ -140,12 +142,12 @@ function getImgUrl($path) {
                         <?php endif; ?>
                     </div>
                 </div>
-                </div>
+            </div>
         </header>
     </div>
 
     <div class="container" style="margin-top: 40px; margin-bottom: 60px;">
-        
+
         <div class="cart-header">
             <div style="width: 40%">
                 <input type="checkbox" id="check-all-top" onchange="toggleAll(this)">
@@ -177,22 +179,22 @@ function getImgUrl($path) {
                                 <img src="https://down-vn.img.susercontent.com/file/vn-50009109-c7a2e1ae720f9704f92f72c6cef24d7d" height="18">
                             </div>
                         </div>
-                        
+
                         <div class="item-price">
                             <span class="old-price"><?= formatMoney($item['price'] * 1.2) ?></span>
                             <span class="new-price"><?= formatMoney($item['price']) ?></span>
                         </div>
-                        
+
                         <div class="item-qty">
                             <button class="qty-btn" onclick="changeQty(<?= $id ?>, -1)">-</button>
                             <input type="text" class="qty-input" id="qty-<?= $id ?>" value="<?= $item['qty'] ?>" readonly>
                             <button class="qty-btn" onclick="changeQty(<?= $id ?>, 1)">+</button>
                         </div>
-                        
+
                         <div class="item-total" id="total-<?= $id ?>">
                             <?= formatMoney($item['price'] * $item['qty']) ?>
                         </div>
-                        
+
                         <div class="item-action">
                             <form method="POST" style="display:inline;">
                                 <input type="hidden" name="action" value="delete">
@@ -205,7 +207,7 @@ function getImgUrl($path) {
                         </div>
                     </div>
                 <?php endforeach; ?>
-                
+
                 <div style="padding: 15px 20px; border-top: 1px solid #eee; color: #ee4d2d; font-size: 13px;">
                     <i class="fas fa-shipping-fast"></i> Giảm ₫300.000 phí vận chuyển đơn tối thiểu ₫0 <span style="color: #0055aa; cursor: pointer;">Tìm hiểu thêm</span>
                 </div>
@@ -215,9 +217,9 @@ function getImgUrl($path) {
                 <div class="footer-left">
                     <input type="checkbox" id="check-all-bot" onchange="toggleAll(this)">
                     <span class="ml-2 mr-3">Chọn Tất Cả (<span id="count-items">0</span>)</span>
-                    
+
                     <span class="mr-3" style="cursor: pointer;" onclick="deleteSelected()">Xóa</span>
-                    
+
                     <span style="color: #ee4d2d; cursor: pointer;">Lưu vào mục Đã thích</span>
                 </div>
                 <div class="footer-right">
@@ -363,7 +365,7 @@ function getImgUrl($path) {
             </div>
         </div>
     </footer>
-    
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -371,18 +373,21 @@ function getImgUrl($path) {
     <script>
         // Hàm định dạng tiền tệ JS
         function formatMoneyJS(amount) {
-            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+            return new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND'
+            }).format(amount);
         }
 
         // Chọn tất cả
         function toggleAll(source) {
             var checkboxes = document.querySelectorAll('.item-check, .shop-check, #check-all-top, #check-all-bot');
-            for(var i=0; i<checkboxes.length; i++) {
+            for (var i = 0; i < checkboxes.length; i++) {
                 checkboxes[i].checked = source.checked;
             }
             updateTotal();
         }
-        
+
         // Chọn shop
         function checkShop(source) {
             var checkboxes = source.closest('.cart-shop-group').querySelectorAll('.item-check');
@@ -395,7 +400,7 @@ function getImgUrl($path) {
             var total = 0;
             var count = 0;
             var checks = document.querySelectorAll('.item-check:checked');
-            
+
             checks.forEach(function(checkbox) {
                 var price = parseInt(checkbox.getAttribute('data-price'));
                 var qty = parseInt(checkbox.getAttribute('data-qty'));
@@ -413,21 +418,25 @@ function getImgUrl($path) {
             var input = document.getElementById('qty-' + pid);
             var currentQty = parseInt(input.value);
             var newQty = currentQty + change;
-            
+
             if (newQty < 1) return;
 
             input.value = newQty;
-            
+
             // Cập nhật attribute data-qty cho checkbox để tính lại tổng
             var checkbox = document.querySelector(`.item-check[value="${pid}"]`);
             checkbox.setAttribute('data-qty', newQty);
-            
+
             // Cập nhật tiền từng món (Item Total)
             var price = parseInt(checkbox.getAttribute('data-price'));
             document.getElementById('total-' + pid).innerText = formatMoneyJS(price * newQty);
 
             // Gọi AJAX cập nhật Session
-            $.post('cart.php', { action: 'update_qty', pid: pid, qty: newQty });
+            $.post('cart.php', {
+                action: 'update_qty',
+                pid: pid,
+                qty: newQty
+            });
 
             // Tính lại tổng tiền
             updateTotal();
@@ -436,18 +445,21 @@ function getImgUrl($path) {
         // [MỚI] Hàm xóa các sản phẩm đã chọn
         function deleteSelected() {
             var checks = document.querySelectorAll('.item-check:checked');
-            if(checks.length === 0) {
+            if (checks.length === 0) {
                 alert("Vui lòng chọn sản phẩm cần xóa!");
                 return;
             }
 
-            if(confirm("Bạn có chắc chắn muốn xóa " + checks.length + " sản phẩm đã chọn?")) {
+            if (confirm("Bạn có chắc chắn muốn xóa " + checks.length + " sản phẩm đã chọn?")) {
                 var pids = [];
                 checks.forEach(function(checkbox) {
                     pids.push(checkbox.value);
                 });
 
-                $.post('cart.php', { action: 'delete_selected', pids: pids }, function(response) {
+                $.post('cart.php', {
+                    action: 'delete_selected',
+                    pids: pids
+                }, function(response) {
                     // Sau khi xóa thành công thì reload trang
                     location.reload();
                 });
@@ -455,4 +467,5 @@ function getImgUrl($path) {
         }
     </script>
 </body>
+
 </html>
