@@ -7,14 +7,19 @@ $session_path = __DIR__ . '/../types/seller_session.php';
 if (file_exists($session_path)) {
     require_once $session_path;
 } else {
-    die("Error: Session file not found at: " . $session_path);
+    // Fallback nếu server cấu hình khác
+    $real_path = $_SERVER['DOCUMENT_ROOT'] . '/LaiRaiShop/page/SellerPage/types/seller_session.php';
+    if(file_exists($real_path)) {
+        require_once $real_path;
+    } else {
+        die("Lỗi: Không tìm thấy file session.");
+    }
 }
 
 $sid = $_SESSION['shop_id'];
 $shop_name = $_SESSION['shop_name'];
-$msg = "";
 
-// --- XỬ LÝ CẬP NHẬT THÔNG TIN SHOP (Giữ lại tính năng này) ---
+// --- XỬ LÝ CẬP NHẬT THÔNG TIN SHOP ---
 if (isset($_POST['update_shop_info'])) {
     $new_name = $_POST['shop_name'];
     $new_desc = $_POST['shop_desc'];
@@ -77,11 +82,7 @@ $result = $conn->query($sql);
         .page-header h2 { font-size: 24px; color: #333; margin-bottom: 5px; font-weight: 600; }
 
         /* Nút thêm mới dạng thẻ a */
-        .btn-add { 
-            background: #088178; color: white; padding: 10px 20px; 
-            border-radius: 5px; font-weight: bold; cursor: pointer; 
-            border: none; font-size: 14px; text-decoration: none; display: inline-block; 
-        }
+        .btn-add { background: #088178; color: white; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; border: none; font-size: 14px; text-decoration: none; display: inline-block; }
         .btn-add:hover { background: #066e67; color: white; }
         
         .table-container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); border: 1px solid #f0f0f0; }
@@ -101,7 +102,7 @@ $result = $conn->query($sql);
         .st-rejected { background: #f8d7da; color: #721c24; }
         .st-hidden { background: #e2e3e5; color: #383d41; }
 
-        /* Modal Shop Styles */
+        /* Modal Styles */
         .btn-edit-shop { margin-top: 10px; font-size: 12px; color: #088178; cursor: pointer; text-decoration: underline; border: none; background: none; }
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
         .modal-content { background-color: #fff; padding: 25px; border-radius: 8px; width: 500px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); position: relative; }
@@ -134,7 +135,7 @@ $result = $conn->query($sql);
                 <a href="/LaiRaiShop/page/HomePage/homepage.php"><i class="fas fa-home"></i> Xem Shop (Client)</a>
             </li>
             <li>
-                <a href="../../HomePage/LoginPage/logout.php" onclick="return confirm('Bạn muốn đăng xuất?');" style="color: #e74c3c;">
+                <a href="../HomePage/LoginPage/logout.php" onclick="return confirm('Bạn muốn đăng xuất?');" style="color: #e74c3c;">
                     <i class="fas fa-sign-out-alt"></i> Đăng xuất
                 </a>
             </li>
@@ -164,10 +165,34 @@ $result = $conn->query($sql);
                 <tbody>
                     <?php if($result->num_rows > 0): ?>
                         <?php while($row = $result->fetch_assoc()): ?>
+                        <?php 
+                            // --- XỬ LÝ HIỂN THỊ ẢNH (FIX LỖI LOAD TRANG) ---
+                            $imgSrc = $row['main_image'];
+                            
+                            // 1. Xử lý chuỗi rỗng
+                            if (empty($imgSrc)) {
+                                $displayImg = 'https://via.placeholder.com/50?text=No+Img';
+                            } else {
+                                // 2. Loại bỏ dấu '/' thừa ở đầu nếu có (để kiểm tra http cho chuẩn)
+                                $cleanPath = ltrim($imgSrc, '/');
+
+                                // 3. Kiểm tra xem có phải link online (http) không
+                                if (strpos($cleanPath, 'http') === 0) {
+                                    $displayImg = $cleanPath;
+                                } else {
+                                    // 4. Nếu là ảnh trong máy -> Thêm đường dẫn gốc /LaiRaiShop
+                                    // Đảm bảo có dấu / ở đầu
+                                    if (strpos($imgSrc, '/') !== 0) {
+                                        $imgSrc = '/' . $imgSrc;
+                                    }
+                                    $displayImg = '/LaiRaiShop' . $imgSrc;
+                                }
+                            }
+                        ?>
                         <tr>
                             <td>#<?= $row['pid'] ?></td>
                             <td>
-                                <img src="<?= !empty($row['main_image']) ? '/LaiRaiShop' . $row['main_image'] : 'https://via.placeholder.com/50' ?>" class="product-img">
+                                <img src="<?= $displayImg ?>" class="product-img" loading="lazy" onerror="this.src='https://via.placeholder.com/50?text=Error'">
                             </td>
                             <td style="font-weight: 500;">
                                 <?= htmlspecialchars($row['name']) ?>
@@ -181,9 +206,7 @@ $result = $conn->query($sql);
                             <td>
                                 <?php 
                                     $st = $row['status'];
-                                    $st_label = '';
-                                    $st_class = '';
-                                    
+                                    $st_label = ''; $st_class = '';
                                     if($st == 'pending') { $st_label = 'Pending'; $st_class = 'st-pending'; }
                                     elseif($st == 'approved') { $st_label = 'Approved'; $st_class = 'st-approved'; }
                                     elseif($st == 'rejected') { $st_label = 'Rejected'; $st_class = 'st-rejected'; }
@@ -194,7 +217,7 @@ $result = $conn->query($sql);
 
                             <td>
                                 <a href="edit_product.php?id=<?= $row['pid'] ?>" class="btn-action btn-edit"><i class="fas fa-pen"></i></a>
-                                <a href="delete_product.php?id=<?= $row['pid'] ?>" class="btn-action btn-delete" onclick="return confirm('Bạn có chắc chắn muốn xóa?');"><i class="fas fa-trash"></i></a>
+                                <a href="delete_product.php?id=<?= $row['pid'] ?>" class="btn-action btn-delete" onclick="return confirm('Xóa sản phẩm này?');"><i class="fas fa-trash"></i></a>
                             </td>
                         </tr>
                         <?php endwhile; ?>
