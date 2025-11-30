@@ -3,7 +3,6 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 30, 2025 at 10:27 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -50,7 +49,8 @@ INSERT INTO `acc` (`aid`, `afname`, `alname`, `email`, `phone`, `username`, `pas
 (5, 'Phạm', 'Thị Dung', 'user1@gmail.com', '0902111111', 'user_dung', '123456', 'user'),
 (6, 'Hoàng', 'Văn Em', 'user2@gmail.com', '0902222222', 'user_em', '123456', 'user'),
 (7, 'Vũ', 'Thị Hoa', 'user3@gmail.com', '0902333333', 'user_hoa', '123456', 'user'),
-(8, 'Đỗ', 'Minh Khoa', 'user4@gmail.com', '0902444444', 'user_khoa', '123456', 'user');
+(8, 'Đỗ', 'Minh Khoa', 'user4@gmail.com', '0902444444', 'user_khoa', '123456', 'user'),
+(9, '', '', 'kh@gmail.con', '0123456789', 'user_kien', '123456', 'admin');
 
 -- --------------------------------------------------------
 
@@ -150,21 +150,29 @@ INSERT INTO `messages` (`msg_id`, `sender_id`, `receiver_id`, `content`, `sent_a
 CREATE TABLE `orders` (
   `oid` int(11) NOT NULL,
   `aid` int(11) NOT NULL,
+  `fullname` varchar(255) NOT NULL,
+  `phone` varchar(20) NOT NULL,
+  `address` text NOT NULL,
+  `note` text DEFAULT NULL,
   `order_date` datetime NOT NULL DEFAULT current_timestamp(),
   `total_amount` decimal(10,2) NOT NULL,
-  `status` enum('pending','paid','shipped','completed','cancelled') NOT NULL DEFAULT 'pending'
+  `status` enum('pending','paid','shipped','completed','cancelled') NOT NULL DEFAULT 'pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `orders`
 --
 
-INSERT INTO `orders` (`oid`, `aid`, `order_date`, `total_amount`, `status`) VALUES
-(1, 5, '2025-11-13 19:44:03', 3190000.00, 'completed'),
-(2, 5, '2025-11-14 19:44:03', 5990000.00, 'paid'),
-(3, 6, '2025-11-18 19:44:03', 30990000.00, 'shipped'),
-(4, 7, '2025-11-19 19:44:03', 890000.00, 'completed'),
-(5, 7, '2025-11-21 19:44:03', 1840000.00, 'pending');
+INSERT INTO `orders` (`oid`, `aid`, `fullname`, `phone`, `address`, `note`, `order_date`, `total_amount`, `status`, `created_at`) VALUES
+(1, 5, '', '', '', NULL, '2025-11-13 19:44:03', 3190000.00, 'completed', '2025-11-30 16:26:52'),
+(2, 5, '', '', '', NULL, '2025-11-14 19:44:03', 5990000.00, 'pending', '2025-11-30 16:26:52'),
+(3, 6, '', '', '', NULL, '2025-11-18 19:44:03', 30990000.00, 'pending', '2025-11-30 16:26:52'),
+(4, 7, '', '', '', NULL, '2025-11-19 19:44:03', 890000.00, 'completed', '2025-11-30 16:26:52'),
+(5, 7, '', '', '', NULL, '2025-11-21 19:44:03', 1840000.00, 'completed', '2025-11-30 16:26:52'),
+(6, 6, 'user_em', '0902222222', 'adas', 'áda', '2025-11-30 23:27:47', 3900000.00, 'completed', '2025-11-30 16:27:47'),
+(7, 2, 'seller_an', '0901111111', 'NHA TRANG', 'GIẢM GIÁ LÁO', '2025-11-30 23:49:54', 99999999.99, 'completed', '2025-11-30 16:49:54'),
+(8, 2, 'seller_an', '0901111111', 'DRGD', 'DFGD', '2025-11-30 23:52:08', 99999999.99, 'completed', '2025-11-30 16:52:08');
 
 -- --------------------------------------------------------
 
@@ -190,7 +198,11 @@ INSERT INTO `order_items` (`oid`, `pid`, `quantity`, `price`) VALUES
 (3, 3, 1, 32990000.00),
 (3, 6, 1, 2390000.00),
 (4, 10, 1, 890000.00),
-(5, 19, 10, 1800000.00);
+(5, 19, 10, 1800000.00),
+(6, 18, 12, 250000.00),
+(6, 19, 5, 180000.00),
+(7, 22, 1, 99999999.99),
+(8, 22, 1, 99999999.99);
 
 -- --------------------------------------------------------
 
@@ -215,25 +227,26 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`pid`, `sid`, `cid`, `name`, `description`, `price`, `stock`, `status`, `main_image`) VALUES
-(1, 1, 5, 'iPhone 15 Pro Max 256GB', 'Chip A17 Pro, Camera 48MP, Titanium, Dynamic Island, Màn hình 6.7 inch Super Retina XDR', 29990000.00, 15, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img1.png'),
-(2, 1, 5, 'Samsung Galaxy S24 Ultra', 'Snapdragon 8 Gen 3, Camera 200MP, Bút S Pen, Màn hình 6.8 inch AMOLED 2X', 27990000.00, 20, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img2.jpg'),
-(3, 1, 6, 'MacBook Air M3 13 inch', 'Chip M3 8-core, RAM 16GB, SSD 512GB, Màn hình Liquid Retina 13.6 inch', 32990000.00, 10, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img3.jpg'),
-(4, 1, 6, 'Dell XPS 15 9530', 'Intel Core i7-13700H, RTX 4060, RAM 32GB, SSD 1TB, Màn hình 15.6 inch OLED 3.5K', 45990000.00, 8, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img4.jpg'),
-(5, 1, 7, 'AirPods Pro 2', 'Chống ồn chủ động, Chip H2, USB-C, Âm thanh Spatial Audio', 5990000.00, 50, 'pending', '/https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img5.jpg'),
-(6, 1, 7, 'Chuột Logitech MX Master 3S', 'Wireless, Bluetooth + USB-C, 8000 DPI, Pin 70 ngày', 2390000.00, 30, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img6.jpg'),
-(7, 2, 8, 'Áo sơ mi nam Oxford', '100% cotton, form slim fit, nhiều màu sắc, phong cách công sở', 350000.00, 100, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img7.jpg'),
-(8, 2, 8, 'Áo thun nam basic Uniqlo', 'Vải voan nhẹ, họa tiết hoa nhí, thiết kế xòe nhẹ, phong cách vintage', 199000.00, 200, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img8.jpg'),
-(9, 2, 9, 'Váy maxi hoa nữ', 'Vải voan nhẹ, họa tiết hoa nhí, thiết kế xòe nhẹ, phong cách vintage', 450000.00, 80, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img9.jpg'),
-(10, 2, 9, 'Áo blazer nữ công sở', 'Chất liệu cao cấp, form chuẩn, phù hợp môi trường văn phòng', 890000.00, 45, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img10.jpg'),
-(11, 2, 10, 'Giày sneaker Nike Air Force 1', 'abc', 2990000.00, 60, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img11.jpg'),
-(12, 2, 10, 'Dép Adidas Adilette', 'Dép quai ngang, êm ái, chống nước, phù hợp đi biển, bể bơi', 890000.00, 120, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img12.jpg'),
-(13, 2, 11, 'Túi xách nữ Charles & Keith', 'Da PU cao cấp, nhiều ngăn, quai xách + đeo chéo, size 25x18cm', 1590000.00, 35, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img13.jpg'),
-(14, 3, 12, 'Bàn làm việc gỗ tự nhiên', 'Gỗ sồi 1.2m x 0.6m, thiết kế tối giản Scandinavian, chống trầy xước', 3990000.00, 12, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img14.jpg'),
-(15, 3, 12, 'Ghế gaming DXRacer', 'Da PU cao cấp, nâng hạ khí nén, tựa lưng 135 độ, tải trọng 150kg', 5490000.00, 18, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img15.jpg'),
-(16, 3, 13, 'Nồi cơm điện Panasonic 1.8L', 'Công nghệ nấu IH, lòng nồi chống dính, 6 chế độ nấu, hẹn giờ 24h', 2890000.00, 25, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img16.jpg'),
-(17, 3, 13, 'Bộ nồi inox 304 Happycook', 'Inox 3 đáy, 5 món, dùng được bếp từ, tặng kèm vá múc', 1690000.00, 40, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img17.jpg'),
-(18, 3, 14, 'Cây kim ngân', 'Chiều cao 40-50cm, dễ chăm sóc, hợp phong thủy, tặng chậu sứ', 250000.00, 100, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img18.jpg'),
-(19, 3, 14, 'Cây lưỡi hổ', 'Lọc không khí, chịu hạn tốt, chiều cao 30-40cm, chậu nhựa composite', 180000.00, 150, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img19.jpg');
+(1, 1, 5, 'iPhone 15 Pro Max 256GB', 'Chip A17 Pro, Camera 48MP, Titanium, Dynamic Island, Màn hình 6.7 inch Super Retina XDR', 29990000.00, 15, 'approved', '/https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img1.png'),
+(2, 1, 5, 'Samsung Galaxy S24 Ultra', 'Snapdragon 8 Gen 3, Camera 200MP, Bút S Pen, Màn hình 6.8 inch AMOLED 2X', 27990000.00, 20, 'pending', '/https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img2.jpg'),
+(3, 1, 6, 'MacBook Air M3 13 inch', 'Chip M3 8-core, RAM 16GB, SSD 512GB, Màn hình Liquid Retina 13.6 inch', 32990000.00, 10, 'approved', '/https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img3.jpg'),
+(4, 1, 6, 'Dell XPS 15 9530', 'Intel Core i7-13700H, RTX 4060, RAM 32GB, SSD 1TB, Màn hình 15.6 inch OLED 3.5K', 45990000.00, 8, 'pending', '/https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img4.jpg'),
+(5, 1, 7, 'AirPods Pro 2', 'Chống ồn chủ động, Chip H2, USB-C, Âm thanh Spatial Audio', 5990000.00, 50, 'approved', '/https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img5.jpg'),
+(6, 1, 7, 'Chuột Logitech MX Master 3S', 'Wireless, Bluetooth + USB-C, 8000 DPI, Pin 70 ngày', 2390000.00, 30, 'approved', '/https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img6.jpg'),
+(7, 2, 8, 'Áo sơ mi nam Oxford', '100% cotton, form slim fit, nhiều màu sắc, phong cách công sở', 350000.00, 100, 'approved', '/https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img7.jpg'),
+(8, 2, 8, 'Áo thun nam basic Uniqlo', 'Vải voan nhẹ, họa tiết hoa nhí, thiết kế xòe nhẹ, phong cách vintage', 199000.00, 200, 'approved', '/https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img8.jpg'),
+(9, 2, 9, 'Váy maxi hoa nữ', 'Vải voan nhẹ, họa tiết hoa nhí, thiết kế xòe nhẹ, phong cách vintage', 450000.00, 80, 'approved', '/https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img9.jpg'),
+(10, 2, 9, 'Áo blazer nữ công sở', 'Chất liệu cao cấp, form chuẩn, phù hợp môi trường văn phòng', 890000.00, 45, 'approved', '/https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img10.jpg'),
+(11, 2, 10, 'Giày sneaker Nike Air Force 1', 'abc', 2990000.00, 60, 'approved', '/https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img11.jpg'),
+(12, 2, 10, 'Dép Adidas Adilette', 'Dép quai ngang, êm ái, chống nước, phù hợp đi biển, bể bơi', 890000.00, 120, 'approved', '/https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img12.jpg'),
+(13, 2, 11, 'Túi xách nữ Charles & Keith', 'Da PU cao cấp, nhiều ngăn, quai xách + đeo chéo, size 25x18cm', 1590000.00, 35, 'approved', '/https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img13.jpg'),
+(14, 3, 12, 'Bàn làm việc gỗ tự nhiên', 'Gỗ sồi 1.2m x 0.6m, thiết kế tối giản Scandinavian, chống trầy xước', 3990000.00, 12, 'approved', '/https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img14.jpg'),
+(15, 3, 12, 'Ghế gaming DXRacer', 'Da PU cao cấp, nâng hạ khí nén, tựa lưng 135 độ, tải trọng 150kg', 5490000.00, 18, 'approved', '/https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img15.jpg'),
+(16, 3, 13, 'Nồi cơm điện Panasonic 1.8L', 'Công nghệ nấu IH, lòng nồi chống dính, 6 chế độ nấu, hẹn giờ 24h', 2890000.00, 25, 'approved', '/https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img16.jpg'),
+(17, 3, 13, 'Bộ nồi inox 304 Happycook', 'Inox 3 đáy, 5 món, dùng được bếp từ, tặng kèm vá múc', 1690000.00, 40, 'approved', '/https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img17.jpg'),
+(18, 3, 14, 'Cây kim ngân', 'Chiều cao 40-50cm, dễ chăm sóc, hợp phong thủy, tặng chậu sứ', 250000.00, 100, 'approved', '/https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img18.jpg'),
+(19, 3, 14, 'Cây lưỡi hổ', 'Lọc không khí, chịu hạn tốt, chiều cao 30-40cm, chậu nhựa composite', 180000.00, 150, 'approved', '/https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img19.jpg'),
+(22, 1, 2, 'Trần Đăng Khoa', 'RẤT ĐẸP TRAI', 99999999.99, 1, 'approved', '/images/products/1764521096_Screenshot 2025-06-22 205801.png');
 
 -- --------------------------------------------------------
 
@@ -441,7 +454,7 @@ ALTER TABLE `wishlist`
 -- AUTO_INCREMENT for table `acc`
 --
 ALTER TABLE `acc`
-  MODIFY `aid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `aid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -459,13 +472,13 @@ ALTER TABLE `messages`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `oid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `oid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `pid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `pid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `product_images`
