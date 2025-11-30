@@ -16,10 +16,10 @@ if (!empty($keyword)) {
     $resetUrl .= "?keyword=" . urlencode($keyword);
 }
 
-// 3. QUERY
+// 3. QUERY - CHỈ NHỮNG SẢN PHẨM ĐƯỢC DUYỆT MỚI HIỂN THỊ
 $sql = "SELECT p.*, c.name as cat_name FROM products p 
         LEFT JOIN categories c ON p.cid = c.cid 
-        WHERE p.status != 'hidden'";
+        WHERE p.status = 'approved'";
 $params = [];
 $types = "";
 

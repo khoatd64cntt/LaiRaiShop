@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-
 // --- [MỚI] 1. CHẶN CACHE TRÌNH DUYỆT (Để sửa lỗi nút Back) ---
 // Giúp trình duyệt không lưu trang này vào bộ nhớ đệm. 
 // Khi logout xong bấm Back, trình duyệt buộc phải tải lại trang -> Session đã mất -> Hiện giao diện khách.
