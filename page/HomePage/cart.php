@@ -10,14 +10,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $pid = $_POST['pid'];
         unset($_SESSION['cart'][$pid]);
     }
-    // 2. Xóa nhiều sản phẩm (MỚI THÊM)
+    // 2. Xóa nhiều sản phẩm
     if (isset($_POST['action']) && $_POST['action'] == 'delete_selected') {
         if (isset($_POST['pids']) && is_array($_POST['pids'])) {
             foreach ($_POST['pids'] as $pid_to_del) {
                 unset($_SESSION['cart'][$pid_to_del]);
             }
         }
-        exit; // Trả về cho JS
+        exit; 
     }
     // 3. Cập nhật số lượng
     if (isset($_POST['action']) && $_POST['action'] == 'update_qty') {
@@ -230,7 +230,7 @@ function getImgUrl($path)
                         </div>
                         <div style="font-size: 12px; color: #ee4d2d;">Tiết kiệm ₫0</div>
                     </div>
-                    <button class="btn-checkout">Mua Hàng</button>
+                    <button class="btn-checkout" onclick="processCheckout()">Mua Hàng</button>
                 </div>
             </div>
 
@@ -413,7 +413,7 @@ function getImgUrl($path)
             document.getElementById('count-items-2').innerText = count;
         }
 
-        // Tăng giảm số lượng (Có AJAX cập nhật session ngầm)
+        // Tăng giảm số lượng
         function changeQty(pid, change) {
             var input = document.getElementById('qty-' + pid);
             var currentQty = parseInt(input.value);
@@ -442,7 +442,7 @@ function getImgUrl($path)
             updateTotal();
         }
 
-        // [MỚI] Hàm xóa các sản phẩm đã chọn
+        // Hàm xóa sản phẩm đã chọn
         function deleteSelected() {
             var checks = document.querySelectorAll('.item-check:checked');
             if (checks.length === 0) {
@@ -464,6 +464,24 @@ function getImgUrl($path)
                     location.reload();
                 });
             }
+        }
+
+        // [MỚI] Hàm xử lý thanh toán (Mua Hàng)
+        function processCheckout() {
+            var checks = document.querySelectorAll('.item-check:checked');
+            
+            if(checks.length === 0) {
+                alert("Vui lòng chọn ít nhất một sản phẩm để mua!");
+                return;
+            }
+
+            var selectedIds = [];
+            checks.forEach(function(checkbox) {
+                selectedIds.push(checkbox.value);
+            });
+
+            // Chuyển hướng sang trang thanh toán kèm theo danh sách ID sản phẩm
+            window.location.href = 'checkout.php?ids=' + selectedIds.join(',');
         }
     </script>
 </body>
