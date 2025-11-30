@@ -1,4 +1,4 @@
-<?php
+<?php 
 // 1. KẾT NỐI SESSION
 $session_path = $_SERVER['DOCUMENT_ROOT'] . '/LaiRaiShop/page/SellerPage/types/seller_session.php';
 
