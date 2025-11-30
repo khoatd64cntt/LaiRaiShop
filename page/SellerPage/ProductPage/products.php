@@ -1,4 +1,4 @@
-<?php 
+<?php
 // FILE: page/SellerPage/ProductPage/products.php
 
 // 1. KẾT NỐI SESSION
@@ -9,7 +9,7 @@ if (file_exists($session_path)) {
 } else {
     // Fallback nếu server cấu hình khác
     $real_path = $_SERVER['DOCUMENT_ROOT'] . '/LaiRaiShop/page/SellerPage/types/seller_session.php';
-    if(file_exists($real_path)) {
+    if (file_exists($real_path)) {
         require_once $real_path;
     } else {
         die("Lỗi: Không tìm thấy file session.");
@@ -23,10 +23,10 @@ $shop_name = $_SESSION['shop_name'];
 if (isset($_POST['update_shop_info'])) {
     $new_name = $_POST['shop_name'];
     $new_desc = $_POST['shop_desc'];
-    
+
     $stmt = $conn->prepare("UPDATE shops SET shop_name = ?, description = ? WHERE sid = ?");
     $stmt->bind_param("ssi", $new_name, $new_desc, $sid);
-    
+
     if ($stmt->execute()) {
         $_SESSION['shop_name'] = $new_name;
         $shop_name = $new_name;
@@ -52,73 +52,326 @@ $result = $conn->query($sql);
 
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <title>Quản lý sản phẩm</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
     <style>
         /* --- CSS STYLE --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { display: flex; min-height: 100vh; background-color: #f4f6f9; color: #333; }
-        a { text-decoration: none; }
-        
-        .sidebar { width: 260px; background: #fff; border-right: 1px solid #e1e1e1; position: fixed; height: 100%; top: 0; left: 0; z-index: 100; }
-        .sidebar-header { padding: 25px 20px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; gap: 10px; }
-        .sidebar-header i { font-size: 24px; color: #088178; }
-        .sidebar-header h2 { font-size: 20px; color: #088178; font-weight: 700; }
-        
-        .user-profile { padding: 20px; text-align: center; background: #f9f9f9; border-bottom: 1px solid #eee; }
-        .user-profile img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 2px solid #088178; }
-        .user-profile h4 { font-size: 16px; margin-bottom: 5px; }
-        .user-profile p { font-size: 12px; color: #777; }
-        
-        .sidebar-menu { list-style: none; padding: 10px 0; flex: 1; }
-        .sidebar-menu li a { display: flex; align-items: center; padding: 12px 25px; color: #555; font-weight: 500; transition: 0.3s; font-size: 15px; border-left: 4px solid transparent; }
-        .sidebar-menu li a:hover, .sidebar-menu li a.active { background-color: #e8f6ea; color: #088178; border-left-color: #088178; }
-        .sidebar-menu li a i { margin-right: 15px; width: 20px; text-align: center; font-size: 16px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
 
-        .main-content { flex: 1; margin-left: 260px; padding: 30px; }
-        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .page-header h2 { font-size: 24px; color: #333; margin-bottom: 5px; font-weight: 600; }
+        body {
+            display: flex;
+            min-height: 100vh;
+            background-color: #f4f6f9;
+            color: #333;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: #fff;
+            border-right: 1px solid #e1e1e1;
+            position: fixed;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-header i {
+            font-size: 24px;
+            color: #135E4B;
+        }
+
+        .sidebar-header h2 {
+            font-size: 20px;
+            color: #135E4B;
+            font-weight: 700;
+        }
+
+        .user-profile {
+            padding: 20px;
+            text-align: center;
+            background: #f9f9f9;
+            border-bottom: 1px solid #eee;
+        }
+
+        .user-profile img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+            border: 2px solid #088178;
+        }
+
+        .user-profile h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .user-profile p {
+            font-size: 12px;
+            color: #777;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 10px 0;
+            flex: 1;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            padding: 12px 25px;
+            color: #555;
+            font-weight: 500;
+            transition: 0.3s;
+            font-size: 15px;
+            border-left: 4px solid transparent;
+        }
+
+        .sidebar-menu li a:hover,
+        .sidebar-menu li a.active {
+            background-color: #e8f6ea;
+            color: #088178;
+            border-left-color: #088178;
+        }
+
+        .sidebar-menu li a i {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 30px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-header h2 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
 
         /* Nút thêm mới dạng thẻ a */
-        .btn-add { background: #088178; color: white; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; border: none; font-size: 14px; text-decoration: none; display: inline-block; }
-        .btn-add:hover { background: #066e67; color: white; }
-        
-        .table-container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); border: 1px solid #f0f0f0; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; vertical-align: middle; }
-        th { background: #f8f9fa; color: #666; font-size: 13px; text-transform: uppercase; font-weight: 600; }
-        
-        .product-img { width: 50px; height: 50px; object-fit: cover; border-radius: 5px; border: 1px solid #eee; }
-        .btn-action { padding: 6px 12px; border-radius: 4px; color: white; font-size: 12px; margin-right: 5px; transition: 0.2s; }
-        .btn-edit { background: #f39c12; }
-        .btn-delete { background: #e74c3c; }
+        .btn-add {
+            background: #135E4B;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-add:hover {
+            background: #0f4a3b;
+            color: white;
+        }
+
+        .table-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+            border: 1px solid #f0f0f0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+
+        th {
+            background: #f8f9fa;
+            color: #666;
+            font-size: 13px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .product-img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 5px;
+            border: 1px solid #eee;
+        }
+
+        .btn-action {
+            padding: 6px 12px;
+            border-radius: 4px;
+            color: white;
+            font-size: 12px;
+            margin-right: 5px;
+            transition: 0.2s;
+        }
+
+        .btn-edit {
+            background: #f39c12;
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+        }
 
         /* Status Badges */
-        .badge { padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-        .st-pending { background: #fff3cd; color: #856404; }
-        .st-approved { background: #d4edda; color: #155724; }
-        .st-rejected { background: #f8d7da; color: #721c24; }
-        .st-hidden { background: #e2e3e5; color: #383d41; }
+        .badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .st-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .st-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .st-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .st-hidden {
+            background: #e2e3e5;
+            color: #383d41;
+        }
 
         /* Modal Styles */
-        .btn-edit-shop { margin-top: 10px; font-size: 12px; color: #088178; cursor: pointer; text-decoration: underline; border: none; background: none; }
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
-        .modal-content { background-color: #fff; padding: 25px; border-radius: 8px; width: 500px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); position: relative; }
-        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 20px; cursor: pointer; color: #aaa; }
-        .close-btn:hover { color: #333; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
-        .form-group input, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        .btn-save { width: 100%; padding: 10px; background: #088178; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-edit-shop {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #135E4B;
+            cursor: pointer;
+            text-decoration: underline;
+            border: none;
+            background: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            width: 500px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 20px;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .btn-save {
+            width: 100%;
+            padding: 10px;
+            background: #135E4B;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
     </style>
 </head>
+
 <body>
 
     <div class="sidebar">
-        <div class="sidebar-header"><i class="fas fa-shopping-bag"></i> <h2>Kênh Người Bán</h2></div>
-        
+        <div class="sidebar-header"><i class="fas fa-shopping-bag"></i>
+            <h2>Kênh Người Bán</h2>
+        </div>
+
         <div class="user-profile">
             <img src="https://ui-avatars.com/api/?name=<?= urlencode($shop_name) ?>&background=088178&color=fff" alt="Shop Logo">
             <h4><?= htmlspecialchars($shop_name) ?></h4>
@@ -155,7 +408,7 @@ $result = $conn->query($sql);
                         <th>ID</th>
                         <th>Hình ảnh</th>
                         <th>Tên sản phẩm</th>
-                        <th>Danh mục</th> 
+                        <th>Danh mục</th>
                         <th>Giá bán</th>
                         <th>Kho</th>
                         <th>Trạng thái</th>
@@ -163,12 +416,12 @@ $result = $conn->query($sql);
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if($result->num_rows > 0): ?>
-                        <?php while($row = $result->fetch_assoc()): ?>
-                        <?php 
+                    <?php if ($result->num_rows > 0): ?>
+                        <?php while ($row = $result->fetch_assoc()): ?>
+                            <?php
                             // --- XỬ LÝ HIỂN THỊ ẢNH (FIX LỖI LOAD TRANG) ---
                             $imgSrc = $row['main_image'];
-                            
+
                             // 1. Xử lý chuỗi rỗng
                             if (empty($imgSrc)) {
                                 $displayImg = 'https://via.placeholder.com/50?text=No+Img';
@@ -188,41 +441,53 @@ $result = $conn->query($sql);
                                     $displayImg = '/LaiRaiShop' . $imgSrc;
                                 }
                             }
-                        ?>
-                        <tr>
-                            <td>#<?= $row['pid'] ?></td>
-                            <td>
-                                <img src="<?= $displayImg ?>" class="product-img" loading="lazy" onerror="this.src='https://via.placeholder.com/50?text=Error'">
-                            </td>
-                            <td style="font-weight: 500;">
-                                <?= htmlspecialchars($row['name']) ?>
-                            </td>
-                            <td style="color: #555; font-size: 14px;">
-                                <?= $row['cat_name'] ?? 'Chưa phân loại' ?>
-                            </td>
-                            <td style="color: #088178; font-weight: bold;"><?= number_format($row['price'], 0, ',', '.') ?>đ</td>
-                            <td><?= $row['stock'] ?></td>
-                            
-                            <td>
-                                <?php 
-                                    $st = $row['status'];
-                                    $st_label = ''; $st_class = '';
-                                    if($st == 'pending') { $st_label = 'Pending'; $st_class = 'st-pending'; }
-                                    elseif($st == 'approved') { $st_label = 'Approved'; $st_class = 'st-approved'; }
-                                    elseif($st == 'rejected') { $st_label = 'Rejected'; $st_class = 'st-rejected'; }
-                                    else { $st_label = 'Hidden'; $st_class = 'st-hidden'; }
-                                ?>
-                                <span class="badge <?= $st_class ?>"><?= $st_label ?></span>
-                            </td>
+                            ?>
+                            <tr>
+                                <td>#<?= $row['pid'] ?></td>
+                                <td>
+                                    <img src="<?= $displayImg ?>" class="product-img" loading="lazy" onerror="this.src='https://via.placeholder.com/50?text=Error'">
+                                </td>
+                                <td style="font-weight: 500;">
+                                    <?= htmlspecialchars($row['name']) ?>
+                                </td>
+                                <td style="color: #555; font-size: 14px;">
+                                    <?= $row['cat_name'] ?? 'Chưa phân loại' ?>
+                                </td>
+                                <td style="color: #088178; font-weight: bold;"><?= number_format($row['price'], 0, ',', '.') ?>đ</td>
+                                <td><?= $row['stock'] ?></td>
 
-                            <td>
-                                <a href="edit_product.php?id=<?= $row['pid'] ?>" class="btn-action btn-edit"><i class="fas fa-pen"></i></a>
-                                <a href="delete_product.php?id=<?= $row['pid'] ?>" class="btn-action btn-delete" onclick="return confirm('Xóa sản phẩm này?');"><i class="fas fa-trash"></i></a>
-                            </td>
-                        </tr>
+                                <td>
+                                    <?php
+                                    $st = $row['status'];
+                                    $st_label = '';
+                                    $st_class = '';
+                                    if ($st == 'pending') {
+                                        $st_label = 'Pending';
+                                        $st_class = 'st-pending';
+                                    } elseif ($st == 'approved') {
+                                        $st_label = 'Approved';
+                                        $st_class = 'st-approved';
+                                    } elseif ($st == 'rejected') {
+                                        $st_label = 'Rejected';
+                                        $st_class = 'st-rejected';
+                                    } else {
+                                        $st_label = 'Hidden';
+                                        $st_class = 'st-hidden';
+                                    }
+                                    ?>
+                                    <span class="badge <?= $st_class ?>"><?= $st_label ?></span>
+                                </td>
+
+                                <td>
+                                    <a href="edit_product.php?id=<?= $row['pid'] ?>" class="btn-action btn-edit"><i class="fas fa-pen"></i></a>
+                                    <a href="delete_product.php?id=<?= $row['pid'] ?>" class="btn-action btn-delete" onclick="return confirm('Xóa sản phẩm này?');"><i class="fas fa-trash"></i></a>
+                                </td>
+                            </tr>
                         <?php endwhile; ?>
                     <?php else: ?>
-                        <tr><td colspan="8" style="text-align: center; padding: 30px;">Chưa có sản phẩm nào.</td></tr>
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 30px;">Chưa có sản phẩm nào.</td>
+                        </tr>
                     <?php endif; ?>
                 </tbody>
             </table>
@@ -248,9 +513,14 @@ $result = $conn->query($sql);
     </div>
 
     <script>
-        function openShopModal() { document.getElementById("shopModal").style.display = "flex"; }
-        function closeShopModal() { document.getElementById("shopModal").style.display = "none"; }
-        
+        function openShopModal() {
+            document.getElementById("shopModal").style.display = "flex";
+        }
+
+        function closeShopModal() {
+            document.getElementById("shopModal").style.display = "none";
+        }
+
         window.onclick = function(event) {
             var m1 = document.getElementById("shopModal");
             if (event.target == m1) m1.style.display = "none";
@@ -258,4 +528,5 @@ $result = $conn->query($sql);
     </script>
 
 </body>
+
 </html>
