@@ -3,18 +3,28 @@ session_start();
 require_once __DIR__ . '/../../config.php';
 require_once ROOT_PATH . '/db/db.php';
 
-// Xử lý cập nhật/xóa (Backend)
+// XỬ LÝ POST (BACKEND)
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // 1. Xóa 1 sản phẩm
     if (isset($_POST['action']) && $_POST['action'] == 'delete') {
         $pid = $_POST['pid'];
         unset($_SESSION['cart'][$pid]);
     }
-    // Cập nhật số lượng (dành cho xử lý JS gọi về)
+    // 2. Xóa nhiều sản phẩm (MỚI THÊM)
+    if (isset($_POST['action']) && $_POST['action'] == 'delete_selected') {
+        if(isset($_POST['pids']) && is_array($_POST['pids'])){
+            foreach($_POST['pids'] as $pid_to_del){
+                unset($_SESSION['cart'][$pid_to_del]);
+            }
+        }
+        exit; // Trả về cho JS
+    }
+    // 3. Cập nhật số lượng
     if (isset($_POST['action']) && $_POST['action'] == 'update_qty') {
         $pid = $_POST['pid'];
         $qty = $_POST['qty'];
         if($qty > 0) $_SESSION['cart'][$pid]['qty'] = $qty;
-        exit; // Kết thúc để trả về cho AJAX
+        exit;
     }
 }
 
@@ -58,14 +68,22 @@ function getImgUrl($path) {
                 </div>
 
                 <div class="top-bar-right">
-                    <a href="SignupPage/signup.php" class="auth-link">Đăng Ký</a>
-                    <a href="LoginPage/login.php" class="auth-link">Đăng Nhập</a>
+                    <?php if (isset($_SESSION['aid'])): ?>
+                        <span class="auth-link" style="color: white;">
+                            Xin chào, <strong><?php echo htmlspecialchars($_SESSION['fullname'] ?? $_SESSION['username'] ?? 'User'); ?></strong>
+                        </span>
+                        <span style="color: white; margin: 0 5px;">|</span>
+                        <a href="LoginPage/logout.php" class="auth-link">Đăng Xuất</a>
+                    <?php else: ?>
+                        <a href="SignupPage/signup.php" class="auth-link">Đăng Ký</a>
+                        <a href="LoginPage/login.php" class="auth-link">Đăng Nhập</a>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
         <header class="lairai-header">
             <div class="container header-content">
-                <div class="logo"><a href="#"><img src="../../images/logo.png" alt="LaiRaiShop Logo"></a></div>
+                <div class="logo"><a href="homepage.php"><img src="../../images/logo.png" alt="LaiRaiShop Logo"></a></div>
 
                 <div class="search-box">
                     <form action="search.php" method="GET">
@@ -86,7 +104,6 @@ function getImgUrl($path) {
                     <i class="fas fa-shopping-cart"></i>
                     
                     <?php 
-                    // Tính tổng số lượng để hiện Badge (số màu đỏ)
                     $total_qty_header = 0;
                     if (isset($_SESSION['cart'])) {
                         foreach ($_SESSION['cart'] as $c_item) {
@@ -180,7 +197,7 @@ function getImgUrl($path) {
                             <form method="POST" style="display:inline;">
                                 <input type="hidden" name="action" value="delete">
                                 <input type="hidden" name="pid" value="<?= $id ?>">
-                                <button type="submit" class="btn-delete">Xóa</button>
+                                <button type="submit" class="btn-delete" onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?')">Xóa</button>
                             </form>
                             <div style="color: #ee4d2d; font-size: 12px; margin-top: 5px; cursor: pointer;">
                                 Tìm sản phẩm tương tự <i class="fas fa-caret-down"></i>
@@ -198,7 +215,9 @@ function getImgUrl($path) {
                 <div class="footer-left">
                     <input type="checkbox" id="check-all-bot" onchange="toggleAll(this)">
                     <span class="ml-2 mr-3">Chọn Tất Cả (<span id="count-items">0</span>)</span>
-                    <span class="mr-3" style="cursor: pointer;">Xóa</span>
+                    
+                    <span class="mr-3" style="cursor: pointer;" onclick="deleteSelected()">Xóa</span>
+                    
                     <span style="color: #ee4d2d; cursor: pointer;">Lưu vào mục Đã thích</span>
                 </div>
                 <div class="footer-right">
@@ -217,7 +236,7 @@ function getImgUrl($path) {
             <div class="text-center p-5 bg-white">
                 <img src="https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/9bdd8040b334d31946f4.png" width="100">
                 <p class="mt-3 text-muted">Giỏ hàng của bạn còn trống</p>
-                <a href="../../index.php" class="btn btn-danger">Mua Ngay</a>
+                <a href="homepage.php" class="btn btn-danger">Mua Ngay</a>
             </div>
         <?php endif; ?>
 
@@ -412,6 +431,27 @@ function getImgUrl($path) {
 
             // Tính lại tổng tiền
             updateTotal();
+        }
+
+        // [MỚI] Hàm xóa các sản phẩm đã chọn
+        function deleteSelected() {
+            var checks = document.querySelectorAll('.item-check:checked');
+            if(checks.length === 0) {
+                alert("Vui lòng chọn sản phẩm cần xóa!");
+                return;
+            }
+
+            if(confirm("Bạn có chắc chắn muốn xóa " + checks.length + " sản phẩm đã chọn?")) {
+                var pids = [];
+                checks.forEach(function(checkbox) {
+                    pids.push(checkbox.value);
+                });
+
+                $.post('cart.php', { action: 'delete_selected', pids: pids }, function(response) {
+                    // Sau khi xóa thành công thì reload trang
+                    location.reload();
+                });
+            }
         }
     </script>
 </body>
