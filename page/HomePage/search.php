@@ -16,10 +16,10 @@ if (!empty($keyword)) {
     $resetUrl .= "?keyword=" . urlencode($keyword);
 }
 
-// 3. QUERY
+// 3. QUERY - CHỈ NHỮNG SẢN PHẨM ĐƯỢC DUYỆT MỚI HIỂN THỊ
 $sql = "SELECT p.*, c.name as cat_name FROM products p 
         LEFT JOIN categories c ON p.cid = c.cid 
-        WHERE p.status != 'hidden'";
+        WHERE p.status = 'approved'";
 $params = [];
 $types = "";
 
@@ -95,8 +95,6 @@ if (isset($_SESSION['aid'])) {
             <div class="container top-bar-content">
                 <div class="top-bar-left">
                     <a href="<?php echo $sellerLink; ?>">Kênh Người Bán</a>
-
-                    <a href="#">Trở thành Người bán</a>
                     <div class="top-bar-connect">
                         <p>Kết nối</p>
                         <a href="https://www.facebook.com/ShopeeVN" target="_blank" rel="noopener noreferrer" aria-label="Facebook">

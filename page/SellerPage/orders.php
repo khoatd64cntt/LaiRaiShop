@@ -80,12 +80,12 @@ $result = $conn->query($sql);
     <title>Quản lý đơn hàng</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
     <style>
-        /* --- CSS STYLE ĐỒNG BỘ VỚI DASHBOARD --- */
+        /* --- CSS STYLE ĐỒNG BỘ --- */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { display: flex; min-height: 100vh; background-color: #f4f6f9; color: #333; }
         a { text-decoration: none; }
         
-        /* Sidebar (Giống hệt Dashboard) */
+        /* Sidebar */
         .sidebar { width: 260px; background: #fff; border-right: 1px solid #e1e1e1; position: fixed; height: 100%; top: 0; left: 0; z-index: 100; }
         .sidebar-header { padding: 25px 20px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; gap: 10px; }
         .sidebar-header i { font-size: 24px; color: #088178; }
@@ -97,25 +97,17 @@ $result = $conn->query($sql);
         .user-profile p { font-size: 12px; color: #777; }
         
         .sidebar-menu { list-style: none; padding: 10px 0; flex: 1; }
-        .sidebar-menu li a { 
-            display: flex; align-items: center; padding: 12px 25px; 
-            color: #555; font-weight: 500; /* Đã sửa font-weight để in đậm giống dashboard */
-            transition: 0.3s; font-size: 15px; border-left: 4px solid transparent; 
-        }
-        .sidebar-menu li a:hover, .sidebar-menu li a.active { 
-            background-color: #e8f6ea; color: #088178; border-left-color: #088178; 
-        }
+        .sidebar-menu li a { display: flex; align-items: center; padding: 12px 25px; color: #555; font-weight: 500; transition: 0.3s; font-size: 15px; border-left: 4px solid transparent; }
+        .sidebar-menu li a:hover, .sidebar-menu li a.active { background-color: #e8f6ea; color: #088178; border-left-color: #088178; }
         .sidebar-menu li a i { margin-right: 15px; width: 20px; text-align: center; font-size: 16px; }
 
         /* Main Content */
         .main-content { flex: 1; margin-left: 260px; padding: 30px; }
-        
-        /* Page Header (Đã sửa để giống Dashboard: không màu mè, font to, màu tối) */
         .page-header { margin-bottom: 30px; }
         .page-header h2 { font-size: 24px; color: #333; margin-bottom: 5px; }
         .page-header p { color: #777; font-size: 14px; }
 
-        /* Order Card Style (Riêng của trang Orders) */
+        /* Order Card */
         .order-card { background: white; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); margin-bottom: 20px; border: 1px solid #f0f0f0; overflow: hidden; transition: 0.3s; }
         .order-card:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .order-header { background: #f8f9fa; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
@@ -131,7 +123,7 @@ $result = $conn->query($sql);
         .order-footer { background: #fff; padding: 15px 20px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
         .total-price { font-size: 18px; color: #d35400; font-weight: 700; }
         
-        /* Status Badge */
+        /* Badges */
         .badge { padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
         .st-pending { background: #fff3cd; color: #856404; }
         .st-completed { background: #d4edda; color: #155724; }
@@ -139,43 +131,39 @@ $result = $conn->query($sql);
         .st-cancelled { background: #f8d7da; color: #721c24; }
         .st-paid { background: #d1ecf1; color: #0c5460; }
 
-        /* Form Update Status */
+        /* Form */
         .status-form { display: flex; gap: 10px; align-items: center; }
         .status-select { padding: 5px; border-radius: 4px; border: 1px solid #ddd; font-size: 13px; outline: none; }
         .btn-update { padding: 6px 15px; background: #088178; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600; }
         .btn-update:hover { background: #066e67; }
 
-        /* Modal & Edit Shop Button (Giống Dashboard) */
+        /* Modal Styles */
         .btn-edit-shop { margin-top: 10px; font-size: 12px; color: #088178; cursor: pointer; text-decoration: underline; border: none; background: none; }
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
         .modal-content { background-color: #fff; padding: 25px; border-radius: 8px; width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); position: relative; }
         .close-btn { position: absolute; top: 10px; right: 15px; font-size: 20px; cursor: pointer; color: #aaa; }
-        .close-btn:hover { color: #333; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
         .form-group input, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
         .btn-save { width: 100%; padding: 10px; background: #088178; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn-save:hover { background: #066e67; }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
         <div class="sidebar-header"><i class="fas fa-shopping-bag"></i> <h2>Kênh Người Bán</h2></div>
-        
         <div class="user-profile">
             <img src="https://ui-avatars.com/api/?name=<?= urlencode($shop_name) ?>&background=088178&color=fff" alt="Shop Logo">
             <h4><?= htmlspecialchars($shop_name) ?></h4>
             <p>ID Shop: #<?= $sid ?></p>
             <button onclick="openShopModal()" class="btn-edit-shop"><i class="fas fa-pen"></i> Sửa thông tin</button>
         </div>
-
         <ul class="sidebar-menu">
             <li><a href="dashboard.php"><i class="fas fa-th-large"></i> Tổng quan</a></li>
             <li><a href="ProductPage/products.php"><i class="fas fa-box"></i> Sản phẩm</a></li>
             <li><a href="ProductPage/add_product.php"><i class="fas fa-plus-circle"></i> Thêm mới</a></li>
             <li><a href="orders.php" class="active"><i class="fas fa-file-invoice-dollar"></i> Đơn hàng</a></li>
-            <li style="margin-top: 20px; border-top: 1px solid #eee;">
+            <li style="border-top: 1px solid #eee; margin-top: 20px;">
                 <a href="/LaiRaiShop/page/HomePage/homepage.php"><i class="fas fa-home"></i> Xem Shop (Client)</a>
             </li>
             <li>
@@ -221,7 +209,29 @@ $result = $conn->query($sql);
                             ?>
                             <tr>
                                 <td style="width: 70px;">
-                                    <img src="<?= !empty($item['main_image']) ? '/LaiRaiShop'.$item['main_image'] : 'https://via.placeholder.com/50' ?>" class="item-img">
+                                    <?php 
+                                        // --- LOGIC XỬ LÝ ẢNH (ĐÃ SỬA) ---
+                                        $imgSrc = $item['main_image'];
+                                        
+                                        if (empty($imgSrc)) {
+                                            $displayImg = 'https://via.placeholder.com/50?text=No+Img';
+                                        } else {
+                                            // Xóa dấu / ở đầu để kiểm tra http chuẩn hơn
+                                            $cleanPath = ltrim($imgSrc, '/');
+
+                                            // Kiểm tra xem có phải link online không
+                                            if (strpos($cleanPath, 'http') === 0) {
+                                                $displayImg = $cleanPath;
+                                            } else {
+                                                // Nếu là ảnh local -> Thêm đường dẫn gốc
+                                                if (strpos($imgSrc, '/') !== 0) {
+                                                    $imgSrc = '/' . $imgSrc;
+                                                }
+                                                $displayImg = '/LaiRaiShop' . $imgSrc;
+                                            }
+                                        }
+                                    ?>
+                                    <img src="<?= $displayImg ?>" class="item-img" loading="lazy" onerror="this.src='https://via.placeholder.com/50?text=Error'">
                                 </td>
                                 <td>
                                     <div class="item-name"><?= htmlspecialchars($item['name']) ?></div>

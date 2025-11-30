@@ -1,4 +1,3 @@
-
 <?php
 session_start(); // BẮT BUỘC: Khởi động session ngay đầu file
 
@@ -31,7 +30,7 @@ while ($row = $result_images->fetch_assoc()) {
     $image_list[] = $row['img_url'];
 }
 if (empty($image_list)) {
-    $image_list[] = 'placeholder.png'; 
+    $image_list[] = 'placeholder.png';
 }
 
 // 4. TRUY VẤN ĐÁNH GIÁ
@@ -81,7 +80,6 @@ function getImgUrl($path)
             <div class="container top-bar-content">
                 <div class="top-bar-left">
                     <a href="../SellerPage/dashboard.php">Kênh Người Bán</a>
-                    <a href="#">Trở thành Người bán</a>
                     <div class="top-bar-connect">
                         <p>Kết nối</p>
                         <a href="https://www.facebook.com/ShopeeVN" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
@@ -107,7 +105,7 @@ function getImgUrl($path)
                 </div>
             </div>
         </div>
-        
+
         <header class="lairai-header">
             <div class="container header-content">
                 <div class="logo"><a href="homepage.php"><img src="../../images/logo.png" alt="LaiRaiShop Logo"></a></div>
@@ -129,8 +127,8 @@ function getImgUrl($path)
 
                 <div class="cart-icon has-dropdown">
                     <i class="fas fa-shopping-cart"></i>
-                    
-                    <?php 
+
+                    <?php
                     $total_qty_header = 0;
                     if (isset($_SESSION['cart'])) {
                         foreach ($_SESSION['cart'] as $c_item) {
@@ -138,7 +136,7 @@ function getImgUrl($path)
                         }
                     }
                     ?>
-                    <?php if($total_qty_header > 0): ?>
+                    <?php if ($total_qty_header > 0): ?>
                         <span class="cart-badge" style="position: absolute; top: -5px; right: -8px; background: #ee4d2d; color: #fff; border-radius: 50%; padding: 0 5px; font-size: 12px; line-height: 16px;"><?= $total_qty_header ?></span>
                     <?php endif; ?>
 
@@ -417,7 +415,10 @@ function getImgUrl($path)
     <script>
         // Hàm định dạng tiền tệ
         function formatMoney(amount) {
-            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+            return new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND'
+            }).format(amount);
         }
 
         // Xử lý đường dẫn ảnh
@@ -432,17 +433,17 @@ function getImgUrl($path)
 
         $(document).ready(function() {
             $('.btn-add-cart').click(function(e) {
-                e.preventDefault(); 
+                e.preventDefault();
 
                 // Kiểm tra đăng nhập trước
                 if (!isLoggedIn) {
                     if (confirm("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng. Bạn có muốn đăng nhập ngay không?")) {
                         window.location.href = "LoginPage/login.php";
                     }
-                    return; 
+                    return;
                 }
 
-                var pid = <?= isset($pid) ? $pid : 0 ?>; 
+                var pid = <?= isset($pid) ? $pid : 0 ?>;
                 var qty = parseInt($('#qty').val());
 
                 if (pid === 0) {
@@ -454,13 +455,13 @@ function getImgUrl($path)
                     url: 'add_to_cart.php',
                     type: 'POST',
                     dataType: 'json',
-                    data: { 
+                    data: {
                         pid: pid,
                         quantity: qty
                     },
                     success: function(response) {
                         if (response.status === 'success') {
-                            
+
                             // Cập nhật Badge
                             var badgeHtml = `<span class="cart-badge" style="position: absolute; top: -5px; right: -8px; background: #ee4d2d; color: #fff; border-radius: 50%; padding: 0 5px; font-size: 12px; line-height: 16px;">${response.total_items}</span>`;
                             if ($('.cart-icon .cart-badge').length) {
@@ -486,17 +487,17 @@ function getImgUrl($path)
                                     </div>
                                 </div>
                             `;
-                            
+
                             // Hiển thị popup
                             $('.cart-dropdown').html(popupHtml).addClass('show-popup');
-                            
+
                             // Tự động ẩn sau 3 giây
-                            setTimeout(function(){ 
-                                $('.cart-dropdown').removeClass('show-popup'); 
+                            setTimeout(function() {
+                                $('.cart-dropdown').removeClass('show-popup');
                             }, 3000);
 
                         } else {
-                            alert(response.msg); 
+                            alert(response.msg);
                         }
                     },
                     error: function(xhr, status, error) {
@@ -508,5 +509,5 @@ function getImgUrl($path)
         });
     </script>
 </body>
-</html>
 
+</html>
