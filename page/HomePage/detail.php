@@ -428,17 +428,34 @@ function getImgUrl($path)
             return "../../" + path.replace(/^\//, '');
         }
 
-        // [SỬA] CHECK LOGIN STATUS BẰNG PHP -> JS
+        // [MỚI] BIẾN KIỂM TRA ĐĂNG NHẬP
         var isLoggedIn = <?php echo isset($_SESSION['aid']) ? 'true' : 'false'; ?>;
+        var loginUrl = "<?php echo BASE_URL; ?>/page/HomePage/LoginPage/login.php";
 
         $(document).ready(function() {
+            
+            // --- XỬ LÝ NÚT MUA NGAY ---
+            $('.btn-buy-now').click(function(e) {
+                e.preventDefault();
+                
+                if (!isLoggedIn) {
+                    if(confirm("Bạn cần đăng nhập để mua hàng. Chuyển đến trang đăng nhập ngay?")) {
+                        window.location.href = loginUrl;
+                    }
+                    return;
+                }
+
+                // Nếu đã đăng nhập thì xử lý mua (code cũ của bạn hoặc chuyển trang thanh toán)
+                alert("Chức năng thanh toán đang phát triển!");
+            });
+
+            // --- XỬ LÝ NÚT THÊM GIỎ HÀNG ---
             $('.btn-add-cart').click(function(e) {
                 e.preventDefault();
 
-                // Kiểm tra đăng nhập trước
                 if (!isLoggedIn) {
                     if (confirm("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng. Bạn có muốn đăng nhập ngay không?")) {
-                        window.location.href = "LoginPage/login.php";
+                        window.location.href = loginUrl;
                     }
                     return;
                 }
@@ -502,7 +519,7 @@ function getImgUrl($path)
                     },
                     error: function(xhr, status, error) {
                         console.log(xhr.responseText);
-                        alert('Lỗi kết nối server.A');
+                        alert('Lỗi kết nối server.');
                     }
                 });
             });
