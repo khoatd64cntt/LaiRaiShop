@@ -1,4 +1,3 @@
-
 <?php 
 // 1. KẾT NỐI SESSION
 $session_path = $_SERVER['DOCUMENT_ROOT'] . '/LaiRaiShop/page/SellerPage/types/seller_session.php';
@@ -9,7 +8,7 @@ if (file_exists($session_path)) {
     die("Lỗi: Không tìm thấy file session tại: " . $session_path);
 }
 
-$sid = $_SESSION['shop_id']; 
+$sid = $_SESSION['shop_id'];
 $shop_name = $_SESSION['shop_name'];
 $msg = "";
 
