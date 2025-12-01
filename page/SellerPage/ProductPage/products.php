@@ -1,19 +1,22 @@
 <?php
 // FILE: page/SellerPage/ProductPage/products.php
 
-// 1. KẾT NỐI SESSION
+// 1. KẾT NỐI SESSION VÀ CONFIG
+// Dùng __DIR__ để định vị file chính xác
 $session_path = __DIR__ . '/../types/seller_session.php';
+$config_path  = __DIR__ . '/../../../config.php'; // Thêm config để dùng BASE_URL và getImage
 
 if (file_exists($session_path)) {
     require_once $session_path;
 } else {
-    // Fallback nếu server cấu hình khác
-    $real_path = $_SERVER['DOCUMENT_ROOT'] . '/LaiRaiShop/page/SellerPage/types/seller_session.php';
-    if (file_exists($real_path)) {
-        require_once $real_path;
-    } else {
-        die("Lỗi: Không tìm thấy file session.");
-    }
+    // Fallback tìm lùi (phòng hờ)
+    $session_path_alt = __DIR__ . '/../../types/seller_session.php';
+    if (file_exists($session_path_alt)) require_once $session_path_alt;
+    else die("Lỗi: Không tìm thấy file session.");
+}
+
+if (file_exists($config_path)) {
+    require_once $config_path;
 }
 
 $sid = $_SESSION['shop_id'];
@@ -184,7 +187,6 @@ $result = $conn->query($sql);
             font-weight: 600;
         }
 
-        /* Nút thêm mới dạng thẻ a */
         .btn-add {
             background: #135E4B;
             color: white;
@@ -257,7 +259,6 @@ $result = $conn->query($sql);
             background: #e74c3c;
         }
 
-        /* Status Badges */
         .badge {
             padding: 5px 10px;
             border-radius: 20px;
@@ -286,7 +287,7 @@ $result = $conn->query($sql);
             color: #383d41;
         }
 
-        /* Modal Styles */
+        /* Modal */
         .btn-edit-shop {
             margin-top: 10px;
             font-size: 12px;
@@ -371,27 +372,24 @@ $result = $conn->query($sql);
         <div class="sidebar-header"><i class="fas fa-shopping-bag"></i>
             <h2>Kênh Người Bán</h2>
         </div>
-
         <div class="user-profile">
             <img src="https://ui-avatars.com/api/?name=<?= urlencode($shop_name) ?>&background=088178&color=fff" alt="Shop Logo">
             <h4><?= htmlspecialchars($shop_name) ?></h4>
             <p>ID Shop: #<?= $sid ?></p>
             <button onclick="openShopModal()" class="btn-edit-shop"><i class="fas fa-pen"></i> Sửa thông tin</button>
         </div>
-
         <ul class="sidebar-menu">
             <li><a href="../dashboard.php"><i class="fas fa-th-large"></i> Tổng quan</a></li>
             <li><a href="products.php" class="active"><i class="fas fa-box"></i> Sản phẩm</a></li>
             <li><a href="add_product.php"><i class="fas fa-plus-circle"></i> Thêm mới</a></li>
-            <li><a href="../orders.php"><i class="fas fa-file-invoice-dollar"></i> Đơn hàng</a></li>
+
+            <li><a href="../orders.php"><i class="fas fa-clipboard-list"></i> Đơn cần xử lý</a></li>
+            <li><a href="../orders_history.php"><i class="fas fa-history"></i> Lịch sử đơn hàng</a></li>
+
             <li style="border-top: 1px solid #eee; margin-top: 20px;">
-                <a href="/LaiRaiShop/page/HomePage/homepage.php"><i class="fas fa-home"></i> Xem Shop (Client)</a>
+                <a href="<?php echo defined('BASE_URL') ? BASE_URL : '/LaiRaiShop'; ?>/page/HomePage/homepage.php"><i class="fas fa-home"></i> Xem Shop (Client)</a>
             </li>
-            <li>
-                <a href="../../HomePage/LoginPage/logout.php" onclick="return confirm('Bạn muốn đăng xuất?');" style="color: #e74c3c;">
-                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
-                </a>
-            </li>
+            <li><a href="../../HomePage/LoginPage/logout.php" onclick="return confirm('Bạn muốn đăng xuất?');" style="color: #e74c3c;"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
         </ul>
     </div>
 
@@ -419,33 +417,31 @@ $result = $conn->query($sql);
                     <?php if ($result->num_rows > 0): ?>
                         <?php while ($row = $result->fetch_assoc()): ?>
                             <?php
-                            // --- XỬ LÝ HIỂN THỊ ẢNH (FIX LỖI LOAD TRANG) ---
+                            // --- XỬ LÝ HIỂN THỊ ẢNH (FIX LỖI LOAD TRANG & ẢNH TRẮNG) ---
                             $imgSrc = $row['main_image'];
 
-                            // 1. Xử lý chuỗi rỗng
-                            if (empty($imgSrc)) {
-                                $displayImg = 'https://via.placeholder.com/50?text=No+Img';
+                            // Sử dụng hàm getImage từ config (nếu có)
+                            if (function_exists('getImage')) {
+                                $displayImg = getImage($imgSrc);
                             } else {
-                                // 2. Loại bỏ dấu '/' thừa ở đầu nếu có (để kiểm tra http cho chuẩn)
-                                $cleanPath = ltrim($imgSrc, '/');
-
-                                // 3. Kiểm tra xem có phải link online (http) không
-                                if (strpos($cleanPath, 'http') === 0) {
-                                    $displayImg = $cleanPath;
+                                // Fallback
+                                if (empty($imgSrc)) {
+                                    $displayImg = 'https://via.placeholder.com/50?text=No+Img';
+                                } elseif (strpos($imgSrc, 'http') === 0) {
+                                    $displayImg = $imgSrc;
                                 } else {
-                                    // 4. Nếu là ảnh trong máy -> Thêm đường dẫn gốc /LaiRaiShop
-                                    // Đảm bảo có dấu / ở đầu
-                                    if (strpos($imgSrc, '/') !== 0) {
-                                        $imgSrc = '/' . $imgSrc;
-                                    }
-                                    $displayImg = '/LaiRaiShop' . $imgSrc;
+                                    $base = defined('BASE_URL') ? BASE_URL : '/LaiRaiShop';
+                                    $displayImg = $base . '/' . ltrim($imgSrc, '/');
                                 }
                             }
                             ?>
                             <tr>
                                 <td>#<?= $row['pid'] ?></td>
                                 <td>
-                                    <img src="<?= $displayImg ?>" class="product-img" loading="lazy" onerror="this.src='https://via.placeholder.com/50?text=Error'">
+                                    <img src="<?= $displayImg ?>" class="product-img"
+                                        style="background-color: #f0f0f0; border: 1px solid #ddd;"
+                                        loading="lazy"
+                                        onerror="this.src='https://via.placeholder.com/50?text=Error'">
                                 </td>
                                 <td style="font-weight: 500;">
                                     <?= htmlspecialchars($row['name']) ?>
@@ -459,23 +455,14 @@ $result = $conn->query($sql);
                                 <td>
                                     <?php
                                     $st = $row['status'];
-                                    $st_label = '';
-                                    $st_class = '';
-                                    if ($st == 'pending') {
-                                        $st_label = 'Pending';
-                                        $st_class = 'st-pending';
-                                    } elseif ($st == 'approved') {
-                                        $st_label = 'Approved';
-                                        $st_class = 'st-approved';
-                                    } elseif ($st == 'rejected') {
-                                        $st_label = 'Rejected';
-                                        $st_class = 'st-rejected';
-                                    } else {
-                                        $st_label = 'Hidden';
-                                        $st_class = 'st-hidden';
-                                    }
+                                    $st_class = match ($st) {
+                                        'pending' => 'st-pending',
+                                        'approved' => 'st-approved',
+                                        'rejected' => 'st-rejected',
+                                        default => 'st-hidden'
+                                    };
                                     ?>
-                                    <span class="badge <?= $st_class ?>"><?= $st_label ?></span>
+                                    <span class="badge <?= $st_class ?>"><?= ucfirst($st) ?></span>
                                 </td>
 
                                 <td>
@@ -520,7 +507,6 @@ $result = $conn->query($sql);
         function closeShopModal() {
             document.getElementById("shopModal").style.display = "none";
         }
-
         window.onclick = function(event) {
             var m1 = document.getElementById("shopModal");
             if (event.target == m1) m1.style.display = "none";

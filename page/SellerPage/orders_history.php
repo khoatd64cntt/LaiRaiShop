@@ -260,7 +260,7 @@ $result = $conn->query($sql);
                         <div style="display:flex; gap:10px; align-items:center;">
                             <span class="badge st-completed">Completed</span>
 
-                            <a href="order_detail.php?oid=<?= $order['oid'] ?>" class="btn-view" style="color:white; text-decoration:none;">
+                            <a href="order_detail.php?oid=<?= $order['oid'] ?>&ref=history" class="btn-view" style="color:white; text-decoration:none;">
                                 <i class="fas fa-eye"></i> Xem Chi Tiết
                             </a>
                         </div>
