@@ -20,8 +20,17 @@ if (!isset($_GET['oid']) || empty($_GET['oid'])) {
 }
 $oid = intval($_GET['oid']);
 
-// 3. TRUY VẤN THÔNG TIN ĐƠN HÀNG (Chỉ lấy nếu thuộc về shop này)
-// Lấy thông tin chung của đơn hàng
+// --- [LOGIC MỚI] XỬ LÝ NÚT QUAY LẠI ---
+$back_link = 'orders.php'; // Mặc định về trang đơn cần xử lý
+$back_text = 'Quay lại danh sách';
+
+if (isset($_GET['ref']) && $_GET['ref'] == 'history') {
+    $back_link = 'orders_history.php'; // Nếu từ lịch sử -> Về lịch sử
+    $back_text = 'Quay lại lịch sử';
+}
+// --------------------------------------
+
+// 3. TRUY VẤN THÔNG TIN ĐƠN HÀNG
 $sql_order = "SELECT o.*, acc.username, acc.phone as user_phone, acc.email
               FROM orders o
               JOIN acc ON o.aid = acc.aid
@@ -29,7 +38,6 @@ $sql_order = "SELECT o.*, acc.username, acc.phone as user_phone, acc.email
               JOIN products p ON oi.pid = p.pid
               WHERE o.oid = $oid AND p.sid = $sid
               GROUP BY o.oid";
-// Group by để tránh lặp nếu shop có nhiều sản phẩm trong đơn này
 
 $result_order = $conn->query($sql_order);
 
@@ -39,14 +47,13 @@ if ($result_order->num_rows == 0) {
 }
 $order = $result_order->fetch_assoc();
 
-// 4. TRUY VẤN CHI TIẾT SẢN PHẨM CỦA SHOP TRONG ĐƠN NÀY
+// 4. TRUY VẤN CHI TIẾT SẢN PHẨM
 $sql_items = "SELECT oi.*, p.name, p.main_image 
               FROM order_items oi 
               JOIN products p ON oi.pid = p.pid 
               WHERE oi.oid = $oid AND p.sid = $sid";
 $result_items = $conn->query($sql_items);
 
-// Tính tổng tiền riêng của Shop trong đơn này
 $shop_total = 0;
 ?>
 
@@ -58,7 +65,7 @@ $shop_total = 0;
     <title>Chi tiết đơn hàng #<?= $oid ?></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
     <style>
-        /* CSS dùng chung cho giao diện Seller */
+        /* CSS dùng chung */
         * {
             margin: 0;
             padding: 0;
@@ -141,7 +148,6 @@ $shop_total = 0;
             color: #555;
             font-weight: 500;
             transition: 0.3s;
-            font-size: 15px;
             border-left: 4px solid transparent;
         }
 
@@ -179,6 +185,7 @@ $shop_total = 0;
             color: #333;
         }
 
+        /* Nút Quay lại */
         .btn-back {
             padding: 8px 15px;
             background: #6c757d;
@@ -347,7 +354,10 @@ $shop_total = 0;
             <li><a href="dashboard.php"><i class="fas fa-th-large"></i> Tổng quan</a></li>
             <li><a href="ProductPage/products.php"><i class="fas fa-box"></i> Sản phẩm</a></li>
             <li><a href="ProductPage/add_product.php"><i class="fas fa-plus-circle"></i> Thêm mới</a></li>
-            <li><a href="orders.php" class="active"><i class="fas fa-file-invoice-dollar"></i> Đơn hàng</a></li>
+
+            <li><a href="orders.php" class="<?= (!isset($_GET['ref']) || $_GET['ref'] != 'history') ? 'active' : '' ?>"><i class="fas fa-file-invoice-dollar"></i> Đơn cần xử lý</a></li>
+            <li><a href="orders_history.php" class="<?= (isset($_GET['ref']) && $_GET['ref'] == 'history') ? 'active' : '' ?>"><i class="fas fa-history"></i> Lịch sử đơn hàng</a></li>
+
             <li style="border-top: 1px solid #eee; margin-top: 20px;">
                 <a href="<?php echo BASE_URL; ?>/page/HomePage/homepage.php"><i class="fas fa-home"></i> Xem Shop (Client)</a>
             </li>
@@ -362,7 +372,9 @@ $shop_total = 0;
     <div class="main-content">
         <div class="page-header">
             <h2>Chi tiết đơn hàng #<?= $oid ?></h2>
-            <a href="orders.php" class="btn-back"><i class="fas fa-arrow-left"></i> Quay lại danh sách</a>
+            <a href="<?= $back_link ?>" class="btn-back">
+                <i class="fas fa-arrow-left"></i> <?= $back_text ?>
+            </a>
         </div>
 
         <div class="detail-card">
@@ -414,7 +426,6 @@ $shop_total = 0;
                             $shop_total += $item_total;
 
                             $imgSrc = $item['main_image'];
-                            // Xử lý ảnh hiển thị
                             if (function_exists('getImage')) {
                                 $displayImg = getImage($imgSrc);
                             } else {

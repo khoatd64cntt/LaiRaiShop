@@ -1,18 +1,21 @@
 <?php
 // FILE: page/SellerPage/orders.php
 
-// 1. KẾT NỐI SESSION VÀ CONFIG
+// 1. KẾT NỐI SESSION VÀ CONFIG (FIX LỖI ĐƯỜNG DẪN)
 $session_path = __DIR__ . '/types/seller_session.php';
 $config_path  = __DIR__ . '/../../config.php';
 
+// Kiểm tra và load file session
 if (file_exists($session_path)) {
     require_once $session_path;
 } else {
+    // Thử tìm lùi ra (phòng hờ cấu trúc lạ)
     $session_path_alt = __DIR__ . '/../types/seller_session.php';
     if (file_exists($session_path_alt)) require_once $session_path_alt;
-    else die("Lỗi: Không tìm thấy file session.");
+    else die("Lỗi: Không tìm thấy file session tại: " . $session_path);
 }
 
+// Kiểm tra và load file config (QUAN TRỌNG ĐỂ CÓ BASE_URL)
 if (file_exists($config_path)) {
     require_once $config_path;
 }
@@ -51,13 +54,57 @@ if (isset($_POST['update_status'])) {
     $check = $conn->query("SELECT 1 FROM order_items oi JOIN products p ON oi.pid = p.pid WHERE oi.oid = $order_id AND p.sid = $sid");
 
     if ($check->num_rows > 0) {
-        $stmt = $conn->prepare("UPDATE orders SET status = ? WHERE oid = ?");
-        $stmt->bind_param("si", $new_status, $order_id);
-        if ($stmt->execute()) {
-            // Nếu chuyển thành Completed -> Nó sẽ tự biến mất khỏi trang này
-            echo "<script>alert('Cập nhật trạng thái thành công!'); window.location.href='orders.php';</script>";
+        $old_status_query = $conn->query("SELECT status FROM orders WHERE oid = $order_id");
+        $old_status = $old_status_query->fetch_assoc()['status'];
+
+        // --- [LOGIC MỚI] KIỂM TRA KHO TRƯỚC KHI DUYỆT ---
+        $can_update = true;
+        $error_msg = "";
+
+        // Chỉ cần kiểm tra kho nếu KHÔNG PHẢI là Hủy đơn (Vì hủy đơn là trả hàng về, không lo hết hàng)
+        if ($new_status != 'cancelled') {
+            $items = $conn->query("SELECT oi.pid, oi.quantity, p.stock, p.name 
+                                   FROM order_items oi 
+                                   JOIN products p ON oi.pid = p.pid 
+                                   WHERE oi.oid = $order_id");
+
+            while ($item = $items->fetch_assoc()) {
+                // Nếu kho hiện tại bị âm (do bán lố trước đó), chặn duyệt tiếp
+                if ($item['stock'] < 0) {
+                    $can_update = false;
+                    $error_msg = "Sản phẩm '" . $item['name'] . "' đang bị âm kho (" . $item['stock'] . "). Vui lòng nhập thêm hàng hoặc hủy đơn!";
+                    break;
+                }
+            }
+        }
+
+        if ($can_update) {
+            $stmt = $conn->prepare("UPDATE orders SET status = ? WHERE oid = ?");
+            $stmt->bind_param("si", $new_status, $order_id);
+
+            if ($stmt->execute()) {
+                // Xử lý hoàn kho nếu Hủy đơn
+                if ($new_status == 'cancelled' && $old_status != 'cancelled') {
+                    $items_cancel = $conn->query("SELECT pid, quantity FROM order_items WHERE oid = $order_id");
+                    while ($item = $items_cancel->fetch_assoc()) {
+                        $conn->query("UPDATE products SET stock = stock + {$item['quantity']} WHERE pid = {$item['pid']}");
+                    }
+                }
+
+                // Xử lý trừ kho lại nếu Khôi phục đơn hủy
+                if ($old_status == 'cancelled' && $new_status != 'cancelled') {
+                    $items_restore = $conn->query("SELECT pid, quantity FROM order_items WHERE oid = $order_id");
+                    while ($item = $items_restore->fetch_assoc()) {
+                        $conn->query("UPDATE products SET stock = stock - {$item['quantity']} WHERE pid = {$item['pid']}");
+                    }
+                }
+
+                echo "<script>alert('Cập nhật trạng thái thành công!'); window.location.href='orders.php';</script>";
+            } else {
+                echo "<script>alert('Lỗi cập nhật');</script>";
+            }
         } else {
-            echo "<script>alert('Lỗi cập nhật');</script>";
+            echo "<script>alert('$error_msg'); window.location.href='orders.php';</script>";
         }
     }
 }
@@ -418,6 +465,10 @@ $result = $conn->query($sql);
             color: #aaa;
         }
 
+        .close-btn:hover {
+            color: #333;
+        }
+
         .form-group {
             margin-bottom: 15px;
         }
@@ -447,6 +498,10 @@ $result = $conn->query($sql);
             cursor: pointer;
             font-weight: bold;
         }
+
+        .btn-save:hover {
+            background: #066e67;
+        }
     </style>
 </head>
 
@@ -466,9 +521,7 @@ $result = $conn->query($sql);
             <li><a href="dashboard.php"><i class="fas fa-th-large"></i> Tổng quan</a></li>
             <li><a href="ProductPage/products.php"><i class="fas fa-box"></i> Sản phẩm</a></li>
             <li><a href="ProductPage/add_product.php"><i class="fas fa-plus-circle"></i> Thêm mới</a></li>
-
             <li><a href="orders.php" class="active"><i class="fas fa-clipboard-list"></i> Đơn cần xử lý</a></li>
-
             <li><a href="orders_history.php"><i class="fas fa-history"></i> Lịch sử đơn hàng</a></li>
 
             <li style="border-top: 1px solid #eee; margin-top: 20px;">
@@ -499,8 +552,9 @@ $result = $conn->query($sql);
                         </div>
                         <div style="display:flex; gap:10px; align-items:center;">
                             <span class="badge st-<?= $order['status'] ?>"><?= ucfirst($order['status']) ?></span>
-                            <a href="order_detail.php?oid=<?= $order['oid'] ?>" class="btn-action">
-                                <i class="fas fa-eye"></i> Xem Chi Tiết
+
+                            <a href="order_detail.php?oid=<?= $order['oid'] ?>&ref=active" class="btn-view" style="color: white; text-decoration: none; background: #9b59b6; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: bold;">
+                                <i class="fas fa-eye"></i> Xem
                             </a>
                         </div>
                     </div>
@@ -555,7 +609,7 @@ $result = $conn->query($sql);
                                 <select name="status" class="status-select">
                                     <option value="pending" <?= $order['status'] == 'pending' ? 'selected' : '' ?>>Pending (Chờ duyệt)</option>
                                     <option value="shipped" <?= $order['status'] == 'shipped' ? 'selected' : '' ?>>Shipped (Đang giao)</option>
-                                    <option value="completed">Completed (Hoàn thành)</option>
+                                    <option value="completed" <?= $order['status'] == 'completed' ? 'selected' : '' ?>>Completed (Hoàn thành)</option>
                                     <option value="cancelled" <?= $order['status'] == 'cancelled' ? 'selected' : '' ?>>Cancelled (Hủy)</option>
                                 </select>
                                 <button type="submit" name="update_status" class="btn-update">Cập nhật</button>
@@ -569,9 +623,8 @@ $result = $conn->query($sql);
             <?php endwhile; ?>
         <?php else: ?>
             <div style="text-align: center; color: #888; margin-top: 50px;">
-                <i class="fas fa-clipboard-check" style="font-size: 50px; margin-bottom: 20px;"></i>
-                <p>Tuyệt vời! Bạn không có đơn hàng nào cần xử lý.</p>
-                <p style="font-size: 13px;">(Kiểm tra <a href="orders_history.php">Lịch sử đơn hàng</a> để xem đơn đã xong)</p>
+                <i class="fas fa-box-open" style="font-size: 50px; margin-bottom: 20px;"></i>
+                <p>Không tìm thấy đơn hàng nào.</p>
             </div>
         <?php endif; ?>
 
