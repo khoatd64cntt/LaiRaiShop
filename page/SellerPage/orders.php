@@ -50,6 +50,9 @@ $current_shop = $res_info->fetch_assoc();
 // 2. XỬ LÝ CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG (CÓ LOGIC KIỂM TRA KHO)
 =======
 // 2. XỬ LÝ CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG
+<<<<<<< HEAD
+>>>>>>> main
+=======
 >>>>>>> main
 if (isset($_POST['update_status'])) {
     $order_id = $_POST['oid'];
