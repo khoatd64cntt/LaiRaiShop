@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 unset($_SESSION['cart'][$pid_to_del]);
             }
         }
-        exit; 
+        exit;
     }
     // 3. Cập nhật số lượng
     if (isset($_POST['action']) && $_POST['action'] == 'update_qty') {
@@ -50,6 +50,7 @@ function getImgUrl($path)
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="style/homepage.css?v=4">
     <link rel="stylesheet" href="style/cart.css?v=1">
+    <?php include ROOT_PATH . '/includes/head_meta.php'; ?>
 </head>
 
 <body>
@@ -469,8 +470,8 @@ function getImgUrl($path)
         // [MỚI] Hàm xử lý thanh toán (Mua Hàng)
         function processCheckout() {
             var checks = document.querySelectorAll('.item-check:checked');
-            
-            if(checks.length === 0) {
+
+            if (checks.length === 0) {
                 alert("Vui lòng chọn ít nhất một sản phẩm để mua!");
                 return;
             }

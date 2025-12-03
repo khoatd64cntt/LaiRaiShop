@@ -41,7 +41,7 @@ if (isset($_SESSION['aid'])) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/page/HomePage/style/homepage.css?v=4">
-    <link rel="icon" href="<?php echo BASE_URL; ?>/images/icon.png" />
+    <?php include ROOT_PATH . '/includes/head_meta.php'; ?>
 </head>
 
 <body>
@@ -101,9 +101,51 @@ if (isset($_SESSION['aid'])) {
 
                 <div class="cart-icon has-dropdown">
                     <i class="fas fa-shopping-cart"></i>
+
+                    <?php
+                    $total_qty_header = 0;
+                    if (isset($_SESSION['cart'])) {
+                        foreach ($_SESSION['cart'] as $c_item) {
+                            $total_qty_header += $c_item['qty'];
+                        }
+                    }
+                    ?>
+
+                    <?php if ($total_qty_header > 0): ?>
+                        <span class="cart-badge" style="position: absolute; top: -5px; right: -8px; background: #ee4d2d; color: #fff; border-radius: 50%; padding: 0 5px; font-size: 12px; line-height: 16px;"><?= $total_qty_header ?></span>
+                    <?php endif; ?>
+
                     <div class="lairai-dropdown-menu cart-dropdown">
-                        <div class="cart-empty-icon-wrapper"><i class="fas fa-shopping-bag"></i></div>
-                        <p>Chưa Có Sản Phẩm</p>
+                        <?php if (!empty($_SESSION['cart'])): ?>
+                            <div class="cart-list-wrapper" style="max-height: 300px; overflow-y: auto;">
+                                <p style="padding: 10px; color: #999; margin: 0; font-size: 14px; text-align: left;">Sản phẩm mới thêm</p>
+                                <?php foreach ($_SESSION['cart'] as $cart_id => $cart_item):
+                                    // Xử lý ảnh cho Homepage (Dùng BASE_URL cho chuẩn)
+                                    $imgSrc = $cart_item['image'];
+                                    if (strpos($imgSrc, 'http') === false) {
+                                        $cleanPath = ltrim($imgSrc, './');
+                                        $imgSrc = BASE_URL . '/' . $cleanPath;
+                                    }
+                                ?>
+                                    <div class="popup-item" style="display: flex; padding: 10px; align-items: center;">
+                                        <img src="<?= $imgSrc ?>" alt="img" style="width: 40px; height: 40px; border: 1px solid #e5e5e5; margin-right: 10px; object-fit: cover;">
+                                        <div class="popup-info" style="flex: 1; overflow: hidden; text-align: left;">
+                                            <div class="popup-name" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13px; color: #333;"><?= htmlspecialchars($cart_item['name']) ?></div>
+                                            <div class="popup-price" style="color: #ee4d2d; font-size: 13px;">
+                                                <?= number_format($cart_item['price'], 0, ',', '.') ?>₫
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <div class="popup-action" style="padding: 10px; text-align: right; background: #f8f8f8;">
+                                <a href="cart.php" class="btn-view-cart" style="background: #ee4d2d; color: #fff; padding: 8px 15px; text-decoration: none; font-size: 14px; border-radius: 2px;">Xem Giỏ Hàng</a>
+                            </div>
+
+                        <?php else: ?>
+                            <div class="cart-empty-icon-wrapper"><i class="fas fa-shopping-bag"></i></div>
+                            <p>Chưa Có Sản Phẩm</p>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

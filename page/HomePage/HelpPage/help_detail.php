@@ -27,7 +27,7 @@ if (!$article) {
     <title><?php echo $article['title']; ?> - Trợ Giúp</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../style/help_center.css">
-    <link rel="icon" href="../../../images/icon.png" />
+    <?php include ROOT_PATH . '/includes/head_meta.php'; ?>
 </head>
 
 <body style="background-color: #fff;">

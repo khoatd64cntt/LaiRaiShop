@@ -45,7 +45,7 @@ $stmt_info->bind_param("i", $sid);
 $stmt_info->execute();
 $current_shop = $stmt_info->get_result()->fetch_assoc();
 
-// 2. XỬ LÝ CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG (ĐÃ SỬA LOGIC KHO)
+// 2. XỬ LÝ CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG (CÓ LOGIC KIỂM TRA KHO)
 if (isset($_POST['update_status'])) {
     $order_id = $_POST['oid'];
     $new_status = $_POST['status'];
@@ -128,7 +128,7 @@ if (isset($_POST['update_status'])) {
     }
 }
 
-// 3. LẤY DANH SÁCH ĐƠN HÀNG (CHỈ ĐƠN CHƯA HOÀN THÀNH)
+// 3. LẤY DANH SÁCH ĐƠN HÀNG
 $sql = "SELECT 
             o.oid, 
             o.order_date, 
@@ -152,8 +152,9 @@ $result = $conn->query($sql);
 
 <head>
     <meta charset="UTF-8">
-    <title>Đơn hàng cần xử lý</title>
+    <title>Quản lý đơn hàng</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <?php include ROOT_PATH . '/includes/head_meta.php'; ?>
     <style>
         /* CSS dùng chung */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
@@ -260,8 +261,8 @@ $result = $conn->query($sql);
 
     <div class="main-content">
         <div class="page-header">
-            <h2 style="color: #088178;">Đơn Hàng Cần Xử Lý</h2>
-            <p>Danh sách các đơn hàng chưa hoàn thành (Pending, Shipped, Paid...).</p>
+            <h2>Quản lý Đơn hàng</h2>
+            <p>Danh sách các đơn hàng đã đặt sản phẩm của shop.</p>
         </div>
 
         <?php if ($result->num_rows > 0): ?>

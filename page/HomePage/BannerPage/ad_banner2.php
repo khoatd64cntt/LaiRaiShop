@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ưu Đãi HDBank Shopee</title>
-    <link rel="icon" href="../../../images/icon.png" />
+    <?php include ROOT_PATH . '/includes/head_meta.php'; ?>
     <link rel="stylesheet" href="../style/ad_banner2.css">
 </head>
 

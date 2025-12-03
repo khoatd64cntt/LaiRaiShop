@@ -96,7 +96,7 @@ if (isset($_SESSION['aid'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/page/HomePage/style/homepage.css?v=4">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/page/HomePage/style/search.css?v=9">
-    <link rel="icon" href="<?php echo BASE_URL; ?>/images/icon.png" />
+    <?php include ROOT_PATH . '/includes/head_meta.php'; ?>
 </head>
 
 <body>

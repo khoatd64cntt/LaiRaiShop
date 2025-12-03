@@ -56,6 +56,7 @@ $result = $conn->query($sql);
     <meta charset="UTF-8">
     <title>Lịch sử đơn hàng</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <?php include ROOT_PATH . '/includes/head_meta.php'; ?>
     <style>
         /* --- CSS STYLE ĐỒNG BỘ DASHBOARD --- */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
