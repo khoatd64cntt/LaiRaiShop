@@ -46,7 +46,7 @@ if (isset($_SESSION['aid'])) {
 
 <body>
 
-    <div class="sticky-header-wrapper">
+<div class="sticky-header-wrapper">
         <div class="top-bar">
             <div class="container top-bar-content">
                 <div class="top-bar-left">
@@ -65,7 +65,10 @@ if (isset($_SESSION['aid'])) {
                 <div class="top-bar-right">
                     <?php if (isset($_SESSION['aid'])): ?>
                         <span class="auth-link" style="color: white;">
-                            Xin chào, <strong><?php echo htmlspecialchars($_SESSION['fullname']); ?></strong>
+                            Xin chào, 
+                            <a href="<?php echo BASE_URL; ?>/page/HomePage/profile.php" style="color: white; text-decoration: none;">
+                                <strong><?php echo htmlspecialchars($_SESSION['fullname'] ?? $_SESSION['username']); ?></strong>
+                            </a>
                         </span>
                         <span style="color: white; margin: 0 5px;">|</span>
                         <a href="<?php echo BASE_URL; ?>/page/HomePage/LoginPage/logout.php" class="auth-link">Đăng Xuất</a>

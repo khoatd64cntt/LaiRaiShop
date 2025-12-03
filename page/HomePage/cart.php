@@ -181,7 +181,6 @@ function getImgUrl($path)
                         </div>
 
                         <div class="item-price">
-                            <span class="old-price"><?= formatMoney($item['price'] * 1.2) ?></span>
                             <span class="new-price"><?= formatMoney($item['price']) ?></span>
                         </div>
 
@@ -195,23 +194,20 @@ function getImgUrl($path)
                             <?= formatMoney($item['price'] * $item['qty']) ?>
                         </div>
 
-                        <div class="item-action">
-                            <form method="POST" style="display:inline;">
+                        <div class="item-action" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                            <form method="POST" style="margin-bottom: 5px;">
                                 <input type="hidden" name="action" value="delete">
                                 <input type="hidden" name="pid" value="<?= $id ?>">
                                 <button type="submit" class="btn-delete" onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?')">Xóa</button>
                             </form>
-                            <div style="color: #ee4d2d; font-size: 12px; margin-top: 5px; cursor: pointer;">
+                            <a href="search.php?keyword=<?= urlencode($item['name']) ?>" style="color: #ee4d2d; font-size: 12px; text-decoration: none; display: block;">
                                 Tìm sản phẩm tương tự <i class="fas fa-caret-down"></i>
-                            </div>
+                            </a>
                         </div>
                     </div>
                 <?php endforeach; ?>
-
-                <div style="padding: 15px 20px; border-top: 1px solid #eee; color: #ee4d2d; font-size: 13px;">
-                    <i class="fas fa-shipping-fast"></i> Giảm ₫300.000 phí vận chuyển đơn tối thiểu ₫0 <span style="color: #0055aa; cursor: pointer;">Tìm hiểu thêm</span>
+                
                 </div>
-            </div>
 
             <div class="cart-footer">
                 <div class="footer-left">
@@ -251,30 +247,16 @@ function getImgUrl($path)
                 <div class="footer-column">
                     <h3>CHĂM SÓC KHÁCH HÀNG</h3>
                     <ul>
-                        <li><a href="#">Trung Tâm Trợ Giúp</a></li>
-                        <li><a href="#">LaiRai Blog</a></li>
-                        <li><a href="#">LaiRai Mall</a></li>
-                        <li><a href="#">Hướng Dẫn Mua Hàng/Đặt Hàng</a></li>
-                        <li><a href="#">Hướng Dẫn Bán Hàng</a></li>
-                        <li><a href="#">Ví Điện Tử</a></li>
-                        <li><a href="#">Đơn Hàng</a></li>
-                        <li><a href="#">Trả Hàng/Hoàn Tiền</a></li>
-                        <li><a href="#">Liên Hệ LaiRaiShop</a></li>
-                        <li><a href="#">Chính Sách Bảo Hành</a></li>
+                        <li><a href="<?php echo BASE_URL; ?>/page/HomePage/HelpPage/help_center.php">Trung Tâm Trợ Giúp</a></li>
+                        <li><a href="<?php echo BASE_URL; ?>/page/HomePage/ContentPage/tutorial1.php">Hướng Dẫn Mua Hàng/Đặt Hàng</a></li>
+                        <li><a href="<?php echo BASE_URL; ?>/page/HomePage/ContentPage/tutorial2.php">Hướng Dẫn Bán Hàng</a></li>
                     </ul>
                 </div>
 
                 <div class="footer-column">
                     <h3>LAIRAISHOP VIỆT NAM</h3>
                     <ul>
-                        <li><a href="#">Về LaiRaiShop</a></li>
-                        <li><a href="#">Tuyển Dụng</a></li>
-                        <li><a href="#">Điều Khoản LaiRaiShop</a></li>
-                        <li><a href="#">Chính Sách Bảo Mật</a></li>
-                        <li><a href="#">Kênh Người Bán</a></li>
-                        <li><a href="#">Flash Sale</a></li>
-                        <li><a href="#">Tiếp Thị Liên Kết</a></li>
-                        <li><a href="#">Liên Hệ Truyền Thông</a></li>
+                        <li><a href="<?php echo BASE_URL; ?>/page/HomePage/ContentPage/about.php">Về LaiRaiShop</a></li>
                     </ul>
                 </div>
 
@@ -307,9 +289,9 @@ function getImgUrl($path)
                 <div class="footer-column">
                     <h3>THEO DÕI CHÚNG TÔI TRÊN</h3>
                     <ul class="social-links">
-                        <li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li>
-                        <li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li>
-                        <li><a href="#"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
+                        <li><a href="https://www.facebook.com/ShopeeVN" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook"></i> Facebook</a></li>
+                        <li><a href="https://www.instagram.com/Shopee_VN" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i> Instagram</a></li>
+                        <li><a href="https://www.linkedin.com/company/shopee" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
                     </ul>
                 </div>
 
@@ -320,9 +302,9 @@ function getImgUrl($path)
                             <img src="https://down-vn.img.susercontent.com/file/a5e589e8e118e937dc660f224b9a1472" alt="QR Code">
                         </div>
                         <div class="app-stores">
-                            <a href="#"><img src="https://down-vn.img.susercontent.com/file/ad01628e90ddf248076685f73497c163" alt="App Store"></a>
-                            <a href="#"><img src="https://down-vn.img.susercontent.com/file/ae7dced05f7243d0f3171f786e123def" alt="Google Play"></a>
-                            <a href="#"><img src="https://down-vn.img.susercontent.com/file/35352374f39bdd03b25e7b83542b2cb0" alt="App Gallery"></a>
+                            <a href="https://shopee.vn/web" target="_blank" rel="noopener noreferrer"><img src="https://down-vn.img.susercontent.com/file/ad01628e90ddf248076685f73497c163" alt="App Store"></a>
+                            <a href="https://shopee.vn/web" target="_blank" rel="noopener noreferrer"><img src="https://down-vn.img.susercontent.com/file/ae7dced05f7243d0f3171f786e123def" alt="Google Play"></a>
+                            <a href="https://shopee.vn/web" target="_blank" rel="noopener noreferrer"><img src="https://down-vn.img.susercontent.com/file/35352374f39bdd03b25e7b83542b2cb0" alt="App Gallery"></a>
                         </div>
                     </div>
                 </div>
@@ -334,16 +316,16 @@ function getImgUrl($path)
                 </div>
                 <div class="country-list">
                     Quốc gia & Khu vực:
-                    <a href="#">Việt Nam</a>
-                    | <a href="#">Lào</a>
-                    | <a href="#">Singapore</a>
-                    | <a href="#">Thái Lan</a>
-                    | <a href="#">Philippines</a>
-                    | <a href="#">Đông Timor</a>
-                    | <a href="#">Indonesia</a>
-                    | <a href="#">Malaysia</a>
-                    | <a href="#">Brunei</a>
-                    | <a href="#">Đài Loan</a>
+                    <a>Việt Nam</a>
+                    | <a>Lào</a>
+                    | <a>Singapore</a>
+                    | <a>Thái Lan</a>
+                    | <a>Philippines</a>
+                    | <a>Đông Timor</a>
+                    | <a>Indonesia</a>
+                    | <a>Malaysia</a>
+                    | <a>Brunei</a>
+                    | <a>Đài Loan</a>
                 </div>
             </div>
         </div>
@@ -351,10 +333,10 @@ function getImgUrl($path)
         <div class="footer-policy">
             <div class="container">
                 <div class="policy-row">
-                    <a href="#">CHÍNH SÁCH BẢO MẬT</a>
-                    <a href="#">QUY CHẾ HOẠT ĐỘNG</a>
-                    <a href="#">CHÍNH SÁCH VẬN CHUYỂN</a>
-                    <a href="#">CHÍNH SÁCH TRẢ HÀNG VÀ HOÀN TIỀN</a>
+                    <a>CHÍNH SÁCH BẢO MẬT</a>
+                    <a>QUY CHẾ HOẠT ĐỘNG</a>
+                    <a>CHÍNH SÁCH VẬN CHUYỂN</a>
+                    <a>CHÍNH SÁCH TRẢ HÀNG VÀ HOÀN TIỀN</a>
                 </div>
                 <div class="company-info">
                     <p>Địa chỉ: 2 Đ. Nguyễn Đình Chiểu, Phường Vĩnh Thọ, Thành phố Nha Trang, Tỉnh Khánh Hòa, Việt Nam</p>
