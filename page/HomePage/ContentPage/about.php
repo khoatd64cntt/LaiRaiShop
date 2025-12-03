@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Về LaiRaiShop - Câu Chuyện Của Chúng Tôi</title>
     <link rel="stylesheet" href="../style/about.css">
-    <link rel="icon" href="../../../images/icon.png" />
+    <?php include ROOT_PATH . '/includes/head_meta.php'; ?>
 </head>
 
 <body>

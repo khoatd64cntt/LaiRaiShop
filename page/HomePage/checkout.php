@@ -155,7 +155,7 @@ if ($user && !empty($user['fullname'])) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="style/homepage.css?v=4">
     <link rel="stylesheet" href="style/detail.css?v=1">
-    <link rel="icon" href="../../images/icon.png" />
+    <?php include ROOT_PATH . '/includes/head_meta.php'; ?>
 
     <style>
         body {

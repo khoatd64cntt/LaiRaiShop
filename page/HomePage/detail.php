@@ -70,7 +70,7 @@ function getImgUrl($path)
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="style/homepage.css?v=4">
     <link rel="stylesheet" href="style/detail.css?v=1">
-    <link rel="icon" href="../../images/icon.png" />
+    <?php include ROOT_PATH . '/includes/head_meta.php'; ?>
 </head>
 
 <body>
@@ -433,13 +433,13 @@ function getImgUrl($path)
         var loginUrl = "<?php echo BASE_URL; ?>/page/HomePage/LoginPage/login.php";
 
         $(document).ready(function() {
-            
+
             // --- XỬ LÝ NÚT MUA NGAY ---
             $('.btn-buy-now').click(function(e) {
                 e.preventDefault();
-                
+
                 if (!isLoggedIn) {
-                    if(confirm("Bạn cần đăng nhập để mua hàng. Chuyển đến trang đăng nhập ngay?")) {
+                    if (confirm("Bạn cần đăng nhập để mua hàng. Chuyển đến trang đăng nhập ngay?")) {
                         window.location.href = loginUrl;
                     }
                     return;

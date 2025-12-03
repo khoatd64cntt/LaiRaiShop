@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hướng Dẫn Bán Hàng</title>
     <link rel="stylesheet" href="../style/tutorial.css">
-    <link rel="icon" href="../../../images/icon.png" />
+    <?php include ROOT_PATH . '/includes/head_meta.php'; ?>
 </head>
 
 <body>

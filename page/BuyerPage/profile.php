@@ -1,6 +1,6 @@
-<?php 
+<?php
 session_start();
-require_once '../../db/db.php'; 
+require_once '../../db/db.php';
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -11,15 +11,15 @@ require_once '../../db/db.php';
     <title>Hồ Sơ Của Tôi | LaiRaiShop</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+
     <link rel="stylesheet" href="../HomePage/style/homepage.css?v=4">
     <link rel="stylesheet" href="style/profile.css?v=1">
-    
-    <link rel="icon" href="../../images/icon.png" />
+
+    <?php include ROOT_PATH . '/includes/head_meta.php'; ?>
 </head>
 
 <body>
-<div class="sticky-header-wrapper">
+    <div class="sticky-header-wrapper">
         <div class="top-bar">
             <div class="container top-bar-content">
                 <div class="top-bar-left">
@@ -132,7 +132,7 @@ require_once '../../db/db.php';
                         <p>Quản lý thông tin hồ sơ để bảo mật tài khoản</p>
                     </div>
                     <hr>
-                    
+
                     <div class="profile-body">
                         <div class="row">
                             <div class="col-md-8">
@@ -143,7 +143,7 @@ require_once '../../db/db.php';
                                             <p class="form-control-plaintext">y4z7sm_t6j</p>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label text-right">Tên</label>
                                         <div class="col-sm-9">
@@ -154,7 +154,7 @@ require_once '../../db/db.php';
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label text-right">Email</label>
                                         <div class="col-sm-9">
-                                            <span class="d-inline-block mt-2">cu*********@gmail.com</span> 
+                                            <span class="d-inline-block mt-2">cu*********@gmail.com</span>
                                             <a href="#" class="ml-2 text-primary">Thay Đổi</a>
                                         </div>
                                     </div>
@@ -162,7 +162,7 @@ require_once '../../db/db.php';
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label text-right">Số điện thoại</label>
                                         <div class="col-sm-9">
-                                            <span class="d-inline-block mt-2">*********88</span> 
+                                            <span class="d-inline-block mt-2">*********88</span>
                                             <a href="#" class="ml-2 text-primary">Thay Đổi</a>
                                         </div>
                                     </div>
@@ -190,15 +190,18 @@ require_once '../../db/db.php';
                                         <div class="col-sm-9 d-flex">
                                             <select class="form-control mr-2">
                                                 <option>Ngày</option>
-                                                <option>1</option><option>2</option>
+                                                <option>1</option>
+                                                <option>2</option>
                                             </select>
                                             <select class="form-control mr-2">
                                                 <option>Tháng</option>
-                                                <option>1</option><option>2</option>
+                                                <option>1</option>
+                                                <option>2</option>
                                             </select>
                                             <select class="form-control">
                                                 <option>Năm</option>
-                                                <option>2000</option><option>2001</option>
+                                                <option>2000</option>
+                                                <option>2001</option>
                                             </select>
                                         </div>
                                     </div>
@@ -357,4 +360,5 @@ require_once '../../db/db.php';
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../../js/homepage.js?v=4"></script>
 </body>
+
 </html>
