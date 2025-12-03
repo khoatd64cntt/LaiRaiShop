@@ -34,6 +34,7 @@ $result = $conn->query($sql);
     <meta charset="UTF-8">
     <title>Lịch sử đơn hàng</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <?php include ROOT_PATH . '/includes/head_meta.php'; ?>
     <style>
         /* Copy CSS y hệt trang orders.php để đồng bộ */
         * {

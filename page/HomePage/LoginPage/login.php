@@ -120,7 +120,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/page/HomePage/style/login_style.css?v=2">
-    <link rel="icon" href="<?php echo BASE_URL; ?>/images/icon.png" />
+    <?php include ROOT_PATH . '/includes/head_meta.php'; ?>
 </head>
 
 <body>
