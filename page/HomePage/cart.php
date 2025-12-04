@@ -1,4 +1,5 @@
 <?php
+// FILE: page/HomePage/cart.php
 session_start();
 require_once __DIR__ . '/../../config.php';
 require_once ROOT_PATH . '/db/db.php';
@@ -50,6 +51,28 @@ function getImgUrl($path)
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="style/homepage.css?v=4">
     <link rel="stylesheet" href="style/cart.css?v=1">
+    
+    <style>
+        /* CSS CHO TRẠNG THÁI GIỎ HÀNG TRỐNG (MỚI) */
+        .empty-cart-box {
+            background: #fff;
+            text-align: center;
+            padding: 50px 20px;
+            margin-top: 20px;
+            box-shadow: 0 1px 1px 0 rgba(0,0,0,.05);
+            border-radius: 2px;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .empty-icon {
+            font-size: 80px;
+            color: #e0e0e0;
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 
 <body>
@@ -72,13 +95,16 @@ function getImgUrl($path)
                 <div class="top-bar-right">
                     <?php if (isset($_SESSION['aid'])): ?>
                         <span class="auth-link" style="color: white;">
-                            Xin chào, <strong><?php echo htmlspecialchars($_SESSION['fullname'] ?? $_SESSION['username'] ?? 'User'); ?></strong>
+                            Xin chào, 
+                            <a href="<?php echo BASE_URL; ?>/page/HomePage/profile.php" style="color: white; text-decoration: none;">
+                                <strong><?php echo htmlspecialchars($_SESSION['fullname'] ?? $_SESSION['username']); ?></strong>
+                            </a>
                         </span>
                         <span style="color: white; margin: 0 5px;">|</span>
-                        <a href="LoginPage/logout.php" class="auth-link">Đăng Xuất</a>
+                        <a href="<?php echo BASE_URL; ?>/page/HomePage/LoginPage/logout.php" class="auth-link">Đăng Xuất</a>
                     <?php else: ?>
-                        <a href="SignupPage/signup.php" class="auth-link">Đăng Ký</a>
-                        <a href="LoginPage/login.php" class="auth-link">Đăng Nhập</a>
+                        <a href="<?php echo BASE_URL; ?>/page/HomePage/SignupPage/signup.php" class="auth-link">Đăng Ký</a>
+                        <a href="<?php echo BASE_URL; ?>/page/HomePage/LoginPage/login.php" class="auth-link">Đăng Nhập</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -148,18 +174,19 @@ function getImgUrl($path)
 
     <div class="container" style="margin-top: 40px; margin-bottom: 60px;">
 
-        <div class="cart-header">
-            <div style="width: 40%">
-                <input type="checkbox" id="check-all-top" onchange="toggleAll(this)">
-                <span class="ml-3">Sản Phẩm</span>
-            </div>
-            <div style="width: 15%; text-align: center;">Đơn Giá</div>
-            <div style="width: 15%; text-align: center;">Số Lượng</div>
-            <div style="width: 15%; text-align: center;">Số Tiền</div>
-            <div style="width: 15%; text-align: center;">Thao Tác</div>
-        </div>
-
         <?php if (!empty($_SESSION['cart'])): ?>
+            
+            <div class="cart-header">
+                <div style="width: 40%">
+                    <input type="checkbox" id="check-all-top" onchange="toggleAll(this)">
+                    <span class="ml-3">Sản Phẩm</span>
+                </div>
+                <div style="width: 15%; text-align: center;">Đơn Giá</div>
+                <div style="width: 15%; text-align: center;">Số Lượng</div>
+                <div style="width: 15%; text-align: center;">Số Tiền</div>
+                <div style="width: 15%; text-align: center;">Thao Tác</div>
+            </div>
+
             <div class="cart-shop-group">
                 <div class="shop-header">
                     <input type="checkbox" class="shop-check" onchange="checkShop(this)">
@@ -207,7 +234,7 @@ function getImgUrl($path)
                     </div>
                 <?php endforeach; ?>
                 
-                </div>
+            </div>
 
             <div class="cart-footer">
                 <div class="footer-left">
@@ -231,10 +258,13 @@ function getImgUrl($path)
             </div>
 
         <?php else: ?>
-            <div class="text-center p-5 bg-white">
-                <img src="https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/9bdd8040b334d31946f4.png" width="100">
-                <p class="mt-3 text-muted">Giỏ hàng của bạn còn trống</p>
-                <a href="homepage.php" class="btn btn-danger">Mua Ngay</a>
+            <div class="empty-cart-box">
+                <div class="empty-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <h5 class="text-muted">Giỏ hàng của bạn còn trống</h5>
+                <p class="text-muted mb-4">Hãy chọn thêm sản phẩm để mua sắm nhé</p>
+                <a href="homepage.php" class="btn btn-danger px-4">Mua Ngay</a>
             </div>
         <?php endif; ?>
 
@@ -348,10 +378,10 @@ function getImgUrl($path)
         </div>
     </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/homepage.js?v=4"></script>
+    <script src="<?php echo BASE_URL; ?>/js/homepage.js?v=4"></script>
     <script>
         // Hàm định dạng tiền tệ JS
         function formatMoneyJS(amount) {
@@ -407,11 +437,11 @@ function getImgUrl($path)
 
             // Cập nhật attribute data-qty cho checkbox để tính lại tổng
             var checkbox = document.querySelector(`.item-check[value="${pid}"]`);
-            checkbox.setAttribute('data-qty', newQty);
+            if(checkbox) checkbox.setAttribute('data-qty', newQty);
 
             // Cập nhật tiền từng món (Item Total)
-            var price = parseInt(checkbox.getAttribute('data-price'));
-            document.getElementById('total-' + pid).innerText = formatMoneyJS(price * newQty);
+            var price = parseInt(checkbox ? checkbox.getAttribute('data-price') : 0);
+            if(checkbox) document.getElementById('total-' + pid).innerText = formatMoneyJS(price * newQty);
 
             // Gọi AJAX cập nhật Session
             $.post('cart.php', {
@@ -442,13 +472,12 @@ function getImgUrl($path)
                     action: 'delete_selected',
                     pids: pids
                 }, function(response) {
-                    // Sau khi xóa thành công thì reload trang
                     location.reload();
                 });
             }
         }
 
-        // [MỚI] Hàm xử lý thanh toán (Mua Hàng)
+        // Hàm xử lý thanh toán (Mua Hàng)
         function processCheckout() {
             var checks = document.querySelectorAll('.item-check:checked');
             
@@ -462,7 +491,6 @@ function getImgUrl($path)
                 selectedIds.push(checkbox.value);
             });
 
-            // Chuyển hướng sang trang thanh toán kèm theo danh sách ID sản phẩm
             window.location.href = 'checkout.php?ids=' + selectedIds.join(',');
         }
     </script>

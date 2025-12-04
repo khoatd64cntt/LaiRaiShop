@@ -243,12 +243,16 @@ if ($user && !empty($user['fullname'])) {
                 <div class="top-bar-right">
                     <?php if (isset($_SESSION['aid'])): ?>
                         <span class="auth-link" style="color: white;">
-                            Xin chào, <strong><?php echo htmlspecialchars($_SESSION['fullname'] ?? $_SESSION['username'] ?? 'User'); ?></strong>
+                            Xin chào, 
+                            <a href="<?php echo BASE_URL; ?>/page/HomePage/profile.php" style="color: white; text-decoration: none;">
+                                <strong><?php echo htmlspecialchars($_SESSION['fullname'] ?? $_SESSION['username']); ?></strong>
+                            </a>
                         </span>
                         <span style="color: white; margin: 0 5px;">|</span>
-                        <a href="LoginPage/logout.php" class="auth-link">Đăng Xuất</a>
+                        <a href="<?php echo BASE_URL; ?>/page/HomePage/LoginPage/logout.php" class="auth-link">Đăng Xuất</a>
                     <?php else: ?>
-                        <a href="LoginPage/login.php" class="auth-link">Đăng Nhập</a>
+                        <a href="<?php echo BASE_URL; ?>/page/HomePage/SignupPage/signup.php" class="auth-link">Đăng Ký</a>
+                        <a href="<?php echo BASE_URL; ?>/page/HomePage/LoginPage/login.php" class="auth-link">Đăng Nhập</a>
                     <?php endif; ?>
                 </div>
             </div>
