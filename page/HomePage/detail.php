@@ -94,13 +94,16 @@ function getImgUrl($path)
                 <div class="top-bar-right">
                     <?php if (isset($_SESSION['aid'])): ?>
                         <span class="auth-link" style="color: white;">
-                            Xin chào, <strong><?php echo htmlspecialchars($_SESSION['fullname'] ?? $_SESSION['username'] ?? 'User'); ?></strong>
+                            Xin chào, 
+                            <a href="<?php echo BASE_URL; ?>/page/HomePage/profile.php" style="color: white; text-decoration: none;">
+                                <strong><?php echo htmlspecialchars($_SESSION['fullname'] ?? $_SESSION['username']); ?></strong>
+                            </a>
                         </span>
                         <span style="color: white; margin: 0 5px;">|</span>
-                        <a href="LoginPage/logout.php" class="auth-link">Đăng Xuất</a>
+                        <a href="<?php echo BASE_URL; ?>/page/HomePage/LoginPage/logout.php" class="auth-link">Đăng Xuất</a>
                     <?php else: ?>
-                        <a href="SignupPage/signup.php" class="auth-link">Đăng Ký</a>
-                        <a href="LoginPage/login.php" class="auth-link">Đăng Nhập</a>
+                        <a href="<?php echo BASE_URL; ?>/page/HomePage/SignupPage/signup.php" class="auth-link">Đăng Ký</a>
+                        <a href="<?php echo BASE_URL; ?>/page/HomePage/LoginPage/login.php" class="auth-link">Đăng Nhập</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -267,30 +270,16 @@ function getImgUrl($path)
                 <div class="footer-column">
                     <h3>CHĂM SÓC KHÁCH HÀNG</h3>
                     <ul>
-                        <li><a href="#">Trung Tâm Trợ Giúp</a></li>
-                        <li><a href="#">LaiRai Blog</a></li>
-                        <li><a href="#">LaiRai Mall</a></li>
-                        <li><a href="#">Hướng Dẫn Mua Hàng/Đặt Hàng</a></li>
-                        <li><a href="#">Hướng Dẫn Bán Hàng</a></li>
-                        <li><a href="#">Ví Điện Tử</a></li>
-                        <li><a href="#">Đơn Hàng</a></li>
-                        <li><a href="#">Trả Hàng/Hoàn Tiền</a></li>
-                        <li><a href="#">Liên Hệ LaiRaiShop</a></li>
-                        <li><a href="#">Chính Sách Bảo Hành</a></li>
+                        <li><a href="<?php echo BASE_URL; ?>/page/HomePage/HelpPage/help_center.php">Trung Tâm Trợ Giúp</a></li>
+                        <li><a href="<?php echo BASE_URL; ?>/page/HomePage/ContentPage/tutorial1.php">Hướng Dẫn Mua Hàng/Đặt Hàng</a></li>
+                        <li><a href="<?php echo BASE_URL; ?>/page/HomePage/ContentPage/tutorial2.php">Hướng Dẫn Bán Hàng</a></li>
                     </ul>
                 </div>
 
                 <div class="footer-column">
                     <h3>LAIRAISHOP VIỆT NAM</h3>
                     <ul>
-                        <li><a href="#">Về LaiRaiShop</a></li>
-                        <li><a href="#">Tuyển Dụng</a></li>
-                        <li><a href="#">Điều Khoản LaiRaiShop</a></li>
-                        <li><a href="#">Chính Sách Bảo Mật</a></li>
-                        <li><a href="#">Kênh Người Bán</a></li>
-                        <li><a href="#">Flash Sale</a></li>
-                        <li><a href="#">Tiếp Thị Liên Kết</a></li>
-                        <li><a href="#">Liên Hệ Truyền Thông</a></li>
+                        <li><a href="<?php echo BASE_URL; ?>/page/HomePage/ContentPage/about.php">Về LaiRaiShop</a></li>
                     </ul>
                 </div>
 
@@ -323,9 +312,9 @@ function getImgUrl($path)
                 <div class="footer-column">
                     <h3>THEO DÕI CHÚNG TÔI TRÊN</h3>
                     <ul class="social-links">
-                        <li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li>
-                        <li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li>
-                        <li><a href="#"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
+                        <li><a href="https://www.facebook.com/ShopeeVN" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook"></i> Facebook</a></li>
+                        <li><a href="https://www.instagram.com/Shopee_VN" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i> Instagram</a></li>
+                        <li><a href="https://www.linkedin.com/company/shopee" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
                     </ul>
                 </div>
 
@@ -336,9 +325,9 @@ function getImgUrl($path)
                             <img src="https://down-vn.img.susercontent.com/file/a5e589e8e118e937dc660f224b9a1472" alt="QR Code">
                         </div>
                         <div class="app-stores">
-                            <a href="#"><img src="https://down-vn.img.susercontent.com/file/ad01628e90ddf248076685f73497c163" alt="App Store"></a>
-                            <a href="#"><img src="https://down-vn.img.susercontent.com/file/ae7dced05f7243d0f3171f786e123def" alt="Google Play"></a>
-                            <a href="#"><img src="https://down-vn.img.susercontent.com/file/35352374f39bdd03b25e7b83542b2cb0" alt="App Gallery"></a>
+                            <a href="https://shopee.vn/web" target="_blank" rel="noopener noreferrer"><img src="https://down-vn.img.susercontent.com/file/ad01628e90ddf248076685f73497c163" alt="App Store"></a>
+                            <a href="https://shopee.vn/web" target="_blank" rel="noopener noreferrer"><img src="https://down-vn.img.susercontent.com/file/ae7dced05f7243d0f3171f786e123def" alt="Google Play"></a>
+                            <a href="https://shopee.vn/web" target="_blank" rel="noopener noreferrer"><img src="https://down-vn.img.susercontent.com/file/35352374f39bdd03b25e7b83542b2cb0" alt="App Gallery"></a>
                         </div>
                     </div>
                 </div>
@@ -350,16 +339,16 @@ function getImgUrl($path)
                 </div>
                 <div class="country-list">
                     Quốc gia & Khu vực:
-                    <a href="#">Việt Nam</a>
-                    | <a href="#">Lào</a>
-                    | <a href="#">Singapore</a>
-                    | <a href="#">Thái Lan</a>
-                    | <a href="#">Philippines</a>
-                    | <a href="#">Đông Timor</a>
-                    | <a href="#">Indonesia</a>z
-                    | <a href="#">Malaysia</a>
-                    | <a href="#">Brunei</a>
-                    | <a href="#">Đài Loan</a>
+                    <a>Việt Nam</a>
+                    | <a>Lào</a>
+                    | <a>Singapore</a>
+                    | <a>Thái Lan</a>
+                    | <a>Philippines</a>
+                    | <a>Đông Timor</a>
+                    | <a>Indonesia</a>
+                    | <a>Malaysia</a>
+                    | <a>Brunei</a>
+                    | <a>Đài Loan</a>
                 </div>
             </div>
         </div>
@@ -367,10 +356,10 @@ function getImgUrl($path)
         <div class="footer-policy">
             <div class="container">
                 <div class="policy-row">
-                    <a href="#">CHÍNH SÁCH BẢO MẬT</a>
-                    <a href="#">QUY CHẾ HOẠT ĐỘNG</a>
-                    <a href="#">CHÍNH SÁCH VẬN CHUYỂN</a>
-                    <a href="#">CHÍNH SÁCH TRẢ HÀNG VÀ HOÀN TIỀN</a>
+                    <a>CHÍNH SÁCH BẢO MẬT</a>
+                    <a>QUY CHẾ HOẠT ĐỘNG</a>
+                    <a>CHÍNH SÁCH VẬN CHUYỂN</a>
+                    <a>CHÍNH SÁCH TRẢ HÀNG VÀ HOÀN TIỀN</a>
                 </div>
                 <div class="company-info">
                     <p>Địa chỉ: 2 Đ. Nguyễn Đình Chiểu, Phường Vĩnh Thọ, Thành phố Nha Trang, Tỉnh Khánh Hòa, Việt Nam</p>
@@ -434,10 +423,12 @@ function getImgUrl($path)
 
         $(document).ready(function() {
 
-            // --- XỬ LÝ NÚT MUA NGAY ---
+            
+            // --- XỬ LÝ NÚT MUA NGAY (ĐÃ SỬA) ---
             $('.btn-buy-now').click(function(e) {
                 e.preventDefault();
-
+                
+                // 1. Kiểm tra đăng nhập
                 if (!isLoggedIn) {
                     if (confirm("Bạn cần đăng nhập để mua hàng. Chuyển đến trang đăng nhập ngay?")) {
                         window.location.href = loginUrl;
@@ -445,8 +436,39 @@ function getImgUrl($path)
                     return;
                 }
 
-                // Nếu đã đăng nhập thì xử lý mua (code cũ của bạn hoặc chuyển trang thanh toán)
-                alert("Chức năng thanh toán đang phát triển!");
+                // 2. Lấy thông tin sản phẩm
+                var pid = <?= isset($pid) ? $pid : 0 ?>;
+                var qty = parseInt($('#qty').val());
+
+                if (pid === 0) {
+                    alert("Lỗi: Không xác định được sản phẩm.");
+                    return;
+                }
+
+                // 3. Gọi AJAX thêm vào giỏ hàng trước (để checkout.php có dữ liệu session)
+                $.ajax({
+                    url: 'add_to_cart.php',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        pid: pid,
+                        quantity: qty
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            // 4. Nếu thêm thành công -> Chuyển hướng sang Checkout ngay lập tức
+                            // Truyền ID sản phẩm lên URL để checkout.php biết cần thanh toán món nào
+                            window.location.href = 'checkout.php?ids=' + pid;
+                        } else {
+                            // Nếu lỗi (ví dụ hết hàng)
+                            alert(response.msg);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(xhr.responseText);
+                        alert('Lỗi kết nối server. Vui lòng thử lại sau.');
+                    }
+                });
             });
 
             // --- XỬ LÝ NÚT THÊM GIỎ HÀNG ---
