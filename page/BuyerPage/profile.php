@@ -1,90 +1,102 @@
 <?php
+// FILE: page/HomePage/profile.php
 session_start();
-require_once '../../db/db.php';
+require_once __DIR__ . '/../../config.php';
+require_once ROOT_PATH . '/db/db.php';
+
+// 1. Kiểm tra đăng nhập
+if (!isset($_SESSION['aid'])) {
+    header("Location: LoginPage/login.php");
+    exit();
+}
+$aid = $_SESSION['aid'];
+$msg = "";
+
+// 2. Xử lý cập nhật thông tin
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $afname = $_POST['afname'];
+    $alname = $_POST['alname'];
+    $email = $_POST['email'];
+    $phone = $_POST['phone'];
+    
+    // Update DB
+    $sql_update = "UPDATE acc SET afname=?, alname=?, email=?, phone=? WHERE aid=?";
+    $stmt = $conn->prepare($sql_update);
+    $stmt->bind_param("ssssi", $afname, $alname, $email, $phone, $aid);
+    
+    if ($stmt->execute()) {
+        $msg = "<div class='alert alert-success'>Cập nhật hồ sơ thành công!</div>";
+        // Cập nhật lại Session
+        $_SESSION['fullname'] = $afname . " " . $alname;
+    } else {
+        $msg = "<div class='alert alert-danger'>Lỗi: " . $conn->error . "</div>";
+    }
+}
+
+// 3. Lấy thông tin User
+$sql = "SELECT * FROM acc WHERE aid = $aid";
+$user = $conn->query($sql)->fetch_assoc();
+
+// Hàm hiển thị ảnh đại diện
+$avatarUrl = "https://ui-avatars.com/api/?name=" . urlencode($user['username']) . "&background=random&size=128";
 ?>
+
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hồ Sơ Của Tôi | LaiRaiShop</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style/homepage.css?v=4">
+    <link rel="icon" href="../../images/icon.png" />
+    
+    <style>
+        body { background-color: #f5f5f5; font-size: 14px; }
+        
+        /* Sidebar bên trái */
+        .profile-sidebar { width: 100%; padding: 10px 0; }
+        .user-brief { display: flex; align-items: center; padding-bottom: 15px; border-bottom: 1px solid #efefef; margin-bottom: 15px; }
+        .user-brief img { width: 50px; height: 50px; border-radius: 50%; border: 1px solid #e1e1e1; margin-right: 15px; }
+        .user-brief div { font-weight: 600; color: #333; overflow: hidden; text-overflow: ellipsis; }
+        .user-brief a { font-weight: 400; color: #888; font-size: 12px; text-decoration: none; }
+        
+        .sidebar-menu { list-style: none; padding: 0; margin: 0; }
+        .sidebar-menu li { margin-bottom: 10px; }
+        .sidebar-menu a { text-decoration: none; color: #333; display: block; padding: 5px 0; transition: color 0.2s; }
+        .sidebar-menu a:hover { color: #ee4d2d; }
+        .sidebar-menu li.active > a { color: #ee4d2d; font-weight: 600; }
+        .sidebar-menu i { width: 25px; text-align: center; color: #555; margin-right: 10px; }
 
-    <link rel="stylesheet" href="../HomePage/style/homepage.css?v=4">
-    <link rel="stylesheet" href="style/profile.css?v=1">
+        /* Card nội dung chính */
+        .profile-main-card { background: #fff; box-shadow: 0 1px 2px 0 rgba(0,0,0,.13); border-radius: 2px; padding: 30px; min-height: 500px; }
+        .profile-header { border-bottom: 1px solid #efefef; padding-bottom: 18px; margin-bottom: 25px; }
+        .profile-header h3 { font-size: 18px; margin: 0; color: #333; font-weight: 500; }
+        .profile-header p { margin: 5px 0 0; font-size: 13px; color: #555; }
 
-    <?php include ROOT_PATH . '/includes/head_meta.php'; ?>
+        /* Form styling */
+        .form-group label { color: #555555cc; font-weight: 500; }
+        .form-control:focus { border-color: #888; box-shadow: none; }
+        .form-control-plaintext { color: #333; font-weight: 500; }
+        .btn-save { background-color: #ee4d2d; color: #fff; border: none; padding: 8px 25px; border-radius: 2px; box-shadow: 0 1px 1px 0 rgba(0,0,0,.09); }
+        .btn-save:hover { background-color: #d73211; color: #fff; }
+
+        /* Avatar Upload */
+        .avatar-upload-section { border-left: 1px solid #efefef; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding-left: 20px; }
+        .avatar-preview-lg { width: 100px; height: 100px; border-radius: 50%; background-color: #f5f5f5; overflow: hidden; margin-bottom: 20px; border: 1px solid #e1e1e1; }
+        .avatar-preview-lg img { width: 100%; height: 100%; object-fit: cover; }
+    </style>
 </head>
-
 <body>
+
     <div class="sticky-header-wrapper">
-        <div class="top-bar">
-            <div class="container top-bar-content">
-                <div class="top-bar-left">
-                    <a href="#">Kênh Người Bán</a><span>|</span><a href="#">Trở thành Người bán</a><span>|</span>
-                    <div class="top-bar-connect">
-                        <p>Kết nối</p> <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
-                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                    </div>
-                </div>
-
-                <div class="top-bar-right">
-                    <div class="top-bar-item has-dropdown">
-                        <a href="#"><i class="fas fa-bell"></i> Thông Báo</a>
-                        <div class="lairai-dropdown-menu notification-dropdown">
-                            <div class="notify-icon-wrapper"><i class="fas fa-user-alt"></i></div>
-                            <p>Đăng nhập để xem Thông báo</p>
-                            <div class="dropdown-footer">
-                                <a href="register.php" class="btn-register">Đăng ký</a>
-                                <a href="login.php" class="btn-login">Đăng nhập</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <a href="#"><i class="fas fa-question-circle"></i> Hỗ Trợ</a>
-
-                    <div class="top-bar-item has-dropdown">
-                        <a href="#"><i class="fas fa-globe"></i> Tiếng Việt <i class="fas fa-chevron-down icon-chevron"></i></a>
-                        <div class="lairai-dropdown-menu language-dropdown">
-                            <ul>
-                                <li><a href="#">Tiếng Việt</a></li>
-                                <li><a href="#">English</a></li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <a href="register.php" class="auth-link">Đăng Ký</a><span>|</span><a href="login.php" class="auth-link">Đăng Nhập</a>
-                </div>
-            </div>
-        </div>
-
         <header class="lairai-header">
             <div class="container header-content">
-                <div class="logo"><a href="#"><img src="../../images/logo.png" alt="LaiRaiShop Logo"></a></div>
-
-                <div class="search-box">
-                    <form action="search.php" method="GET">
-                        <input type="text" name="keyword" placeholder="Bao ship 0Đ - Đăng ký ngay để nhận ưu đãi hấp dẫn!">
-                        <button type="submit"><i class="fas fa-search"></i></button>
-                    </form>
-                    <div class="search-keywords">
-                        <?php
-                        $keywords = ["Sục Crocs", "Áo Khoác Nam", "iPhone 15 Pro Max", "Dép Lào", "Quần Bò Ống Rộng", "Túi Xách Nữ", "MacBook Air M3", "Nồi Cơm Điện", "Cây Cảnh"];
-                        foreach ($keywords as $kw) {
-                            echo '<a href="search.php?keyword=' . urlencode($kw) . '">' . $kw . '</a>';
-                        }
-                        ?>
-                    </div>
-                </div>
-
-                <div class="cart-icon has-dropdown">
-                    <i class="fas fa-shopping-cart"></i>
-                    <div class="lairai-dropdown-menu cart-dropdown">
-                        <div class="cart-empty-icon-wrapper"><i class="fas fa-shopping-bag"></i></div>
-                        <p>Chưa Có Sản Phẩm</p>
-                    </div>
+                <div class="logo"><a href="homepage.php"><img src="../../images/logo.png" alt="Logo"></a></div>
+                <div class="top-bar-right" style="margin-left: auto;">
+                     <a href="homepage.php" class="text-white">Trang Chủ</a> 
+                     <span class="mx-2 text-white">|</span> 
+                     <a href="LoginPage/logout.php" class="text-white">Đăng Xuất</a>
                 </div>
             </div>
         </header>
@@ -92,37 +104,32 @@ require_once '../../db/db.php';
 
     <div class="container mt-4 mb-5">
         <div class="row">
-            <div class="col-md-3 d-none d-md-block">
-                <div class="profile-card">
-                    <div class="profile-avatar">
-                        <img src="https://placehold.co/50x50" alt="Avatar">
+            
+            <div class="col-md-3">
+                <div class="profile-sidebar">
+                    <div class="user-brief">
+                        <img src="<?= $avatarUrl ?>" alt="Avatar">
+                        <div>
+                            <div><?= htmlspecialchars($user['username']) ?></div>
+                            <a href="profile.php"><i class="fas fa-pen"></i> Sửa hồ sơ</a>
+                        </div>
                     </div>
-                    <div class="profile-info">
-                        <div class="profile-name">User Name</div>
-                        <a href="profile.php" class="profile-edit"><i class="fas fa-pen"></i> Sửa hồ sơ</a>
-                    </div>
-                </div>
 
-                <ul class="sidebar-menu">
-                    <li class="active">
-                        <a href="profile.php"><i class="fas fa-user text-primary mr-2"></i> Tài Khoản Của Tôi</a>
-                        <ul class="sidebar-submenu pl-4" style="display: block;">
-                            <li><a href="profile.php" class="text-danger">Hồ Sơ</a></li>
-                            <li><a href="#">Ngân Hàng</a></li>
-                            <li><a href="#">Địa Chỉ</a></li>
-                            <li><a href="#">Đổi Mật Khẩu</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="purchase.php"><i class="fas fa-file-alt text-primary mr-2"></i> Đơn Mua</a>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fas fa-bell text-danger mr-2"></i> Thông Báo</a>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fas fa-ticket-alt text-danger mr-2"></i> Kho Voucher</a>
-                    </li>
-                </ul>
+                    <ul class="sidebar-menu">
+                        <li class="active">
+                            <a href="profile.php"><i class="fas fa-user text-primary"></i> Tài Khoản Của Tôi</a>
+                            <ul style="list-style: none; padding-left: 35px; margin-top: 5px;">
+                                <li><a href="profile.php" style="color: #ee4d2d;">Hồ Sơ</a></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="purchase.php"><i class="fas fa-file-alt text-primary"></i> Đơn Mua</a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fas fa-bell text-danger"></i> Thông Báo</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
             <div class="col-md-9">
@@ -131,105 +138,71 @@ require_once '../../db/db.php';
                         <h3>Hồ Sơ Của Tôi</h3>
                         <p>Quản lý thông tin hồ sơ để bảo mật tài khoản</p>
                     </div>
-                    <hr>
 
-                    <div class="profile-body">
+                    <?= $msg ?>
+                    
+                    <form action="" method="POST">
                         <div class="row">
                             <div class="col-md-8">
-                                <form action="" method="POST">
-                                    <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label text-right">Tên đăng nhập</label>
-                                        <div class="col-sm-9">
-                                            <p class="form-control-plaintext">y4z7sm_t6j</p>
-                                        </div>
+                                <div class="form-group row align-items-center">
+                                    <label class="col-sm-3 col-form-label text-right">Tên đăng nhập</label>
+                                    <div class="col-sm-9">
+                                        <p class="form-control-plaintext"><?= htmlspecialchars($user['username']) ?></p>
                                     </div>
+                                </div>
+                                
+                                <div class="form-group row align-items-center">
+                                    <label class="col-sm-3 col-form-label text-right">Họ</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" name="afname" class="form-control" value="<?= htmlspecialchars($user['afname']) ?>">
+                                    </div>
+                                </div>
 
-                                    <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label text-right">Tên</label>
-                                        <div class="col-sm-9">
-                                            <input type="text" class="form-control" value="É">
-                                        </div>
+                                <div class="form-group row align-items-center">
+                                    <label class="col-sm-3 col-form-label text-right">Tên</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" name="alname" class="form-control" value="<?= htmlspecialchars($user['alname']) ?>">
                                     </div>
+                                </div>
 
-                                    <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label text-right">Email</label>
-                                        <div class="col-sm-9">
-                                            <span class="d-inline-block mt-2">cu*********@gmail.com</span>
-                                            <a href="#" class="ml-2 text-primary">Thay Đổi</a>
-                                        </div>
+                                <div class="form-group row align-items-center">
+                                    <label class="col-sm-3 col-form-label text-right">Email</label>
+                                    <div class="col-sm-9">
+                                        <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($user['email']) ?>">
                                     </div>
+                                </div>
 
-                                    <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label text-right">Số điện thoại</label>
-                                        <div class="col-sm-9">
-                                            <span class="d-inline-block mt-2">*********88</span>
-                                            <a href="#" class="ml-2 text-primary">Thay Đổi</a>
-                                        </div>
+                                <div class="form-group row align-items-center">
+                                    <label class="col-sm-3 col-form-label text-right">Số điện thoại</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" name="phone" class="form-control" value="<?= htmlspecialchars($user['phone']) ?>">
                                     </div>
+                                </div>
 
-                                    <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label text-right">Giới tính</label>
-                                        <div class="col-sm-9 mt-2">
-                                            <div class="custom-control custom-radio custom-control-inline">
-                                                <input type="radio" id="male" name="gender" class="custom-control-input">
-                                                <label class="custom-control-label" for="male">Nam</label>
-                                            </div>
-                                            <div class="custom-control custom-radio custom-control-inline">
-                                                <input type="radio" id="female" name="gender" class="custom-control-input">
-                                                <label class="custom-control-label" for="female">Nữ</label>
-                                            </div>
-                                            <div class="custom-control custom-radio custom-control-inline">
-                                                <input type="radio" id="other" name="gender" class="custom-control-input" checked>
-                                                <label class="custom-control-label" for="other">Khác</label>
-                                            </div>
-                                        </div>
+                                <div class="form-group row mt-4">
+                                    <div class="col-sm-9 offset-sm-3">
+                                        <button type="submit" class="btn btn-save">Lưu</button>
                                     </div>
-
-                                    <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label text-right">Ngày sinh</label>
-                                        <div class="col-sm-9 d-flex">
-                                            <select class="form-control mr-2">
-                                                <option>Ngày</option>
-                                                <option>1</option>
-                                                <option>2</option>
-                                            </select>
-                                            <select class="form-control mr-2">
-                                                <option>Tháng</option>
-                                                <option>1</option>
-                                                <option>2</option>
-                                            </select>
-                                            <select class="form-control">
-                                                <option>Năm</option>
-                                                <option>2000</option>
-                                                <option>2001</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group row mt-4">
-                                        <div class="col-sm-9 offset-sm-3">
-                                            <button type="button" class="btn btn-save">Lưu</button>
-                                        </div>
-                                    </div>
-                                </form>
+                                </div>
                             </div>
 
                             <div class="col-md-4">
-                                <div class="avatar-upload text-center border-left">
-                                    <div class="avatar-preview">
-                                        <img src="https://placehold.co/100x100" class="rounded-circle" alt="Avatar">
+                                <div class="avatar-upload-section">
+                                    <div class="avatar-preview-lg">
+                                        <img src="<?= $avatarUrl ?>" alt="Avatar Large">
                                     </div>
-                                    <button class="btn btn-light btn-sm mt-3 border">Chọn Ảnh</button>
-                                    <div class="avatar-note mt-3 text-muted">
-                                        <small>Dụng lượng file tối đa 1 MB</small><br>
-                                        <small>Định dạng:.JPEG, .PNG</small>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm mb-2">Chọn Ảnh</button>
+                                    <div class="text-muted text-center" style="font-size: 12px;">
+                                        Dụng lượng file tối đa 1 MB<br>
+                                        Định dạng:.JPEG, .PNG
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -240,30 +213,16 @@ require_once '../../db/db.php';
                 <div class="footer-column">
                     <h3>CHĂM SÓC KHÁCH HÀNG</h3>
                     <ul>
-                        <li><a href="#">Trung Tâm Trợ Giúp</a></li>
-                        <li><a href="#">LaiRai Blog</a></li>
-                        <li><a href="#">LaiRai Mall</a></li>
-                        <li><a href="#">Hướng Dẫn Mua Hàng/Đặt Hàng</a></li>
-                        <li><a href="#">Hướng Dẫn Bán Hàng</a></li>
-                        <li><a href="#">Ví Điện Tử</a></li>
-                        <li><a href="#">Đơn Hàng</a></li>
-                        <li><a href="#">Trả Hàng/Hoàn Tiền</a></li>
-                        <li><a href="#">Liên Hệ LaiRaiShop</a></li>
-                        <li><a href="#">Chính Sách Bảo Hành</a></li>
+                        <li><a href="<?php echo BASE_URL; ?>/page/HomePage/HelpPage/help_center.php">Trung Tâm Trợ Giúp</a></li>
+                        <li><a href="<?php echo BASE_URL; ?>/page/HomePage/ContentPage/tutorial1.php">Hướng Dẫn Mua Hàng/Đặt Hàng</a></li>
+                        <li><a href="<?php echo BASE_URL; ?>/page/HomePage/ContentPage/tutorial2.php">Hướng Dẫn Bán Hàng</a></li>
                     </ul>
                 </div>
 
                 <div class="footer-column">
                     <h3>LAIRAISHOP VIỆT NAM</h3>
                     <ul>
-                        <li><a href="#">Về LaiRaiShop</a></li>
-                        <li><a href="#">Tuyển Dụng</a></li>
-                        <li><a href="#">Điều Khoản LaiRaiShop</a></li>
-                        <li><a href="#">Chính Sách Bảo Mật</a></li>
-                        <li><a href="#">Kênh Người Bán</a></li>
-                        <li><a href="#">Flash Sale</a></li>
-                        <li><a href="#">Tiếp Thị Liên Kết</a></li>
-                        <li><a href="#">Liên Hệ Truyền Thông</a></li>
+                        <li><a href="<?php echo BASE_URL; ?>/page/HomePage/ContentPage/about.php">Về LaiRaiShop</a></li>
                     </ul>
                 </div>
 
@@ -296,9 +255,9 @@ require_once '../../db/db.php';
                 <div class="footer-column">
                     <h3>THEO DÕI CHÚNG TÔI TRÊN</h3>
                     <ul class="social-links">
-                        <li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li>
-                        <li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li>
-                        <li><a href="#"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
+                        <li><a href="https://www.facebook.com/ShopeeVN" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook"></i> Facebook</a></li>
+                        <li><a href="https://www.instagram.com/Shopee_VN" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i> Instagram</a></li>
+                        <li><a href="https://www.linkedin.com/company/shopee" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
                     </ul>
                 </div>
 
@@ -309,9 +268,9 @@ require_once '../../db/db.php';
                             <img src="https://down-vn.img.susercontent.com/file/a5e589e8e118e937dc660f224b9a1472" alt="QR Code">
                         </div>
                         <div class="app-stores">
-                            <a href="#"><img src="https://down-vn.img.susercontent.com/file/ad01628e90ddf248076685f73497c163" alt="App Store"></a>
-                            <a href="#"><img src="https://down-vn.img.susercontent.com/file/ae7dced05f7243d0f3171f786e123def" alt="Google Play"></a>
-                            <a href="#"><img src="https://down-vn.img.susercontent.com/file/35352374f39bdd03b25e7b83542b2cb0" alt="App Gallery"></a>
+                            <a href="https://shopee.vn/web" target="_blank" rel="noopener noreferrer"><img src="https://down-vn.img.susercontent.com/file/ad01628e90ddf248076685f73497c163" alt="App Store"></a>
+                            <a href="https://shopee.vn/web" target="_blank" rel="noopener noreferrer"><img src="https://down-vn.img.susercontent.com/file/ae7dced05f7243d0f3171f786e123def" alt="Google Play"></a>
+                            <a href="https://shopee.vn/web" target="_blank" rel="noopener noreferrer"><img src="https://down-vn.img.susercontent.com/file/35352374f39bdd03b25e7b83542b2cb0" alt="App Gallery"></a>
                         </div>
                     </div>
                 </div>
@@ -323,16 +282,16 @@ require_once '../../db/db.php';
                 </div>
                 <div class="country-list">
                     Quốc gia & Khu vực:
-                    <a href="#">Việt Nam</a>
-                    | <a href="#">Lào</a>
-                    | <a href="#">Singapore</a>
-                    | <a href="#">Thái Lan</a>
-                    | <a href="#">Philippines</a>
-                    | <a href="#">Đông Timor</a>
-                    | <a href="#">Indonesia</a>
-                    | <a href="#">Malaysia</a>
-                    | <a href="#">Brunei</a>
-                    | <a href="#">Đài Loan</a>
+                    <a>Việt Nam</a>
+                    | <a>Lào</a>
+                    | <a>Singapore</a>
+                    | <a>Thái Lan</a>
+                    | <a>Philippines</a>
+                    | <a>Đông Timor</a>
+                    | <a>Indonesia</a>
+                    | <a>Malaysia</a>
+                    | <a>Brunei</a>
+                    | <a>Đài Loan</a>
                 </div>
             </div>
         </div>
@@ -340,10 +299,10 @@ require_once '../../db/db.php';
         <div class="footer-policy">
             <div class="container">
                 <div class="policy-row">
-                    <a href="#">CHÍNH SÁCH BẢO MẬT</a>
-                    <a href="#">QUY CHẾ HOẠT ĐỘNG</a>
-                    <a href="#">CHÍNH SÁCH VẬN CHUYỂN</a>
-                    <a href="#">CHÍNH SÁCH TRẢ HÀNG VÀ HOÀN TIỀN</a>
+                    <a>CHÍNH SÁCH BẢO MẬT</a>
+                    <a>QUY CHẾ HOẠT ĐỘNG</a>
+                    <a>CHÍNH SÁCH VẬN CHUYỂN</a>
+                    <a>CHÍNH SÁCH TRẢ HÀNG VÀ HOÀN TIỀN</a>
                 </div>
                 <div class="company-info">
                     <p>Địa chỉ: 2 Đ. Nguyễn Đình Chiểu, Phường Vĩnh Thọ, Thành phố Nha Trang, Tỉnh Khánh Hòa, Việt Nam</p>
@@ -358,7 +317,7 @@ require_once '../../db/db.php';
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../../js/homepage.js?v=4"></script>
-</body>
+    <script src="<?php echo BASE_URL; ?>/js/homepage.js?v=4"></script>
 
+</body>
 </html>
