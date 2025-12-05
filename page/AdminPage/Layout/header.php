@@ -98,7 +98,8 @@ if (!function_exists('formatCurrency')) {
             background: #135E4B;
             color: #d1d3e2;
             border: none;
-            padding: 15px 20px;
+            padding: 12px 15px;
+            /* [CẬP NHẬT] Giảm khoảng cách để tiết kiệm chiều dọc */
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
