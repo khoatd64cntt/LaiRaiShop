@@ -62,6 +62,7 @@ $cats = $conn->query("SELECT * FROM categories");
     <meta charset="UTF-8">
     <title>Thêm sản phẩm</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <?php include ROOT_PATH . '/includes/head_meta.php'; ?>
     <style>
         body {
             background-color: #f4f6f9;

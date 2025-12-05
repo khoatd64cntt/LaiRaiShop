@@ -1,30 +1,22 @@
 <?php
 // FILE: page/SellerPage/dashboard.php
 
-// 1. KẾT NỐI SESSION VÀ DB
+// 1. KẾT NỐI SESSION VÀ CONFIG
 $session_path = __DIR__ . '/types/seller_session.php';
-$config_path  = __DIR__ . '/../../config.php'; // Đường dẫn tới config để có BASE_URL
+$config_path  = __DIR__ . '/../../config.php';
 
 if (file_exists($session_path)) {
     require_once $session_path;
 } else {
-    $session_path_alt = __DIR__ . '/../types/seller_session.php';
-    if (file_exists($session_path_alt)) {
-        require_once $session_path_alt;
-    } else {
-        die("Lỗi: Không tìm thấy file session.");
-    }
+    die("Lỗi: Không tìm thấy file session.");
 }
 
-if (file_exists($config_path)) require_once $config_path;
-
-if (!isset($conn)) {
-    $db_path = __DIR__ . '/../../db/db.php';
-    if (file_exists($db_path)) require_once $db_path;
+if (file_exists($config_path)) {
+    require_once $config_path;
 }
 
-$sid = $_SESSION['shop_id'] ?? 0;
-$shop_name = $_SESSION['shop_name'] ?? 'Shop';
+$sid = $_SESSION['shop_id'];
+$shop_name = $_SESSION['shop_name'];
 $msg = "";
 
 // --- XỬ LÝ CẬP NHẬT THÔNG TIN SHOP ---
@@ -45,22 +37,23 @@ if (isset($_POST['update_shop_info'])) {
 }
 
 // --- LẤY THÔNG TIN CHI TIẾT SHOP ---
-$stmt_info = $conn->prepare("SELECT * FROM shops WHERE sid = ?");
-$stmt_info->bind_param("i", $sid);
-$stmt_info->execute();
-$current_shop = $stmt_info->get_result()->fetch_assoc();
+$sql_shop_info = "SELECT * FROM shops WHERE sid = $sid";
+$res_info = $conn->query($sql_shop_info);
+$current_shop = $res_info->fetch_assoc();
 
-// --- TÍNH TOÁN THỐNG KÊ ---
-// 1. Doanh thu
+// --- TÍNH TOÁN THỐNG KÊ (DASHBOARD LOGIC) ---
+
+// 1. Tổng doanh thu (Chỉ tính những đơn đã giao thành công - 'completed')
+// Lưu ý: Cần join order_items để tính tiền của từng món thuộc shop này
 $sql_rev = "SELECT SUM(oi.quantity * oi.price) as total_revenue 
             FROM order_items oi
             JOIN products p ON oi.pid = p.pid
             JOIN orders o ON oi.oid = o.oid
-            WHERE p.sid = $sid AND (o.status = 'completed' OR o.status = 'shipped')";
+            WHERE p.sid = $sid AND o.status = 'completed'";
 $res_rev = $conn->query($sql_rev);
 $revenue = $res_rev->fetch_assoc()['total_revenue'] ?? 0;
 
-// 2. Tổng đơn
+// 2. Tổng số đơn hàng (Đếm số đơn có chứa sản phẩm của shop)
 $sql_orders = "SELECT COUNT(DISTINCT oi.oid) as total_orders 
                FROM order_items oi
                JOIN products p ON oi.pid = p.pid
@@ -73,7 +66,7 @@ $sql_prods = "SELECT COUNT(*) as total_products FROM products WHERE sid = $sid";
 $res_prods = $conn->query($sql_prods);
 $total_products = $res_prods->fetch_assoc()['total_products'] ?? 0;
 
-// 4. Đơn chờ xử lý
+// 4. Đơn chờ xử lý (pending)
 $sql_pending = "SELECT COUNT(DISTINCT oi.oid) as pending 
                 FROM order_items oi
                 JOIN products p ON oi.pid = p.pid
@@ -82,7 +75,7 @@ $sql_pending = "SELECT COUNT(DISTINCT oi.oid) as pending
 $res_pending = $conn->query($sql_pending);
 $pending_orders = $res_pending->fetch_assoc()['pending'] ?? 0;
 
-// 5. Đơn hàng mới nhất
+// 5. Lấy 5 đơn hàng mới nhất
 $sql_recent = "SELECT o.oid, acc.username, o.order_date, o.status,
                SUM(oi.quantity * oi.price) as shop_total 
                FROM orders o
@@ -94,6 +87,7 @@ $sql_recent = "SELECT o.oid, acc.username, o.order_date, o.status,
                ORDER BY o.order_date DESC LIMIT 5";
 $recent_orders = $conn->query($sql_recent);
 ?>
+
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -101,6 +95,7 @@ $recent_orders = $conn->query($sql_recent);
     <meta charset="UTF-8">
     <title>Kênh Người Bán - Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <?php include ROOT_PATH . '/includes/head_meta.php'; ?>
     <style>
         /* CSS dùng chung */
         * {
@@ -121,6 +116,7 @@ $recent_orders = $conn->query($sql_recent);
             text-decoration: none;
         }
 
+        /* SIDEBAR (Đồng bộ style với products.php) */
         .sidebar {
             width: 260px;
             background-color: #fff;
@@ -144,12 +140,12 @@ $recent_orders = $conn->query($sql_recent);
 
         .sidebar-header i {
             font-size: 24px;
-            color: #088178;
+            color: #135E4B; /* Màu xanh đậm mới */
         }
 
         .sidebar-header h2 {
             font-size: 20px;
-            color: #088178;
+            color: #135E4B; /* Màu xanh đậm mới */
             font-weight: 700;
         }
 
@@ -210,6 +206,7 @@ $recent_orders = $conn->query($sql_recent);
             font-size: 16px;
         }
 
+        /* MAIN CONTENT */
         .main-content {
             flex: 1;
             margin-left: 260px;
@@ -226,6 +223,7 @@ $recent_orders = $conn->query($sql_recent);
             margin-bottom: 5px;
         }
 
+        /* STATS CARDS */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -267,26 +265,12 @@ $recent_orders = $conn->query($sql_recent);
             font-size: 24px;
         }
 
-        .c-revenue .card-icon {
-            background: #e8f6ea;
-            color: #088178;
-        }
+        .c-revenue .card-icon { background: #e8f6ea; color: #088178; }
+        .c-orders .card-icon { background: #e3f2fd; color: #0984e3; }
+        .c-products .card-icon { background: #fff3e0; color: #e67e22; }
+        .c-pending .card-icon { background: #fdeaea; color: #e74c3c; }
 
-        .c-orders .card-icon {
-            background: #e3f2fd;
-            color: #0984e3;
-        }
-
-        .c-products .card-icon {
-            background: #fff3e0;
-            color: #e67e22;
-        }
-
-        .c-pending .card-icon {
-            background: #fdeaea;
-            color: #e74c3c;
-        }
-
+        /* TABLE SECTION */
         .table-section {
             background: white;
             padding: 25px;
@@ -332,30 +316,11 @@ $recent_orders = $conn->query($sql_recent);
             text-transform: uppercase;
         }
 
-        .st-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .st-completed {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .st-shipped {
-            background: #cce5ff;
-            color: #004085;
-        }
-
-        .st-cancelled {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .st-paid {
-            background: #d1ecf1;
-            color: #0c5460;
-        }
+        .st-pending { background: #fff3cd; color: #856404; }
+        .st-completed { background: #d4edda; color: #155724; }
+        .st-shipped { background: #cce5ff; color: #004085; }
+        .st-cancelled { background: #f8d7da; color: #721c24; }
+        .st-paid { background: #d1ecf1; color: #0c5460; }
 
         .btn-action {
             background: #088178;
@@ -370,11 +335,11 @@ $recent_orders = $conn->query($sql_recent);
             background: #066e67;
         }
 
-        /* Modal & Form */
+        /* MODAL & FORM (Style mới) */
         .btn-edit-shop {
             margin-top: 10px;
             font-size: 12px;
-            color: #088178;
+            color: #135E4B; /* Màu mới */
             cursor: pointer;
             text-decoration: underline;
             border: none;
@@ -408,6 +373,7 @@ $recent_orders = $conn->query($sql_recent);
             right: 15px;
             font-size: 20px;
             cursor: pointer;
+            color: #aaa;
         }
 
         .form-group {
@@ -432,12 +398,16 @@ $recent_orders = $conn->query($sql_recent);
         .btn-save {
             width: 100%;
             padding: 10px;
-            background: #088178;
+            background: #135E4B; /* Màu mới */
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
+        }
+        
+        .btn-save:hover {
+            background: #0f4a3b;
         }
     </style>
 </head>
@@ -455,14 +425,17 @@ $recent_orders = $conn->query($sql_recent);
             <p>ID Shop: #<?= $sid ?></p>
             <button onclick="openModal()" class="btn-edit-shop"><i class="fas fa-pen"></i> Sửa thông tin</button>
         </div>
+        
         <ul class="sidebar-menu">
             <li><a href="dashboard.php" class="active"><i class="fas fa-th-large"></i> Tổng quan</a></li>
             <li><a href="ProductPage/products.php"><i class="fas fa-box"></i> Sản phẩm</a></li>
             <li><a href="ProductPage/add_product.php"><i class="fas fa-plus-circle"></i> Thêm mới</a></li>
-            <li><a href="orders.php"><i class="fas fa-file-invoice-dollar"></i> Đơn hàng</a></li>
+            
+            <li><a href="orders.php"><i class="fas fa-clipboard-list"></i> Đơn cần xử lý</a></li>
+            <li><a href="orders_history.php"><i class="fas fa-history"></i> Lịch sử đơn hàng</a></li>
 
             <li style="margin-top: 20px; border-top: 1px solid #eee;">
-                <a href="<?php echo BASE_URL; ?>/page/HomePage/homepage.php"><i class="fas fa-home"></i> Xem Shop (Client)</a>
+                <a href="<?php echo defined('BASE_URL') ? BASE_URL : '/LaiRaiShop'; ?>/page/HomePage/homepage.php"><i class="fas fa-home"></i> Xem Shop (Client)</a>
             </li>
             <li>
                 <a href="../HomePage/LoginPage/logout.php" onclick="return confirm('Bạn muốn đăng xuất?');" style="color: #e74c3c;">
@@ -536,7 +509,7 @@ $recent_orders = $conn->query($sql_recent);
                                 <td><span class="badge st-<?= $row['status'] ?>"><?= ucfirst($row['status']) ?></span></td>
 
                                 <td style="text-align: right;">
-                                    <a href="order_detail.php?oid=<?= $row['oid'] ?>" class="btn-action">Xem</a>
+                                    <a href="orders.php" class="btn-action">Xem</a>
                                 </td>
 
                             </tr>
@@ -555,7 +528,7 @@ $recent_orders = $conn->query($sql_recent);
     <div id="shopModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal()">&times;</span>
-            <h3 style="color: #088178; text-align: center; margin-bottom: 20px;">Sửa Thông Tin Shop</h3>
+            <h3 style="color: #135E4B; text-align: center; margin-bottom: 20px;">Sửa Thông Tin Shop</h3>
             <form method="POST">
                 <div class="form-group">
                     <label>Tên Shop:</label>

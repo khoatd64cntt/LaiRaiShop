@@ -1,4 +1,5 @@
 <?php
+// FILE: page/HomePage/cart.php
 session_start();
 require_once __DIR__ . '/../../config.php';
 require_once ROOT_PATH . '/db/db.php';
@@ -17,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 unset($_SESSION['cart'][$pid_to_del]);
             }
         }
-        exit; 
+        exit;
     }
     // 3. Cập nhật số lượng
     if (isset($_POST['action']) && $_POST['action'] == 'update_qty') {
@@ -50,6 +51,29 @@ function getImgUrl($path)
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="style/homepage.css?v=4">
     <link rel="stylesheet" href="style/cart.css?v=1">
+
+    
+    <style>
+        /* CSS CHO TRẠNG THÁI GIỎ HÀNG TRỐNG (MỚI) */
+        .empty-cart-box {
+            background: #fff;
+            text-align: center;
+            padding: 50px 20px;
+            margin-top: 20px;
+            box-shadow: 0 1px 1px 0 rgba(0,0,0,.05);
+            border-radius: 2px;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .empty-icon {
+            font-size: 80px;
+            color: #e0e0e0;
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 
 <body>
@@ -72,13 +96,16 @@ function getImgUrl($path)
                 <div class="top-bar-right">
                     <?php if (isset($_SESSION['aid'])): ?>
                         <span class="auth-link" style="color: white;">
-                            Xin chào, <strong><?php echo htmlspecialchars($_SESSION['fullname'] ?? $_SESSION['username'] ?? 'User'); ?></strong>
+                            Xin chào, 
+                            <a href="<?php echo BASE_URL; ?>/page/HomePage/profile.php" style="color: white; text-decoration: none;">
+                                <strong><?php echo htmlspecialchars($_SESSION['fullname'] ?? $_SESSION['username']); ?></strong>
+                            </a>
                         </span>
                         <span style="color: white; margin: 0 5px;">|</span>
-                        <a href="LoginPage/logout.php" class="auth-link">Đăng Xuất</a>
+                        <a href="<?php echo BASE_URL; ?>/page/HomePage/LoginPage/logout.php" class="auth-link">Đăng Xuất</a>
                     <?php else: ?>
-                        <a href="SignupPage/signup.php" class="auth-link">Đăng Ký</a>
-                        <a href="LoginPage/login.php" class="auth-link">Đăng Nhập</a>
+                        <a href="<?php echo BASE_URL; ?>/page/HomePage/SignupPage/signup.php" class="auth-link">Đăng Ký</a>
+                        <a href="<?php echo BASE_URL; ?>/page/HomePage/LoginPage/login.php" class="auth-link">Đăng Nhập</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -148,18 +175,19 @@ function getImgUrl($path)
 
     <div class="container" style="margin-top: 40px; margin-bottom: 60px;">
 
-        <div class="cart-header">
-            <div style="width: 40%">
-                <input type="checkbox" id="check-all-top" onchange="toggleAll(this)">
-                <span class="ml-3">Sản Phẩm</span>
-            </div>
-            <div style="width: 15%; text-align: center;">Đơn Giá</div>
-            <div style="width: 15%; text-align: center;">Số Lượng</div>
-            <div style="width: 15%; text-align: center;">Số Tiền</div>
-            <div style="width: 15%; text-align: center;">Thao Tác</div>
-        </div>
-
         <?php if (!empty($_SESSION['cart'])): ?>
+            
+            <div class="cart-header">
+                <div style="width: 40%">
+                    <input type="checkbox" id="check-all-top" onchange="toggleAll(this)">
+                    <span class="ml-3">Sản Phẩm</span>
+                </div>
+                <div style="width: 15%; text-align: center;">Đơn Giá</div>
+                <div style="width: 15%; text-align: center;">Số Lượng</div>
+                <div style="width: 15%; text-align: center;">Số Tiền</div>
+                <div style="width: 15%; text-align: center;">Thao Tác</div>
+            </div>
+
             <div class="cart-shop-group">
                 <div class="shop-header">
                     <input type="checkbox" class="shop-check" onchange="checkShop(this)">
@@ -181,7 +209,6 @@ function getImgUrl($path)
                         </div>
 
                         <div class="item-price">
-                            <span class="old-price"><?= formatMoney($item['price'] * 1.2) ?></span>
                             <span class="new-price"><?= formatMoney($item['price']) ?></span>
                         </div>
 
@@ -195,22 +222,19 @@ function getImgUrl($path)
                             <?= formatMoney($item['price'] * $item['qty']) ?>
                         </div>
 
-                        <div class="item-action">
-                            <form method="POST" style="display:inline;">
+                        <div class="item-action" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                            <form method="POST" style="margin-bottom: 5px;">
                                 <input type="hidden" name="action" value="delete">
                                 <input type="hidden" name="pid" value="<?= $id ?>">
                                 <button type="submit" class="btn-delete" onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?')">Xóa</button>
                             </form>
-                            <div style="color: #ee4d2d; font-size: 12px; margin-top: 5px; cursor: pointer;">
+                            <a href="search.php?keyword=<?= urlencode($item['name']) ?>" style="color: #ee4d2d; font-size: 12px; text-decoration: none; display: block;">
                                 Tìm sản phẩm tương tự <i class="fas fa-caret-down"></i>
-                            </div>
+                            </a>
                         </div>
                     </div>
                 <?php endforeach; ?>
-
-                <div style="padding: 15px 20px; border-top: 1px solid #eee; color: #ee4d2d; font-size: 13px;">
-                    <i class="fas fa-shipping-fast"></i> Giảm ₫300.000 phí vận chuyển đơn tối thiểu ₫0 <span style="color: #0055aa; cursor: pointer;">Tìm hiểu thêm</span>
-                </div>
+                
             </div>
 
             <div class="cart-footer">
@@ -235,10 +259,13 @@ function getImgUrl($path)
             </div>
 
         <?php else: ?>
-            <div class="text-center p-5 bg-white">
-                <img src="https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/9bdd8040b334d31946f4.png" width="100">
-                <p class="mt-3 text-muted">Giỏ hàng của bạn còn trống</p>
-                <a href="homepage.php" class="btn btn-danger">Mua Ngay</a>
+            <div class="empty-cart-box">
+                <div class="empty-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <h5 class="text-muted">Giỏ hàng của bạn còn trống</h5>
+                <p class="text-muted mb-4">Hãy chọn thêm sản phẩm để mua sắm nhé</p>
+                <a href="homepage.php" class="btn btn-danger px-4">Mua Ngay</a>
             </div>
         <?php endif; ?>
 
@@ -251,30 +278,16 @@ function getImgUrl($path)
                 <div class="footer-column">
                     <h3>CHĂM SÓC KHÁCH HÀNG</h3>
                     <ul>
-                        <li><a href="#">Trung Tâm Trợ Giúp</a></li>
-                        <li><a href="#">LaiRai Blog</a></li>
-                        <li><a href="#">LaiRai Mall</a></li>
-                        <li><a href="#">Hướng Dẫn Mua Hàng/Đặt Hàng</a></li>
-                        <li><a href="#">Hướng Dẫn Bán Hàng</a></li>
-                        <li><a href="#">Ví Điện Tử</a></li>
-                        <li><a href="#">Đơn Hàng</a></li>
-                        <li><a href="#">Trả Hàng/Hoàn Tiền</a></li>
-                        <li><a href="#">Liên Hệ LaiRaiShop</a></li>
-                        <li><a href="#">Chính Sách Bảo Hành</a></li>
+                        <li><a href="<?php echo BASE_URL; ?>/page/HomePage/HelpPage/help_center.php">Trung Tâm Trợ Giúp</a></li>
+                        <li><a href="<?php echo BASE_URL; ?>/page/HomePage/ContentPage/tutorial1.php">Hướng Dẫn Mua Hàng/Đặt Hàng</a></li>
+                        <li><a href="<?php echo BASE_URL; ?>/page/HomePage/ContentPage/tutorial2.php">Hướng Dẫn Bán Hàng</a></li>
                     </ul>
                 </div>
 
                 <div class="footer-column">
                     <h3>LAIRAISHOP VIỆT NAM</h3>
                     <ul>
-                        <li><a href="#">Về LaiRaiShop</a></li>
-                        <li><a href="#">Tuyển Dụng</a></li>
-                        <li><a href="#">Điều Khoản LaiRaiShop</a></li>
-                        <li><a href="#">Chính Sách Bảo Mật</a></li>
-                        <li><a href="#">Kênh Người Bán</a></li>
-                        <li><a href="#">Flash Sale</a></li>
-                        <li><a href="#">Tiếp Thị Liên Kết</a></li>
-                        <li><a href="#">Liên Hệ Truyền Thông</a></li>
+                        <li><a href="<?php echo BASE_URL; ?>/page/HomePage/ContentPage/about.php">Về LaiRaiShop</a></li>
                     </ul>
                 </div>
 
@@ -307,9 +320,9 @@ function getImgUrl($path)
                 <div class="footer-column">
                     <h3>THEO DÕI CHÚNG TÔI TRÊN</h3>
                     <ul class="social-links">
-                        <li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li>
-                        <li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li>
-                        <li><a href="#"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
+                        <li><a href="https://www.facebook.com/ShopeeVN" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook"></i> Facebook</a></li>
+                        <li><a href="https://www.instagram.com/Shopee_VN" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i> Instagram</a></li>
+                        <li><a href="https://www.linkedin.com/company/shopee" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
                     </ul>
                 </div>
 
@@ -320,9 +333,9 @@ function getImgUrl($path)
                             <img src="https://down-vn.img.susercontent.com/file/a5e589e8e118e937dc660f224b9a1472" alt="QR Code">
                         </div>
                         <div class="app-stores">
-                            <a href="#"><img src="https://down-vn.img.susercontent.com/file/ad01628e90ddf248076685f73497c163" alt="App Store"></a>
-                            <a href="#"><img src="https://down-vn.img.susercontent.com/file/ae7dced05f7243d0f3171f786e123def" alt="Google Play"></a>
-                            <a href="#"><img src="https://down-vn.img.susercontent.com/file/35352374f39bdd03b25e7b83542b2cb0" alt="App Gallery"></a>
+                            <a href="https://shopee.vn/web" target="_blank" rel="noopener noreferrer"><img src="https://down-vn.img.susercontent.com/file/ad01628e90ddf248076685f73497c163" alt="App Store"></a>
+                            <a href="https://shopee.vn/web" target="_blank" rel="noopener noreferrer"><img src="https://down-vn.img.susercontent.com/file/ae7dced05f7243d0f3171f786e123def" alt="Google Play"></a>
+                            <a href="https://shopee.vn/web" target="_blank" rel="noopener noreferrer"><img src="https://down-vn.img.susercontent.com/file/35352374f39bdd03b25e7b83542b2cb0" alt="App Gallery"></a>
                         </div>
                     </div>
                 </div>
@@ -334,16 +347,16 @@ function getImgUrl($path)
                 </div>
                 <div class="country-list">
                     Quốc gia & Khu vực:
-                    <a href="#">Việt Nam</a>
-                    | <a href="#">Lào</a>
-                    | <a href="#">Singapore</a>
-                    | <a href="#">Thái Lan</a>
-                    | <a href="#">Philippines</a>
-                    | <a href="#">Đông Timor</a>
-                    | <a href="#">Indonesia</a>
-                    | <a href="#">Malaysia</a>
-                    | <a href="#">Brunei</a>
-                    | <a href="#">Đài Loan</a>
+                    <a>Việt Nam</a>
+                    | <a>Lào</a>
+                    | <a>Singapore</a>
+                    | <a>Thái Lan</a>
+                    | <a>Philippines</a>
+                    | <a>Đông Timor</a>
+                    | <a>Indonesia</a>
+                    | <a>Malaysia</a>
+                    | <a>Brunei</a>
+                    | <a>Đài Loan</a>
                 </div>
             </div>
         </div>
@@ -351,10 +364,10 @@ function getImgUrl($path)
         <div class="footer-policy">
             <div class="container">
                 <div class="policy-row">
-                    <a href="#">CHÍNH SÁCH BẢO MẬT</a>
-                    <a href="#">QUY CHẾ HOẠT ĐỘNG</a>
-                    <a href="#">CHÍNH SÁCH VẬN CHUYỂN</a>
-                    <a href="#">CHÍNH SÁCH TRẢ HÀNG VÀ HOÀN TIỀN</a>
+                    <a>CHÍNH SÁCH BẢO MẬT</a>
+                    <a>QUY CHẾ HOẠT ĐỘNG</a>
+                    <a>CHÍNH SÁCH VẬN CHUYỂN</a>
+                    <a>CHÍNH SÁCH TRẢ HÀNG VÀ HOÀN TIỀN</a>
                 </div>
                 <div class="company-info">
                     <p>Địa chỉ: 2 Đ. Nguyễn Đình Chiểu, Phường Vĩnh Thọ, Thành phố Nha Trang, Tỉnh Khánh Hòa, Việt Nam</p>
@@ -367,7 +380,6 @@ function getImgUrl($path)
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/homepage.js?v=4"></script>
     <script>
@@ -425,11 +437,11 @@ function getImgUrl($path)
 
             // Cập nhật attribute data-qty cho checkbox để tính lại tổng
             var checkbox = document.querySelector(`.item-check[value="${pid}"]`);
-            checkbox.setAttribute('data-qty', newQty);
+            if(checkbox) checkbox.setAttribute('data-qty', newQty);
 
             // Cập nhật tiền từng món (Item Total)
-            var price = parseInt(checkbox.getAttribute('data-price'));
-            document.getElementById('total-' + pid).innerText = formatMoneyJS(price * newQty);
+            var price = parseInt(checkbox ? checkbox.getAttribute('data-price') : 0);
+            if(checkbox) document.getElementById('total-' + pid).innerText = formatMoneyJS(price * newQty);
 
             // Gọi AJAX cập nhật Session
             $.post('cart.php', {
@@ -460,17 +472,16 @@ function getImgUrl($path)
                     action: 'delete_selected',
                     pids: pids
                 }, function(response) {
-                    // Sau khi xóa thành công thì reload trang
                     location.reload();
                 });
             }
         }
 
-        // [MỚI] Hàm xử lý thanh toán (Mua Hàng)
+        // Hàm xử lý thanh toán (Mua Hàng)
         function processCheckout() {
             var checks = document.querySelectorAll('.item-check:checked');
-            
-            if(checks.length === 0) {
+
+            if (checks.length === 0) {
                 alert("Vui lòng chọn ít nhất một sản phẩm để mua!");
                 return;
             }
@@ -480,7 +491,6 @@ function getImgUrl($path)
                 selectedIds.push(checkbox.value);
             });
 
-            // Chuyển hướng sang trang thanh toán kèm theo danh sách ID sản phẩm
             window.location.href = 'checkout.php?ids=' + selectedIds.join(',');
         }
     </script>
