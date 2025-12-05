@@ -54,30 +54,37 @@ if (!function_exists('formatCurrency')) {
 
         #sidebar-wrapper {
             min-height: 100vh;
-            width: 250px;
-            margin-left: -250px;
+            width: 200px;
+            /* [CẬP NHẬT] Giảm từ 250px xuống 200px */
+            margin-left: -200px;
+            /* [CẬP NHẬT] Khớp với width */
             transition: margin .25s ease-out;
             background: #135E4B;
             color: #fff;
+            font-size: 0.9rem;
+            /* [MỚI] Giảm cỡ chữ để gọn hơn */
         }
 
         #sidebar-wrapper .sidebar-heading {
-            padding: 1.2rem;
-            font-size: 1.2rem;
+            padding: 1rem 0.5rem;
+            /* [CẬP NHẬT] Giảm padding */
+            font-size: 1.1rem;
             background: #0e4638;
             text-align: center;
             font-weight: bold;
         }
 
         #sidebar-wrapper .list-group {
-            width: 250px;
+            width: 200px;
+            /* [CẬP NHẬT] Khớp với width sidebar */
         }
 
         #sidebar-wrapper .list-group-item {
             background: #135E4B;
             color: #e9ecef;
             border: none;
-            padding: 15px 20px;
+            padding: 12px 15px;
+            /* [CẬP NHẬT] Giảm khoảng cách để tiết kiệm chiều dọc */
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
