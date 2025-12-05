@@ -6,21 +6,37 @@ require_once '../Layout/header.php';
 
 $message = '';
 
-// BƯỚC 2: XỬ LÝ CẬP NHẬT TRẠNG THÁI NGAY TẠI TRANG NÀY (CÓ LOGIC KHO HÀNG)
+// BƯỚC 2: XỬ LÝ CẬP NHẬT TRẠNG THÁI (CÓ LOGIC KHO HÀNG + TÍNH HOA HỒNG)
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_order'])) {
     $oid = $conn->real_escape_string($_POST['order_id']);
     $new_status = $conn->real_escape_string($_POST['new_status']);
 
-    // 1. Lấy trạng thái CŨ của đơn hàng
-    $query_old = $conn->query("SELECT status FROM orders WHERE oid = '$oid'");
-    $old_status = ($query_old && $query_old->num_rows > 0) ? $query_old->fetch_assoc()['status'] : '';
+    // 1. Lấy trạng thái CŨ và TỔNG TIỀN của đơn hàng
+    $query_info = $conn->query("SELECT status, total_amount FROM orders WHERE oid = '$oid'");
+    $order_info = ($query_info && $query_info->num_rows > 0) ? $query_info->fetch_assoc() : null;
+
+    $old_status = $order_info['status'] ?? '';
+    $total_amount = $order_info['total_amount'] ?? 0;
 
     // 2. Cập nhật trạng thái MỚI
     $valid_statuses = ['pending', 'paid', 'shipped', 'completed', 'cancelled'];
 
     if (in_array($new_status, $valid_statuses)) {
-        $sql_update = "UPDATE orders SET status = '$new_status' WHERE oid = '$oid'";
 
+        // [LOGIC TÍNH HOA HỒNG CHUẨN]
+        $commission_sql_part = "";
+
+        if ($new_status == 'completed') {
+            $fee = $total_amount * 0.05;
+            $commission_sql_part = ", commission_fee = '$fee'";
+        } else {
+            // [MỚI] Reset phí về 0 nếu chuyển trạng thái khác Completed
+            $commission_sql_part = ", commission_fee = 0";
+        }
+
+        $sql_update = "UPDATE orders SET status = '$new_status' $commission_sql_part WHERE oid = '$oid'";
+
+        // ... (Các đoạn code xử lý kho phía sau giữ nguyên)
         if ($conn->query($sql_update) === TRUE) {
 
             // --- LOGIC XỬ LÝ KHO HÀNG ---
@@ -182,11 +198,11 @@ $result = $conn->query($sql);
                     <input type="hidden" name="order_id" id="modalOrderId">
 
                     <div class="alert alert-info" style="font-size: 13px;">
-                        <i class="fas fa-info-circle"></i> <b>Hệ quả kho hàng:</b>
+                        <i class="fas fa-info-circle"></i> <b>Lưu ý hệ thống:</b>
                         <ul style="margin-bottom: 0; padding-left: 20px;">
-                            <li>Chuyển sang <b>Cancelled</b>: Cộng lại kho (Trả hàng).</li>
+                            <li>Chuyển sang <b>Cancelled</b>: Hoàn lại kho.</li>
                             <li>Từ Cancelled sang khác: Trừ lại kho.</li>
-                            <li>Các trạng thái khác: Chỉ đổi nhãn, không đổi kho.</li>
+                            <li>Chuyển sang <b>Completed</b>: Tự động tính phí sàn (5%).</li>
                         </ul>
                     </div>
 
@@ -211,18 +227,13 @@ $result = $conn->query($sql);
 </div>
 
 <script>
-    // Khi bấm nút "Xử lý"
     $('.update-status-btn').on('click', function() {
         var orderId = $(this).data('id');
         var currentStatus = $(this).data('current-status');
-
-        // Điền thông tin vào Modal
         $('#orderIdDisplay').text(orderId);
         $('#modalOrderId').val(orderId);
         $('#new_status').val(currentStatus);
     });
 </script>
 
-<?php
-include '../Layout/footer.php';
-?>
+<?php include '../Layout/footer.php'; ?>
