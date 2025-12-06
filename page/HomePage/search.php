@@ -8,7 +8,8 @@ $keyword = isset($_GET['keyword']) ? trim($_GET['keyword']) : '';
 $cat_input = isset($_GET['category']) ? $_GET['category'] : '';
 $price_min = isset($_GET['price_min']) ? intval($_GET['price_min']) : '';
 $price_max = isset($_GET['price_max']) ? intval($_GET['price_max']) : '';
-$sort = isset($_GET['sort']) ? $_GET['sort'] : 'newest';
+// Sắp xếp mặc định theo độ liên quan
+$sort = isset($_GET['sort']) ? $_GET['sort'] : 'relevance';
 
 // 2. URL RESET CHO SIDEBAR (Giữ lại từ khóa, chỉ xóa lọc)
 $resetUrl = "search.php";
@@ -23,31 +24,30 @@ $sql = "SELECT p.*, c.name as cat_name FROM products p
 $params = [];
 $types = "";
 
+// GHI CHÚ: TÌM KIẾM CÓ PHÂN BIỆT DẤU TIẾNG VIỆT
 if (!empty($keyword)) {
-    $sql .= " AND p.name LIKE ?";
+    // Sử dụng BINARY để so sánh chính xác có dấu
+    $sql .= " AND BINARY p.name LIKE ?";
     $params[] = "%$keyword%";
     $types .= "s";
 }
-if (!empty($cat_input)) {
-    // Tách chuỗi ID danh mục thành mảng
-    $id_array = explode(',', $cat_input);
-    // Ép kiểu từng phần tử thành số nguyên để tránh SQL Injection
-    $id_array = array_map('intval', $id_array);
-    // Loại bỏ các giá trị không hợp lệ (nếu có)
-    $id_array = array_filter($id_array);
 
+if (!empty($cat_input)) {
+    $id_array = explode(',', $cat_input);
+    $id_array = array_map('intval', $id_array);
+    $id_array = array_filter($id_array);
     if (!empty($id_array)) {
-        // Nối lại thành chuỗi để dùng trong câu lệnh SQL
         $ids_string = implode(',', $id_array);
-        // Dùng IN để lọc nhiều danh mục
         $sql .= " AND p.cid IN ($ids_string) ";
     }
 }
+
 if (!empty($price_min)) {
     $sql .= " AND p.price >= ?";
     $params[] = $price_min;
     $types .= "i";
 }
+
 if (!empty($price_max)) {
     $sql .= " AND p.price <= ?";
     $params[] = $price_max;
@@ -64,18 +64,40 @@ switch ($sort) {
     case 'sales':
         $sql .= " ORDER BY p.stock ASC";
         break;
-    default:
+    case 'newest':
         $sql .= " ORDER BY p.pid DESC";
+        break;
+    case 'relevance':
+    default:
+        if (!empty($keyword)) {
+            // Tìm kiếm có dấu trong cả name và description
+            $sql .= " AND (BINARY p.name LIKE ? OR BINARY p.description LIKE ?)";
+            $params[] = "%$keyword%";
+            $params[] = "%$keyword%";
+            $types .= "ss";
+        } else {
+            $sql .= " ORDER BY p.pid DESC";
+        }
         break;
 }
 
 $stmt = $conn->prepare($sql);
-if (!empty($params)) $stmt->bind_param($types, ...$params);
+if (!empty($params)) {
+    $stmt->bind_param($types, ...$params);
+}
 $stmt->execute();
 $products = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
 // 4. DANH MỤC
-$allCategories = $conn->query("SELECT * FROM categories WHERE parent_id IS NOT NULL")->fetch_all(MYSQLI_ASSOC);
+$sql_parents = "SELECT * FROM categories WHERE parent_id IS NULL ORDER BY cid ASC";
+$parents = $conn->query($sql_parents)->fetch_all(MYSQLI_ASSOC);
+
+// Hàm lấy danh mục con
+function getChildren($conn, $parent_id)
+{
+    $sql = "SELECT * FROM categories WHERE parent_id = $parent_id";
+    return $conn->query($sql)->fetch_all(MYSQLI_ASSOC);
+}
 
 // Link header
 $sellerLink = BASE_URL . "/page/HomePage/LoginPage/login.php";
@@ -95,7 +117,7 @@ if (isset($_SESSION['aid'])) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/page/HomePage/style/homepage.css?v=4">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/page/HomePage/style/search.css?v=9">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/page/HomePage/style/search.css?v=11">
     <?php include ROOT_PATH . '/includes/head_meta.php'; ?>
 </head>
 
@@ -139,7 +161,7 @@ if (isset($_SESSION['aid'])) {
 
                 <div class="search-box">
                     <form action="search.php" method="GET">
-                        <input type="text" name="keyword" placeholder="Bao ship 0Đ - Đăng ký ngay để nhận ưu đãi hấp dẫn!">
+                        <input type="text" name="keyword" placeholder="Bao ship 0đ - Đăng ký ngay để nhận ưu đãi hấp dẫn!">
                         <button type="submit"><i class="fas fa-search"></i></button>
                     </form>
                     <div class="search-keywords">
@@ -172,16 +194,38 @@ if (isset($_SESSION['aid'])) {
                 <div class="filter-section">
                     <h4>Theo Danh Mục</h4>
                     <div class="search-category-list">
-                        <?php foreach ($allCategories as $cat): ?>
-                            <a href="search.php?keyword=<?php echo urlencode($keyword); ?>&category=<?php echo $cat['cid']; ?>"
-                                class="search-cat-item <?php echo ($cat_id == $cat['cid']) ? 'active' : ''; ?>">
-                                <?php echo $cat['name']; ?>
+                        <?php
+                        // Lặp qua các danh mục cha
+                        foreach ($parents as $parent):
+                            $children = getChildren($conn, $parent['cid']);
+                            // Kiểm tra xem danh mục cha (hoặc con của nó) có đang được chọn không
+                            $isActiveParent = ($cat_input == $parent['cid']);
+                        ?>
+                            <a href="search.php?keyword=<?php echo urlencode($keyword); ?>&category=<?php echo $parent['cid']; ?>"
+                                class="search-cat-item parent <?php echo $isActiveParent ? 'active' : ''; ?>"
+                                style="font-weight: 700; color: #333;">
+                                <?php echo $parent['name']; ?>
                             </a>
+
+                            <?php if (!empty($children)): ?>
+                                <div class="child-cats" style="padding-left: 15px; margin-bottom: 5px;">
+                                    <?php foreach ($children as $child):
+                                        $isActiveChild = ($cat_input == $child['cid']);
+                                    ?>
+                                        <a href="search.php?keyword=<?php echo urlencode($keyword); ?>&category=<?php echo $child['cid']; ?>"
+                                            class="search-cat-item child <?php echo $isActiveChild ? 'active' : ''; ?>"
+                                            style="font-size: 13px; color: #666;">
+                                            &bull; <?php echo $child['name']; ?>
+                                        </a>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+
                         <?php endforeach; ?>
                     </div>
                 </div>
 
-                <div class="filter-section">
+                <div class="filter-section price-section">
                     <h4>Khoảng Giá</h4>
                     <form id="priceFilterForm" method="GET" action="search.php">
                         <input type="hidden" name="keyword" value="<?php echo htmlspecialchars($keyword); ?>">
@@ -216,8 +260,9 @@ if (isset($_SESSION['aid'])) {
 
             <div class="sort-bar">
                 <span class="sort-label">Sắp xếp theo</span>
-                <a href="?keyword=<?php echo $keyword; ?>&sort=newest" class="sort-btn <?php echo ($sort == 'newest') ? 'active' : ''; ?>">Mới nhất</a>
-                <a href="?keyword=<?php echo $keyword; ?>&sort=sales" class="sort-btn <?php echo ($sort == 'sales') ? 'active' : ''; ?>">Bán chạy</a>
+                <a href="?keyword=<?php echo urlencode($keyword); ?>&sort=relevance&category=<?= $cat_input ?>" class="sort-btn <?php echo ($sort == 'relevance') ? 'active' : ''; ?>">Liên quan</a>
+                <a href="?keyword=<?php echo urlencode($keyword); ?>&sort=newest&category=<?= $cat_input ?>" class="sort-btn <?php echo ($sort == 'newest') ? 'active' : ''; ?>">Mới nhất</a>
+                <a href="?keyword=<?php echo urlencode($keyword); ?>&sort=sales&category=<?= $cat_input ?>" class="sort-btn <?php echo ($sort == 'sales') ? 'active' : ''; ?>">Bán chạy</a>
 
                 <div class="sort-price-dropdown">
                     <span class="<?php echo ($sort == 'price_asc' || $sort == 'price_desc') ? 'active-text' : ''; ?>">
@@ -229,8 +274,8 @@ if (isset($_SESSION['aid'])) {
                     </span>
                     <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
                     <div class="dropdown-content">
-                        <a href="?keyword=<?php echo $keyword; ?>&sort=price_asc">Giá: Thấp đến Cao</a>
-                        <a href="?keyword=<?php echo $keyword; ?>&sort=price_desc">Giá: Cao đến Thấp</a>
+                        <a href="?keyword=<?php echo urlencode($keyword); ?>&sort=price_asc&category=<?= $cat_input ?>">Giá: Thấp đến Cao</a>
+                        <a href="?keyword=<?php echo urlencode($keyword); ?>&sort=price_desc&category=<?= $cat_input ?>">Giá: Cao đến Thấp</a>
                     </div>
                 </div>
             </div>
@@ -259,8 +304,7 @@ if (isset($_SESSION['aid'])) {
                 <?php else: ?>
                     <div class="no-result">
                         <img src="https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/search/a60759ad1dabe909c46a.png" alt="No result">
-                        <p class="msg">Hix. Không có sản phẩm nào. Bạn thử tắt điều kiện lọc và tìm lại nhé?</p>
-                        <p class="or">hoặc</p>
+                        <p class="msg">Hix. Không tìm thấy sản phẩm nào phù hợp.</p>
                         <a href="search.php" class="btn-clear-main">Xóa bộ lọc</a>
                     </div>
                 <?php endif; ?>
