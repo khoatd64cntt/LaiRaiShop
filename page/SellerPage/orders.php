@@ -45,77 +45,79 @@ $stmt_info->bind_param("i", $sid);
 $stmt_info->execute();
 $current_shop = $stmt_info->get_result()->fetch_assoc();
 
-// 2. XỬ LÝ CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG (CÓ LOGIC KHO & HOA HỒNG)
+// 2. XỬ LÝ CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG (ĐÃ SỬA LỖI TRỪ KHO)
 if (isset($_POST['update_status'])) {
     $order_id = $_POST['oid'];
     $new_status = $_POST['status'];
 
-    $check = $conn->query("SELECT 1 FROM order_items oi JOIN products p ON oi.pid = p.pid WHERE oi.oid = $order_id AND p.sid = $sid");
-
-    if ($check->num_rows > 0) {
-        $old_status_query = $conn->query("SELECT status FROM orders WHERE oid = $order_id");
+    // Lấy trạng thái cũ của đơn hàng
+    $old_status_query = $conn->query("SELECT status FROM orders WHERE oid = $order_id");
+    
+    if ($old_status_query->num_rows > 0) {
         $old_status = $old_status_query->fetch_assoc()['status'];
 
-        // --- [LOGIC MỚI] KIỂM TRA KHO TRƯỚC KHI DUYỆT ---
-        $can_update = true;
-        $error_msg = "";
+        // Chỉ xử lý nếu trạng thái thay đổi
+        if ($old_status != $new_status) {
+            
+            // Định nghĩa các trạng thái ĐÃ TRỪ KHO (Active)
+            // Pending: Giả định là CHƯA TRỪ KHO (vì bạn nói completed mới trừ)
+            $active_statuses = ['shipped', 'completed', 'paid']; 
 
-        // Chỉ cần kiểm tra kho nếu KHÔNG PHẢI là Hủy đơn (Vì hủy đơn là trả hàng về, không lo hết hàng)
-        if ($new_status != 'cancelled') {
-            $items = $conn->query("SELECT oi.pid, oi.quantity, p.stock, p.name 
-                                   FROM order_items oi 
-                                   JOIN products p ON oi.pid = p.pid 
-                                   WHERE oi.oid = $order_id");
+            $is_moving_to_active = in_array($new_status, $active_statuses) && !in_array($old_status, $active_statuses);
+            $is_moving_to_cancel = ($new_status == 'cancelled') && in_array($old_status, $active_statuses);
 
-            while ($item = $items->fetch_assoc()) {
-                // Nếu kho hiện tại bị âm (do bán lố trước đó), chặn duyệt tiếp
-                if ($item['stock'] < 0) {
-                    $can_update = false;
-                    $error_msg = "Sản phẩm '" . $item['name'] . "' đang bị âm kho (" . $item['stock'] . "). Vui lòng nhập thêm hàng hoặc hủy đơn!";
-                    break;
+            $can_update = true;
+            $error_msg = "";
+
+            // --- KIỂM TRA KHO (Chỉ khi chuyển từ Pending/Cancel -> Shipped/Completed) ---
+            if ($is_moving_to_active) {
+                $items = $conn->query("SELECT oi.pid, oi.quantity, p.stock, p.name 
+                                       FROM order_items oi 
+                                       JOIN products p ON oi.pid = p.pid 
+                                       WHERE oi.oid = $order_id");
+
+                while ($item = $items->fetch_assoc()) {
+                    if ($item['stock'] < $item['quantity']) {
+                        $can_update = false;
+                        $error_msg = "Sản phẩm '" . $item['name'] . "' không đủ hàng (Kho: " . $item['stock'] . ", Cần: " . $item['quantity'] . ")";
+                        break;
+                    }
                 }
             }
-        }
 
-        if ($can_update) {
-            $stmt = $conn->prepare("UPDATE orders SET status = ? WHERE oid = ?");
-            $stmt->bind_param("si", $new_status, $order_id);
+            if ($can_update) {
+                // Cập nhật status
+                $stmt = $conn->prepare("UPDATE orders SET status = ? WHERE oid = ?");
+                $stmt->bind_param("si", $new_status, $order_id);
 
-            if ($stmt->execute()) {
-                // Xử lý hoàn kho nếu Hủy đơn
-                if ($new_status == 'cancelled' && $old_status != 'cancelled') {
-                    $items_cancel = $conn->query("SELECT pid, quantity FROM order_items WHERE oid = $order_id");
-                    while ($item = $items_cancel->fetch_assoc()) {
-                        $conn->query("UPDATE products SET stock = stock + {$item['quantity']} WHERE pid = {$item['pid']}");
+                if ($stmt->execute()) {
+                    // 1. TRỪ KHO: Nếu chuyển từ Pending/Cancelled -> Shipped/Completed
+                    if ($is_moving_to_active) {
+                        $items_deduct = $conn->query("SELECT pid, quantity FROM order_items WHERE oid = $order_id");
+                        while ($item = $items_deduct->fetch_assoc()) {
+                            $conn->query("UPDATE products SET stock = stock - {$item['quantity']} WHERE pid = {$item['pid']}");
+                        }
                     }
-                }
 
-                // Xử lý trừ kho lại nếu Khôi phục đơn hủy
-                if ($old_status == 'cancelled' && $new_status != 'cancelled') {
-                    $items_restore = $conn->query("SELECT pid, quantity FROM order_items WHERE oid = $order_id");
-                    while ($item = $items_restore->fetch_assoc()) {
-                        $conn->query("UPDATE products SET stock = stock - {$item['quantity']} WHERE pid = {$item['pid']}");
+                    // 2. HOÀN KHO: Nếu chuyển từ Shipped/Completed -> Cancelled
+                    if ($is_moving_to_cancel) {
+                        $items_refund = $conn->query("SELECT pid, quantity FROM order_items WHERE oid = $order_id");
+                        while ($item = $items_refund->fetch_assoc()) {
+                            $conn->query("UPDATE products SET stock = stock + {$item['quantity']} WHERE pid = {$item['pid']}");
+                        }
                     }
-                }
 
-                // TRƯỜNG HỢP 2: HỦY ĐƠN ĐÃ DUYỆT (Shipped/Completed -> Cancelled)
-                // Hành động: HOÀN KHO (CỘNG LẠI)
-                elseif ($is_old_approved && !$is_new_approved) {
-                    foreach ($items_data as $item) {
-                        $conn->query("UPDATE products SET stock = stock + {$item['quantity']} WHERE pid = {$item['pid']}");
-                    }
+                    echo "<script>alert('Cập nhật trạng thái thành công!'); window.location.href='orders.php';</script>";
+                } else {
+                    echo "<script>alert('Lỗi cập nhật SQL: " . $conn->error . "');</script>";
                 }
-                
-                // TRƯỜNG HỢP 3: Pending -> Cancelled
-                // Hành động: KHÔNG LÀM GÌ (Vì chưa trừ kho nên không cần cộng lại)
-
-                echo "<script>alert('Cập nhật trạng thái thành công!'); window.location.href='orders.php';</script>";
             } else {
-                echo "<script>alert('Lỗi cập nhật: " . $conn->error . "');</script>";
+                // Không đủ hàng
+                echo "<script>alert('$error_msg'); window.location.href='orders.php';</script>";
             }
         } else {
-            // Báo lỗi kho
-            echo "<script>alert('$error_msg'); window.location.href='orders.php';</script>";
+            // Trạng thái không đổi, chỉ reload
+            echo "<script>window.location.href='orders.php';</script>";
         }
     }
 }
