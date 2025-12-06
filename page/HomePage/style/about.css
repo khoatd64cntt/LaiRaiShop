@@ -56,19 +56,25 @@ p {
     font-weight: bold;
 }
 
-/* Nút về trang chủ */
-.btn-home {
+a.btn-home {
     display: inline-block;
     margin-top: 30px;
     padding: 12px 30px;
     background: #333;
-    color: white;
-    text-decoration: none;
+    color: #ffffff !important;
+    text-decoration: none !important;
     border-radius: 50px;
     font-weight: bold;
     transition: 0.3s;
 }
 
-.btn-home:hover {
+/* QUAN TRỌNG: ĐÈ LÊN STYLE CHUNG CỦA A BTN HOME */
+a.btn-home:hover,
+a.btn-home:focus,
+a.btn-home:active {
     background: #d0011b;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    outline: none;
+
 }

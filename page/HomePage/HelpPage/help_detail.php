@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once '../../../config.php';
 require_once 'help_data.php';
 
 // Lấy ID và tìm bài viết trong mảng
@@ -43,9 +43,7 @@ if (!$article) {
 
                 <div class="divider"></div>
 
-                <div class="page-title">
-                    <i class="fas fa-life-ring"></i> Trung Tâm Trợ Giúp
-                </div>
+                <div class="page-title">Trung Tâm Trợ Giúp</div>
             </div>
 
             <div class="header-right">

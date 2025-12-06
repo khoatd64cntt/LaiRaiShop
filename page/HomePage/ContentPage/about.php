@@ -1,3 +1,6 @@
+<?php
+require_once '../../../config.php';
+?>
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -5,7 +8,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Về LaiRaiShop - Câu Chuyện Của Chúng Tôi</title>
-    <link rel="stylesheet" href="../style/about.css">
+    <link rel="stylesheet" href="../style/about.css?v=<?php echo time(); ?>">
     <?php include ROOT_PATH . '/includes/head_meta.php'; ?>
 </head>
 

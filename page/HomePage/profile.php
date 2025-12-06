@@ -18,12 +18,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $alname = $_POST['alname'];
     $email = $_POST['email'];
     $phone = $_POST['phone'];
-    
+
     // Update DB
     $sql_update = "UPDATE acc SET afname=?, alname=?, email=?, phone=? WHERE aid=?";
     $stmt = $conn->prepare($sql_update);
     $stmt->bind_param("ssssi", $afname, $alname, $email, $phone, $aid);
-    
+
     if ($stmt->execute()) {
         $msg = "<div class='alert alert-success'>Cập nhật hồ sơ thành công!</div>";
         // Cập nhật lại Session
@@ -43,6 +43,7 @@ $avatarUrl = "https://ui-avatars.com/api/?name=" . urlencode($user['username']) 
 
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <title>Hồ Sơ Của Tôi | LaiRaiShop</title>
@@ -50,43 +51,170 @@ $avatarUrl = "https://ui-avatars.com/api/?name=" . urlencode($user['username']) 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style/homepage.css?v=4">
     <link rel="icon" href="../../images/icon.png" />
-    
+
     <style>
-        body { background-color: #f5f5f5; font-size: 14px; }
-        
+        body {
+            background-color: #f5f5f5;
+            font-size: 14px;
+        }
+
         /* Sidebar bên trái */
-        .profile-sidebar { width: 100%; padding: 10px 0; }
-        .user-brief { display: flex; align-items: center; padding-bottom: 15px; border-bottom: 1px solid #efefef; margin-bottom: 15px; }
-        .user-brief img { width: 50px; height: 50px; border-radius: 50%; border: 1px solid #e1e1e1; margin-right: 15px; }
-        .user-brief div { font-weight: 600; color: #333; overflow: hidden; text-overflow: ellipsis; }
-        .user-brief a { font-weight: 400; color: #888; font-size: 12px; text-decoration: none; }
-        
-        .sidebar-menu { list-style: none; padding: 0; margin: 0; }
-        .sidebar-menu li { margin-bottom: 10px; }
-        .sidebar-menu a { text-decoration: none; color: #333; display: block; padding: 5px 0; transition: color 0.2s; }
-        .sidebar-menu a:hover { color: #ee4d2d; }
-        .sidebar-menu li.active > a { color: #ee4d2d; font-weight: 600; }
-        .sidebar-menu i { width: 25px; text-align: center; color: #555; margin-right: 10px; }
+        .profile-sidebar {
+            width: 100%;
+            padding: 10px 0;
+        }
+
+        .user-brief {
+            display: flex;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #efefef;
+            margin-bottom: 15px;
+        }
+
+        .user-brief img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 1px solid #e1e1e1;
+            margin-right: 15px;
+        }
+
+        .user-brief div {
+            font-weight: 600;
+            color: #333;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-brief a {
+            font-weight: 400;
+            color: #888;
+            font-size: 12px;
+            text-decoration: none;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar-menu a {
+            text-decoration: none;
+            color: #333;
+            display: block;
+            padding: 5px 0;
+            transition: color 0.2s;
+        }
+
+        .sidebar-menu a:hover {
+            color: #ee4d2d;
+        }
+
+        .sidebar-menu li.active>a {
+            color: #ee4d2d;
+            font-weight: 600;
+        }
+
+        .sidebar-menu i {
+            width: 25px;
+            text-align: center;
+            color: #555;
+            margin-right: 10px;
+        }
 
         /* Card nội dung chính */
-        .profile-main-card { background: #fff; box-shadow: 0 1px 2px 0 rgba(0,0,0,.13); border-radius: 2px; padding: 30px; min-height: 500px; }
-        .profile-header { border-bottom: 1px solid #efefef; padding-bottom: 18px; margin-bottom: 25px; }
-        .profile-header h3 { font-size: 18px; margin: 0; color: #333; font-weight: 500; }
-        .profile-header p { margin: 5px 0 0; font-size: 13px; color: #555; }
+        .profile-main-card {
+            background: #fff;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, .13);
+            border-radius: 2px;
+            padding: 30px;
+            min-height: 500px;
+        }
+
+        .profile-header {
+            border-bottom: 1px solid #efefef;
+            padding-bottom: 18px;
+            margin-bottom: 25px;
+        }
+
+        .profile-header h3 {
+            font-size: 18px;
+            margin: 0;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .profile-header p {
+            margin: 5px 0 0;
+            font-size: 13px;
+            color: #555;
+        }
 
         /* Form styling */
-        .form-group label { color: #555555cc; font-weight: 500; }
-        .form-control:focus { border-color: #888; box-shadow: none; }
-        .form-control-plaintext { color: #333; font-weight: 500; }
-        .btn-save { background-color: #ee4d2d; color: #fff; border: none; padding: 8px 25px; border-radius: 2px; box-shadow: 0 1px 1px 0 rgba(0,0,0,.09); }
-        .btn-save:hover { background-color: #d73211; color: #fff; }
+        .form-group label {
+            color: #555555cc;
+            font-weight: 500;
+        }
+
+        .form-control:focus {
+            border-color: #888;
+            box-shadow: none;
+        }
+
+        .form-control-plaintext {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .btn-save {
+            background-color: #ee4d2d;
+            color: #fff;
+            border: none;
+            padding: 8px 25px;
+            border-radius: 2px;
+            box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .09);
+        }
+
+        .btn-save:hover {
+            background-color: #d73211;
+            color: #fff;
+        }
 
         /* Avatar Upload */
-        .avatar-upload-section { border-left: 1px solid #efefef; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding-left: 20px; }
-        .avatar-preview-lg { width: 100px; height: 100px; border-radius: 50%; background-color: #f5f5f5; overflow: hidden; margin-bottom: 20px; border: 1px solid #e1e1e1; }
-        .avatar-preview-lg img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-upload-section {
+            border-left: 1px solid #efefef;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding-left: 20px;
+        }
+
+        .avatar-preview-lg {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #f5f5f5;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border: 1px solid #e1e1e1;
+        }
+
+        .avatar-preview-lg img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
     </style>
 </head>
+
 <body>
 
     <div class="sticky-header-wrapper">
@@ -94,9 +222,9 @@ $avatarUrl = "https://ui-avatars.com/api/?name=" . urlencode($user['username']) 
             <div class="container header-content">
                 <div class="logo"><a href="homepage.php"><img src="../../images/logo.png" alt="Logo"></a></div>
                 <div class="top-bar-right" style="margin-left: auto;">
-                     <a href="homepage.php" class="text-white">Trang Chủ</a> 
-                     <span class="mx-2 text-white">|</span> 
-                     <a href="LoginPage/logout.php" class="text-white">Đăng Xuất</a>
+                    <a href="homepage.php" class="text-white">Trang Chủ</a>
+                    <span class="mx-2 text-white">|</span>
+                    <a href="LoginPage/logout.php" class="text-white">Đăng Xuất</a>
                 </div>
             </div>
         </header>
@@ -104,7 +232,7 @@ $avatarUrl = "https://ui-avatars.com/api/?name=" . urlencode($user['username']) 
 
     <div class="container mt-4 mb-5">
         <div class="row">
-            
+
             <div class="col-md-3">
                 <div class="profile-sidebar">
                     <div class="user-brief">
@@ -125,9 +253,6 @@ $avatarUrl = "https://ui-avatars.com/api/?name=" . urlencode($user['username']) 
                         <li>
                             <a href="purchase.php"><i class="fas fa-file-alt text-primary"></i> Đơn Mua</a>
                         </li>
-                        <li>
-                            <a href="#"><i class="fas fa-bell text-danger"></i> Thông Báo</a>
-                        </li>
                     </ul>
                 </div>
             </div>
@@ -140,7 +265,7 @@ $avatarUrl = "https://ui-avatars.com/api/?name=" . urlencode($user['username']) 
                     </div>
 
                     <?= $msg ?>
-                    
+
                     <form action="" method="POST">
                         <div class="row">
                             <div class="col-md-8">
@@ -150,7 +275,7 @@ $avatarUrl = "https://ui-avatars.com/api/?name=" . urlencode($user['username']) 
                                         <p class="form-control-plaintext"><?= htmlspecialchars($user['username']) ?></p>
                                     </div>
                                 </div>
-                                
+
                                 <div class="form-group row align-items-center">
                                     <label class="col-sm-3 col-form-label text-right">Họ</label>
                                     <div class="col-sm-9">
@@ -320,4 +445,5 @@ $avatarUrl = "https://ui-avatars.com/api/?name=" . urlencode($user['username']) 
     <script src="<?php echo BASE_URL; ?>/js/homepage.js?v=4"></script>
 
 </body>
+
 </html>

@@ -150,7 +150,7 @@ if (!function_exists('formatCurrency')) {
         <div id="page-content-wrapper">
             <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom px-4 shadow-sm sticky-top">
                 <button class="btn btn-success btn-sm" id="menu-toggle"><i class="fas fa-bars"></i></button>
-                <ul class="navbar-nav ml-auto mt-2 mt-lg-0">s
+                <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
                     <li class="nav-item">
                         <span class="nav-link font-weight-bold text-dark">
                             <i class="fas fa-user-circle mr-1"></i> <?php echo isset($_SESSION['fullname']) ? $_SESSION['fullname'] : 'Admin'; ?>

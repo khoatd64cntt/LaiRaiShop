@@ -1,3 +1,6 @@
+<?php
+require_once '../../../config.php';
+?>
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -5,7 +8,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hướng Dẫn Mua Hàng</title>
-    <link rel="stylesheet" href="../style/tutorial.css">
+    <!-- QUAN TRỌNG: ĐÈ LÊN STYLE CHUNG CỦA A BTN BACK -->
+    <link rel="stylesheet" href="../style/tutorial.css?v=<?php echo time(); ?>">
     <?php include ROOT_PATH . '/includes/head_meta.php'; ?>
 </head>
 
