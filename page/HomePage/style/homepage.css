@@ -195,6 +195,7 @@ ul {
 
 .search-keywords a:hover {
     color: white;
+    text-decoration: none;
 }
 
 /* Cart Icon */
