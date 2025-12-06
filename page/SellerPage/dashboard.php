@@ -485,7 +485,7 @@ $recent_orders = $conn->query($sql_recent);
         <div class="table-section">
             <div class="section-header">
                 <h3>Đơn hàng mới nhất</h3>
-                <a href="orders.php" style="color: #088178; font-weight: bold; font-size: 14px;">Xem tất cả &rarr;</a>
+                
             </div>
             <?php if ($recent_orders && $recent_orders->num_rows > 0): ?>
                 <table>
@@ -501,20 +501,30 @@ $recent_orders = $conn->query($sql_recent);
                     </thead>
                     <tbody>
                         <?php while ($row = $recent_orders->fetch_assoc()): ?>
-                            <tr>
-                                <td><b>#<?= $row['oid'] ?></b></td>
-                                <td><?= date('d/m/Y', strtotime($row['order_date'])) ?></td>
-                                <td><?= htmlspecialchars($row['username']) ?></td>
-                                <td style="font-weight: bold; color: #088178;"><?= number_format($row['shop_total'], 0, ',', '.') ?>đ</td>
-                                <td><span class="badge st-<?= $row['status'] ?>"><?= ucfirst($row['status']) ?></span></td>
+                        <tr>
+                        <td><b>#<?= $row['oid'] ?></b></td>
+                        <td><?= date('d/m/Y', strtotime($row['order_date'])) ?></td>
+                        <td><?= htmlspecialchars($row['username']) ?></td>
+                        <td style="font-weight: bold; color: #088178;"><?= number_format($row['shop_total'], 0, ',', '.') ?>đ</td>
+                        <td><span class="badge st-<?= $row['status'] ?>"><?= ucfirst($row['status']) ?></span></td>
 
-                                <td style="text-align: right;">
-                                    <a href="orders.php" class="btn-action">Xem</a>
-                                </td>
+                        <td style="text-align: right;">
+                            <?php 
+                        // --- SỬA LOGIC LINK Ở ĐÂY ---
+                        // Nếu trạng thái là 'completed' hoặc 'cancelled' thì chuyển sang trang Lịch sử
+                        // Các trạng thái khác (pending, paid, shipped...) thì chuyển sang trang Đơn cần xử lý
+                        if ($row['status'] == 'completed' || $row['status'] == 'cancelled') {
+                        $link_target = 'orders_history.php'; 
+                        } else {
+                        $link_target = 'orders.php';
+                        }
+                        ?>
+                        <a href="<?= $link_target ?>" class="btn-action">Xem</a>
+                        </td>
 
-                            </tr>
-                        <?php endwhile; ?>
-                    </tbody>
+                    </tr>
+                    <?php endwhile; ?>
+                </tbody>
                 </table>
             <?php else: ?>
                 <div style="text-align: center; padding: 30px; color: #888;">
