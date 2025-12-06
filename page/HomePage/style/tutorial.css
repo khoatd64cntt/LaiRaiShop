@@ -93,23 +93,27 @@ h1 {
     margin: 0;
 }
 
-/* Nút quay về */
-.btn-back {
+a.btn-back {
     display: block;
     width: fit-content;
     margin: 30px auto 0;
     padding: 10px 30px;
     background: #333;
-    color: #fff;
-    text-decoration: none;
+    color: #ffffff !important;
+    text-decoration: none !important;
     border-radius: 5px;
     font-weight: 600;
     transition: background 0.2s;
     text-align: center;
 }
 
-.btn-back:hover {
+a.btn-back:hover,
+a.btn-back:focus,
+a.btn-back:active {
     background: #555;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    outline: none;
 }
 
 /* Responsive cho điện thoại */

@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once '../../../config.php';
 require_once 'help_data.php';
 
 // Lấy tham số tìm kiếm từ URL
