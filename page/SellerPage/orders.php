@@ -45,40 +45,33 @@ $stmt_info->bind_param("i", $sid);
 $stmt_info->execute();
 $current_shop = $stmt_info->get_result()->fetch_assoc();
 
-// 2. XỬ LÝ CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG (CÓ LOGIC KIỂM TRA KHO)
+// 2. XỬ LÝ CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG (CÓ LOGIC KHO & HOA HỒNG)
 if (isset($_POST['update_status'])) {
     $order_id = $_POST['oid'];
     $new_status = $_POST['status'];
 
-    // Check quyền sở hữu đơn hàng
     $check = $conn->query("SELECT 1 FROM order_items oi JOIN products p ON oi.pid = p.pid WHERE oi.oid = $order_id AND p.sid = $sid");
 
     if ($check->num_rows > 0) {
-        // Lấy trạng thái cũ để so sánh
         $old_status_query = $conn->query("SELECT status FROM orders WHERE oid = $order_id");
         $old_status = $old_status_query->fetch_assoc()['status'];
 
-        // Định nghĩa nhóm trạng thái "Đã duyệt/Trừ kho"
-        // (Nếu đơn hàng nằm trong các trạng thái này nghĩa là hàng đã xuất khỏi kho)
-        $approved_states = ['paid', 'shipped', 'completed'];
-        
-        $is_old_approved = in_array($old_status, $approved_states);
-        $is_new_approved = in_array($new_status, $approved_states);
-
-        // --- KIỂM TRA SỐ LƯỢNG TỒN KHO TRƯỚC KHI DUYỆT ---
+        // --- [LOGIC MỚI] KIỂM TRA KHO TRƯỚC KHI DUYỆT ---
         $can_update = true;
         $error_msg = "";
 
-        // Nếu chuẩn bị duyệt đơn (Pending -> Approved), cần check xem còn hàng không
-        if (!$is_old_approved && $is_new_approved) {
-            $items_check = $conn->query("SELECT oi.quantity, p.stock, p.name 
-                                         FROM order_items oi 
-                                         JOIN products p ON oi.pid = p.pid 
-                                         WHERE oi.oid = $order_id");
-            while ($item = $items_check->fetch_assoc()) {
-                if ($item['stock'] < $item['quantity']) {
+        // Chỉ cần kiểm tra kho nếu KHÔNG PHẢI là Hủy đơn (Vì hủy đơn là trả hàng về, không lo hết hàng)
+        if ($new_status != 'cancelled') {
+            $items = $conn->query("SELECT oi.pid, oi.quantity, p.stock, p.name 
+                                   FROM order_items oi 
+                                   JOIN products p ON oi.pid = p.pid 
+                                   WHERE oi.oid = $order_id");
+
+            while ($item = $items->fetch_assoc()) {
+                // Nếu kho hiện tại bị âm (do bán lố trước đó), chặn duyệt tiếp
+                if ($item['stock'] < 0) {
                     $can_update = false;
-                    $error_msg = "Sản phẩm '{$item['name']}' không đủ hàng (Kho: {$item['stock']}, Cần: {$item['quantity']}).";
+                    $error_msg = "Sản phẩm '" . $item['name'] . "' đang bị âm kho (" . $item['stock'] . "). Vui lòng nhập thêm hàng hoặc hủy đơn!";
                     break;
                 }
             }
@@ -89,20 +82,18 @@ if (isset($_POST['update_status'])) {
             $stmt->bind_param("si", $new_status, $order_id);
 
             if ($stmt->execute()) {
-                
-                // Lấy danh sách sản phẩm trong đơn để cập nhật kho
-                $items_query = $conn->query("SELECT pid, quantity FROM order_items WHERE oid = $order_id");
-                $items_data = [];
-                while ($row = $items_query->fetch_assoc()) {
-                    $items_data[] = $row;
+                // Xử lý hoàn kho nếu Hủy đơn
+                if ($new_status == 'cancelled' && $old_status != 'cancelled') {
+                    $items_cancel = $conn->query("SELECT pid, quantity FROM order_items WHERE oid = $order_id");
+                    while ($item = $items_cancel->fetch_assoc()) {
+                        $conn->query("UPDATE products SET stock = stock + {$item['quantity']} WHERE pid = {$item['pid']}");
+                    }
                 }
 
-                // --- LOGIC CẬP NHẬT KHO ---
-
-                // TRƯỜNG HỢP 1: DUYỆT ĐƠN (Pending -> Shipped/Completed)
-                // Hành động: TRỪ KHO
-                if (!$is_old_approved && $is_new_approved) {
-                    foreach ($items_data as $item) {
+                // Xử lý trừ kho lại nếu Khôi phục đơn hủy
+                if ($old_status == 'cancelled' && $new_status != 'cancelled') {
+                    $items_restore = $conn->query("SELECT pid, quantity FROM order_items WHERE oid = $order_id");
+                    while ($item = $items_restore->fetch_assoc()) {
                         $conn->query("UPDATE products SET stock = stock - {$item['quantity']} WHERE pid = {$item['pid']}");
                     }
                 }
@@ -120,9 +111,10 @@ if (isset($_POST['update_status'])) {
 
                 echo "<script>alert('Cập nhật trạng thái thành công!'); window.location.href='orders.php';</script>";
             } else {
-                echo "<script>alert('Lỗi cập nhật');</script>";
+                echo "<script>alert('Lỗi cập nhật: " . $conn->error . "');</script>";
             }
         } else {
+            // Báo lỗi kho
             echo "<script>alert('$error_msg'); window.location.href='orders.php';</script>";
         }
     }
@@ -216,16 +208,85 @@ $result = $conn->query($sql);
         .btn-update { padding: 6px 15px; background: #088178; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600; }
         .btn-update:hover { background: #066e67; }
 
-        .btn-edit-shop { margin-top: 10px; font-size: 12px; color: #135E4B; cursor: pointer; text-decoration: underline; border: none; background: none; }
-        
-        /* Modal */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center; }
-        .modal-content { background-color: #fff; padding: 25px; border-radius: 8px; width: 400px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); position: relative; }
-        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 20px; cursor: pointer; color: #aaa; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
-        .form-group input, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
-        .btn-save { width: 100%; padding: 10px; background: #135E4B; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        /* Modal Styles */
+        .btn-edit-shop {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #088178;
+            cursor: pointer;
+            text-decoration: underline;
+            border: none;
+            background: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            width: 400px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 20px;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .btn-save {
+            width: 100%;
+            padding: 10px;
+            background: #088178;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-save:hover {
+            background: #066e67;
+        }
     </style>
 </head>
 
@@ -262,7 +323,7 @@ $result = $conn->query($sql);
     <div class="main-content">
         <div class="page-header">
             <h2>Quản lý Đơn hàng</h2>
-            <p>Danh sách các đơn hàng đã đặt sản phẩm của shop.</p>
+            <p>Danh sách các đơn hàng chưa hoàn thành (Pending, Shipped, Cancelled...).</p>
         </div>
 
         <?php if ($result->num_rows > 0): ?>
@@ -275,6 +336,10 @@ $result = $conn->query($sql);
                         </div>
                         <div style="display:flex; gap:10px; align-items:center;">
                             <span class="badge st-<?= $order['status'] ?>"><?= ucfirst($order['status']) ?></span>
+
+                            <a href="order_detail.php?oid=<?= $order['oid'] ?>&ref=active" class="btn-view" style="color: white; text-decoration: none; background: #9b59b6; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: bold;">
+                                <i class="fas fa-eye"></i> Xem
+                            </a>
                         </div>
                     </div>
 

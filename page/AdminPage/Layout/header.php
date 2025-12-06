@@ -1,29 +1,17 @@
 <?php
 // FILE: page/AdminPage/Layout/header.php
-
-// 1. KẾT NỐI CONFIG (Đi ngược 3 cấp để tìm config.php)
 require_once __DIR__ . '/../../../config.php';
 
-// Lưu ý: Không cần require 'db.php' nữa vì đã gộp vào config.php ở trên
-// Nếu bạn vẫn muốn tách riêng db.php thì giữ nguyên dòng require cũ, nhưng nhớ bỏ phần kết nối trong config.php đi.
+if (session_status() === PHP_SESSION_NONE) session_start();
 
-// 2. KHỞI TẠO SESSION
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// 3. KIỂM TRA QUYỀN ADMIN
 if (!isset($_SESSION['aid']) || $_SESSION['role'] !== 'admin') {
     header("Location: " . BASE_URL . "/page/HomePage/LoginPage/login.php");
     exit();
 }
 
-// 4. ĐỊNH NGHĨA URL TIỆN ÍCH
 $url_admin = BASE_URL . '/page/AdminPage/';
-// Fix: Trỏ thẳng vào file logout.php thay vì login.php?logout=true
 $url_logout = BASE_URL . '/page/HomePage/LoginPage/logout.php';
 
-// 5. HÀM HỖ TRỢ FORMAT TIỀN
 if (!function_exists('formatCurrency')) {
     function formatCurrency($amount)
     {
@@ -48,53 +36,80 @@ if (!function_exists('formatCurrency')) {
             overflow-x: hidden;
         }
 
-        #wrapper {
-            display: flex;
-        }
-
+        /* --- [1] CỐ ĐỊNH SIDEBAR (FIXED POSITION) --- */
         #sidebar-wrapper {
-            min-height: 100vh;
-            width: 250px;
-            margin-left: -250px;
-            transition: margin .25s ease-out;
+            position: fixed;
+            /* Giúp sidebar đứng yên, không cuộn theo trang */
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 220px;
+            /* Độ rộng cố định */
+            z-index: 1000;
             background: #135E4B;
             color: #fff;
+            overflow-y: auto;
+            /* Cho phép cuộn riêng trong menu nếu quá dài */
+            transition: all 0.3s ease;
+            /* Hiệu ứng trượt mượt mà */
+            /* Ẩn thanh cuộn của sidebar cho đẹp */
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
 
-        #sidebar-wrapper .sidebar-heading {
-            padding: 1.2rem;
+        #sidebar-wrapper::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* --- [2] ĐẨY NỘI DUNG CHÍNH QUA PHẢI --- */
+        #page-content-wrapper {
+            width: 100%;
+            margin-left: 220px;
+            /* Phải khớp với width của sidebar */
+            transition: all 0.3s ease;
+            min-height: 100vh;
+        }
+
+        /* --- [3] TRẠNG THÁI KHI ĐÓNG MENU (TOGGLED) --- */
+        #wrapper.toggled #sidebar-wrapper {
+            margin-left: -220px;
+            /* Ẩn sidebar sang trái */
+        }
+
+        #wrapper.toggled #page-content-wrapper {
+            margin-left: 0;
+            /* Nội dung tràn ra toàn màn hình */
+        }
+
+        /* Style cho các link trong menu */
+        .sidebar-heading {
+            padding: 1.5rem 1rem;
             font-size: 1.2rem;
             background: #0e4638;
             text-align: center;
             font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            /* Giữ tiêu đề menu luôn ở trên cùng */
         }
 
-        #sidebar-wrapper .list-group {
-            width: 250px;
-        }
-
-        #sidebar-wrapper .list-group-item {
+        .list-group-item {
             background: #135E4B;
-            color: #e9ecef;
+            color: #d1d3e2;
             border: none;
-            padding: 15px 20px;
+            padding: 12px 15px;
+            /* [CẬP NHẬT] Giảm khoảng cách để tiết kiệm chiều dọc */
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        #sidebar-wrapper .list-group-item:hover {
+        .list-group-item:hover {
             background: #1aa17f;
             color: #fff;
             text-decoration: none;
             padding-left: 25px;
+            /* Hiệu ứng hover đẩy nhẹ */
             transition: 0.2s;
-        }
-
-        #wrapper.toggled #sidebar-wrapper {
-            margin-left: 0;
-        }
-
-        #page-content-wrapper {
-            width: 100%;
         }
 
         .card {
@@ -103,6 +118,14 @@ if (!function_exists('formatCurrency')) {
             box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
         }
     </style>
+
+    <script>
+        // Kiểm tra ngay trong thẻ head xem user đã đóng menu chưa
+        if (localStorage.getItem("sidebar_state") === "toggled") {
+            // Nếu đã đóng, thêm class toggled vào html hoặc body ngay lập tức để CSS ẩn nó đi trước khi vẽ
+            document.write('<style>#sidebar-wrapper { margin-left: -220px !important; } #page-content-wrapper { margin-left: 0 !important; }</style>');
+        }
+    </script>
 </head>
 
 <body>
@@ -116,20 +139,27 @@ if (!function_exists('formatCurrency')) {
                 <a href="<?php echo $url_admin; ?>OrderPage/orders_list.php" class="list-group-item"><i class="fas fa-file-invoice-dollar mr-2"></i> Đơn hàng</a>
                 <a href="<?php echo $url_admin; ?>UserPage/users_list.php" class="list-group-item"><i class="fas fa-users mr-2"></i> Người dùng</a>
                 <a href="<?php echo $url_admin; ?>ReportsRevenuePage/reports_revenue.php" class="list-group-item"><i class="fas fa-chart-line mr-2"></i> Báo cáo</a>
-                <div class="dropdown-divider border-secondary"></div>
+
+                <div class="dropdown-divider border-secondary my-3"></div>
                 <a href="<?php echo $url_logout; ?>" class="list-group-item text-warning font-weight-bold" onclick="return confirm('Đăng xuất ngay?');">
                     <i class="fas fa-sign-out-alt mr-2"></i> Đăng xuất
                 </a>
             </div>
         </div>
+
         <div id="page-content-wrapper">
-            <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom px-4">
-                <button class="btn btn-outline-success btn-sm" id="menu-toggle"><i class="fas fa-bars"></i> Menu</button>
+            <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom px-4 shadow-sm sticky-top">
+                <button class="btn btn-success btn-sm" id="menu-toggle"><i class="fas fa-bars"></i></button>
                 <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
-                    <li class="nav-item">
-                        <span class="nav-link font-weight-bold text-dark">
-                            <i class="fas fa-user-circle mr-1"></i> Xin chào, <?php echo isset($_SESSION['fullname']) ? $_SESSION['fullname'] : 'Admin'; ?>
-                        </span>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle font-weight-bold text-dark" href="#" id="navbarDropdown" role="button" data-toggle="dropdown">
+                            <i class="fas fa-user-circle mr-1"></i> <?php echo isset($_SESSION['fullname']) ? $_SESSION['fullname'] : 'Admin'; ?>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="#">Hồ sơ</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-danger" href="<?php echo $url_logout; ?>">Đăng xuất</a>
+                        </div>
                     </li>
                 </ul>
             </nav>
