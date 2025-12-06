@@ -150,16 +150,11 @@ if (!function_exists('formatCurrency')) {
         <div id="page-content-wrapper">
             <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom px-4 shadow-sm sticky-top">
                 <button class="btn btn-success btn-sm" id="menu-toggle"><i class="fas fa-bars"></i></button>
-                <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle font-weight-bold text-dark" href="#" id="navbarDropdown" role="button" data-toggle="dropdown">
+                <ul class="navbar-nav ml-auto mt-2 mt-lg-0">s
+                    <li class="nav-item">
+                        <span class="nav-link font-weight-bold text-dark">
                             <i class="fas fa-user-circle mr-1"></i> <?php echo isset($_SESSION['fullname']) ? $_SESSION['fullname'] : 'Admin'; ?>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="#">Hồ sơ</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item text-danger" href="<?php echo $url_logout; ?>">Đăng xuất</a>
-                        </div>
+                        </span>
                     </li>
                 </ul>
             </nav>
