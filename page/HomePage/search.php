@@ -8,7 +8,7 @@ $keyword = isset($_GET['keyword']) ? trim($_GET['keyword']) : '';
 $cat_input = isset($_GET['category']) ? $_GET['category'] : '';
 $price_min = isset($_GET['price_min']) ? intval($_GET['price_min']) : '';
 $price_max = isset($_GET['price_max']) ? intval($_GET['price_max']) : '';
-// Sắp xếp mặc định theo độ liên quan
+// Sắp xếp theo độ liên quan
 $sort = isset($_GET['sort']) ? $_GET['sort'] : 'relevance';
 
 // 2. URL RESET CHO SIDEBAR (Giữ lại từ khóa, chỉ xóa lọc)
@@ -24,13 +24,14 @@ $sql = "SELECT p.*, c.name as cat_name FROM products p
 $params = [];
 $types = "";
 
-// GHI CHÚ: CHỈ TÌM KIẾM THEO TÊN
 if (!empty($keyword)) {
+    // Tìm bằng tên
     $sql .= " AND p.name LIKE ?";
     $params[] = "%$keyword%";
     $types .= "s";
 }
 
+// Lọc Danh mục
 if (!empty($cat_input)) {
     $id_array = explode(',', $cat_input);
     $id_array = array_map('intval', $id_array);
@@ -41,6 +42,7 @@ if (!empty($cat_input)) {
     }
 }
 
+// Lọc Giá
 if (!empty($price_min)) {
     $sql .= " AND p.price >= ?";
     $params[] = $price_min;
@@ -68,12 +70,15 @@ switch ($sort) {
         break;
     case 'relevance':
     default:
+        // Tên bắt đầu bằng từ khóa
+        // Tên chứa từ khóa
         if (!empty($keyword)) {
-            // Dùng ngoặc đơn để gom nhóm điều kiện OR
-            $sql .= " AND (p.name LIKE ? OR p.description LIKE ?)";
-            $params[] = "%$keyword%";
-            $params[] = "%$keyword%";
-            $types .= "ss";
+            $sql .= " ORDER BY (CASE 
+                        WHEN p.name LIKE ? THEN 1 
+                        ELSE 2 
+                      END) ASC, p.pid DESC";
+            $params[] = "$keyword%";
+            $types .= "s";
         } else {
             $sql .= " ORDER BY p.pid DESC";
         }
