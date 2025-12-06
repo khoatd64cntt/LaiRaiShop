@@ -2,9 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Máy chủ: 127.0.0.1
+-- Thời gian đã tạo: Th12 06, 2025 lúc 04:37 PM
+-- Phiên bản máy phục vụ: 10.4.32-MariaDB
+-- Phiên bản PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -50,7 +51,8 @@ INSERT INTO `acc` (`aid`, `afname`, `alname`, `email`, `phone`, `username`, `pas
 (6, 'Hoàng', 'Văn Em', 'user2@gmail.com', '0902222222', 'user_em', '123456', 'user'),
 (7, 'Vũ', 'Thị Hoa', 'user3@gmail.com', '0902333333', 'user_hoa', '123456', 'user'),
 (8, 'Đỗ', 'Minh Khoa', 'user4@gmail.com', '0902444444', 'user_khoa', '123456', 'user'),
-(9, '', '', 'kh@gmail.con', '0123456789', 'user_kien', '123456', 'admin');
+(9, 'Võ', 'Văn Kiên', 'user5@gmail.com', '0123456789', 'user_kien', '123456', 'user'),
+(11, '', '', 'thongnguyen.111004@gmail.com', '0902444445', 'seller_khoi', '123456', 'seller');
 
 -- --------------------------------------------------------
 
@@ -87,6 +89,7 @@ INSERT INTO `cart` (`aid`, `pid`, `quantity`) VALUES
 CREATE TABLE `categories` (
   `cid` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
+  `image` varchar(255) DEFAULT NULL,
   `parent_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -94,21 +97,21 @@ CREATE TABLE `categories` (
 -- Đang đổ dữ liệu cho bảng `categories`
 --
 
-INSERT INTO `categories` (`cid`, `name`, `parent_id`) VALUES
-(1, 'Điện tử', NULL),
-(2, 'Thời trang', NULL),
-(3, 'Gia dụng', NULL),
-(4, 'Sách & Văn phòng', NULL),
-(5, 'Điện thoại', 1),
-(6, 'Laptop', 1),
-(7, 'Phụ kiện điện tử', 1),
-(8, 'Áo nam', 2),
-(9, 'Áo nữ', 2),
-(10, 'Giày dép', 2),
-(11, 'Túi xách', 2),
-(12, 'Nội thất', 3),
-(13, 'Đồ bếp', 3),
-(14, 'Cây cảnh', 3);
+INSERT INTO `categories` (`cid`, `name`, `image`, `parent_id`) VALUES
+(1, 'Điện tử', 'https://down-vn.img.susercontent.com/file/978b9e4cb61c611aaaf58664fae133c5_tn', NULL),
+(2, 'Thời trang', 'https://down-vn.img.susercontent.com/file/687f3967b7c2fe6a134a2c11894eea4b_tn', NULL),
+(3, 'Gia dụng', 'https://down-vn.img.susercontent.com/file/7abfbfee3c4844652b4a8245e473d857@resize_w320_nl.webp', NULL),
+(4, 'Sách & Văn phòng', 'https://down-vn.img.susercontent.com/file/36013311815c55d303b0e6c62d6a8139@resize_w320_nl.webp', NULL),
+(5, 'Điện thoại', 'https://down-vn.img.susercontent.com/file/31234a27876fb89cd522d7e3db1ba5ca_tn', 1),
+(6, 'Laptop', 'https://down-vn.img.susercontent.com/file/c3f3edfaa9f6dafc4825b77d8449999d_tn', 1),
+(7, 'Phụ kiện điện tử', 'https://down-vn.img.susercontent.com/file/ec14dd4fc238e676e43be2a911414d4d_tn', 1),
+(8, 'Áo nam', 'https://down-vn.img.susercontent.com/file/687f3967b7c2fe6a134a2c11894eea4b_tn', 2),
+(9, 'Áo nữ', 'https://down-vn.img.susercontent.com/file/75ea42f9eca124e9cb3cde744c060e4d_tn', 2),
+(10, 'Giày dép', 'https://down-vn.img.susercontent.com/file/74ca517e1fa74dc4d974e5d03c3139de_tn', 2),
+(11, 'Túi xách', 'https://down-vn.img.susercontent.com/file/fa6ada2555e8e51f369718bbc92ccc52@resize_w320_nl.webp', 2),
+(12, 'Nội thất', 'https://down-vn.img.susercontent.com/file/24b194a695ea59d384768b7b471d563f_tn', 3),
+(13, 'Đồ bếp', 'https://down-vn.img.susercontent.com/file/e4fbccba5e1189d1141b9d6188af79c0@resize_w320_nl.webp', 3),
+(14, 'Cây cảnh', 'https://down-vn.img.susercontent.com/file/49119e891a44fa135f5f6f5fd4cfc747@resize_w320_nl.webp', 3);
 
 -- --------------------------------------------------------
 
@@ -156,6 +159,7 @@ CREATE TABLE `orders` (
   `note` text DEFAULT NULL,
   `order_date` datetime NOT NULL DEFAULT current_timestamp(),
   `total_amount` decimal(20,2) DEFAULT NULL,
+  `commission_fee` decimal(20,2) DEFAULT 0.00,
   `status` enum('pending','paid','shipped','completed','cancelled') NOT NULL DEFAULT 'pending',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -164,18 +168,17 @@ CREATE TABLE `orders` (
 -- Đang đổ dữ liệu cho bảng `orders`
 --
 
-INSERT INTO `orders` (`oid`, `aid`, `fullname`, `phone`, `address`, `note`, `order_date`, `total_amount`, `status`, `created_at`) VALUES
-(1, 5, '', '', '', NULL, '2025-11-13 19:44:03', 3190000.00, 'cancelled', '2025-11-30 16:26:52'),
-(2, 5, '', '', '', NULL, '2025-11-14 19:44:03', 5990000.00, 'pending', '2025-11-30 16:26:52'),
-(3, 6, '', '', '', NULL, '2025-11-18 19:44:03', 30990000.00, 'pending', '2025-11-30 16:26:52'),
-(4, 7, '', '', '', NULL, '2025-11-19 19:44:03', 890000.00, 'completed', '2025-11-30 16:26:52'),
-(5, 7, '', '', '', NULL, '2025-11-21 19:44:03', 1840000.00, 'completed', '2025-11-30 16:26:52'),
-(6, 6, 'user_em', '0902222222', 'adas', 'áda', '2025-11-30 23:27:47', 3900000.00, 'completed', '2025-11-30 16:27:47'),
-(7, 2, 'seller_an', '0901111111', 'NHA TRANG', 'GIẢM GIÁ LÁO', '2025-11-30 23:49:54', 99999999.99, 'completed', '2025-11-30 16:49:54'),
-(8, 2, 'seller_an', '0901111111', 'DRGD', 'DFGD', '2025-11-30 23:52:08', 99999999.99, 'completed', '2025-11-30 16:52:08'),
-(9, 8, 'user_khoa', '0902444444', 'chiết', 'uy', '2025-12-01 02:04:14', 1110000.00, 'completed', '2025-11-30 19:04:14'),
-(10, 6, 'user_em', '0902222222', 'tt', 'tt', '2025-12-01 02:09:05', 99999999.99, 'completed', '2025-11-30 19:09:05'),
-(11, 8, 'user_khoa', '0902444444', 'rr', 'rr', '2025-12-01 02:32:39', 1999999999.80, 'pending', '2025-11-30 19:32:39');
+INSERT INTO `orders` (`oid`, `aid`, `fullname`, `phone`, `address`, `note`, `order_date`, `total_amount`, `commission_fee`, `status`, `created_at`) VALUES
+(1, 8, 'user_khoa', '0902444444', 'ttt', 'rr', '2025-12-01 09:31:33', 299999999.97, 15000000.00, 'completed', '2025-12-01 02:31:33'),
+(2, 8, 'user_khoa', '0902444444', 'tt', 'ee', '2025-12-01 09:32:32', 699999999.93, 35000000.00, 'completed', '2025-12-01 02:32:32'),
+(5, 8, 'user_khoa', '0902444444', 'vtt', 'dđ', '2025-12-03 19:10:31', 1590000.00, 79500.00, 'completed', '2025-12-03 12:10:31'),
+(6, 8, 'user_khoa', '0902444444', '2 Đ. Nguyễn Đình Chiểu', '123', '2025-12-06 20:28:53', 1590000.00, 0.00, 'completed', '2025-12-06 13:28:53'),
+(7, 8, 'user_khoa', '0902444444', '2 Đ. Nguyễn Đình Chiểu', '23456', '2025-12-06 20:32:23', 32990000.00, 0.00, 'completed', '2025-12-06 13:32:23'),
+(8, 8, 'user_khoa', '0902444444', '2 Đ. Nguyễn Đình Chiểu', '111', '2025-12-06 20:56:17', 99999999999.99, 0.00, 'cancelled', '2025-12-06 13:56:17'),
+(9, 8, 'user_khoa', '0902444444', '2 Đ. Nguyễn Đình Chiểu', '13', '2025-12-06 20:57:56', 99999999999.99, 0.00, 'completed', '2025-12-06 13:57:56'),
+(10, 11, 'seller_khoi', '0902444445', '2 Đ. Nguyễn Đình Chiểu', 'fghgf', '2025-12-06 21:13:10', 99999999999.99, 0.00, 'cancelled', '2025-12-06 14:13:10'),
+(11, 8, 'user_khoa', '0902444444', '2 Đ. Nguyễn Đình Chiểu', '111', '2025-12-06 21:17:53', 2640000.00, 0.00, 'completed', '2025-12-06 14:17:53'),
+(12, 8, 'user_khoa', '0902444444', '2 Đ. Nguyễn Đình Chiểu', '231', '2025-12-06 21:22:04', 180000.00, 0.00, 'pending', '2025-12-06 14:22:04');
 
 -- --------------------------------------------------------
 
@@ -187,7 +190,7 @@ CREATE TABLE `order_items` (
   `oid` int(11) NOT NULL,
   `pid` int(11) NOT NULL,
   `quantity` int(11) NOT NULL,
-  `price` decimal(10,2) NOT NULL
+  `price` decimal(20,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -195,22 +198,17 @@ CREATE TABLE `order_items` (
 --
 
 INSERT INTO `order_items` (`oid`, `pid`, `quantity`, `price`) VALUES
-(1, 8, 1, 199000.00),
-(1, 11, 1, 2990000.00),
-(2, 5, 1, 5990000.00),
-(3, 3, 1, 32990000.00),
-(3, 6, 1, 2390000.00),
-(4, 10, 1, 890000.00),
-(5, 19, 10, 1800000.00),
-(6, 18, 12, 250000.00),
-(6, 19, 5, 180000.00),
-(7, 22, 1, 99999999.99),
-(8, 22, 1, 99999999.99),
-(9, 18, 3, 250000.00),
-(9, 19, 2, 180000.00),
-(10, 17, 1, 1690000.00),
-(10, 22, 1, 99999999.99),
-(11, 22, 20, 99999999.99);
+(1, 22, 3, 99999999.99),
+(2, 22, 7, 99999999.99),
+(5, 13, 1, 1590000.00),
+(6, 13, 1, 1590000.00),
+(7, 3, 1, 32990000.00),
+(8, 22, 1, 99999999999.99),
+(9, 22, 1, 99999999999.99),
+(10, 22, 1, 99999999999.99),
+(11, 6, 1, 2390000.00),
+(11, 18, 1, 250000.00),
+(12, 19, 1, 180000.00);
 
 -- --------------------------------------------------------
 
@@ -222,9 +220,9 @@ CREATE TABLE `products` (
   `pid` int(11) NOT NULL,
   `sid` int(11) NOT NULL,
   `cid` int(11) DEFAULT NULL,
-  `name` varchar(150) NOT NULL,
+  `name` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_vietnamese_ci NOT NULL,
   `description` text DEFAULT NULL,
-  `price` decimal(10,2) NOT NULL,
+  `price` decimal(20,2) NOT NULL,
   `stock` int(11) NOT NULL DEFAULT 0,
   `status` enum('pending','approved','rejected','hidden') NOT NULL DEFAULT 'pending',
   `main_image` varchar(255) DEFAULT NULL
@@ -235,26 +233,26 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`pid`, `sid`, `cid`, `name`, `description`, `price`, `stock`, `status`, `main_image`) VALUES
-(1, 1, 5, 'iPhone 15 Pro Max 256GB', 'Chip A17 Pro, Camera 48MP, Titanium, Dynamic Island, Màn hình 6.7 inch Super Retina XDR', 29990000.00, 15, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img1.png'),
-(2, 1, 5, 'Samsung Galaxy S24 Ultra', 'Snapdragon 8 Gen 3, Camera 200MP, Bút S Pen, Màn hình 6.8 inch AMOLED 2X', 27990000.00, 20, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img2.jpg'),
-(3, 1, 6, 'MacBook Air M3 13 inch', 'Chip M3 8-core, RAM 16GB, SSD 512GB, Màn hình Liquid Retina 13.6 inch', 32990000.00, 10, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img3.jpg'),
-(4, 1, 6, 'Dell XPS 15 9530', 'Intel Core i7-13700H, RTX 4060, RAM 32GB, SSD 1TB, Màn hình 15.6 inch OLED 3.5K', 45990000.00, 8, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img4.jpg'),
-(5, 1, 7, 'AirPods Pro 2', 'Chống ồn chủ động, Chip H2, USB-C, Âm thanh Spatial Audio', 5990000.00, 50, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img5.jpg'),
-(6, 1, 7, 'Chuột Logitech MX Master 3S', 'Wireless, Bluetooth + USB-C, 8000 DPI, Pin 70 ngày', 2390000.00, 30, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img6.jpg'),
-(7, 2, 8, 'Áo sơ mi nam Oxford', '100% cotton, form slim fit, nhiều màu sắc, phong cách công sở', 350000.00, 100, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img7.jpg'),
-(8, 2, 8, 'Áo thun nam basic Uniqlo', 'Vải voan nhẹ, họa tiết hoa nhí, thiết kế xòe nhẹ, phong cách vintage', 199000.00, 200, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img8.jpg'),
-(9, 2, 9, 'Váy maxi hoa nữ', 'Vải voan nhẹ, họa tiết hoa nhí, thiết kế xòe nhẹ, phong cách vintage', 450000.00, 80, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img9.jpg'),
-(10, 2, 9, 'Áo blazer nữ công sở', 'Chất liệu cao cấp, form chuẩn, phù hợp môi trường văn phòng', 890000.00, 45, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img10.jpg'),
-(11, 2, 10, 'Giày sneaker Nike Air Force 1', 'abc', 2990000.00, 60, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img11.jpg'),
-(12, 2, 10, 'Dép Adidas Adilette', 'Dép quai ngang, êm ái, chống nước, phù hợp đi biển, bể bơi', 890000.00, 120, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img12.jpg'),
-(13, 2, 11, 'Túi xách nữ Charles & Keith', 'Da PU cao cấp, nhiều ngăn, quai xách + đeo chéo, size 25x18cm', 1590000.00, 35, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img13.jpg'),
-(14, 3, 12, 'Bàn làm việc gỗ tự nhiên', 'Gỗ sồi 1.2m x 0.6m, thiết kế tối giản Scandinavian, chống trầy xước', 3990000.00, 12, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img14.jpg'),
-(15, 3, 12, 'Ghế gaming DXRacer', 'Da PU cao cấp, nâng hạ khí nén, tựa lưng 135 độ, tải trọng 150kg', 5490000.00, 18, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img15.jpg'),
-(16, 3, 13, 'Nồi cơm điện Panasonic 1.8L', 'Công nghệ nấu IH, lòng nồi chống dính, 6 chế độ nấu, hẹn giờ 24h', 2890000.00, 25, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img16.jpg'),
-(17, 3, 13, 'Bộ nồi inox 304 Happycook', 'Inox 3 đáy, 5 món, dùng được bếp từ, tặng kèm vá múc', 1690000.00, 40, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img17.jpg'),
-(18, 3, 14, 'Cây kim ngân', 'Chiều cao 40-50cm, dễ chăm sóc, hợp phong thủy, tặng chậu sứ', 250000.00, 100, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img18.jpg'),
-(19, 3, 14, 'Cây lưỡi hổ', 'Lọc không khí, chịu hạn tốt, chiều cao 30-40cm, chậu nhựa composite', 180000.00, 150, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img19.jpg'),
-(22, 1, 2, 'Trần Đăng Khoa', 'RẤT ĐẸP TRAI', 99999999.99, 1, 'approved', '/images/products/1764521096_Screenshot 2025-06-22 205801.png');
+(1, 1, 5, 'iPhone 15 Pro Max 256GB', 'Chip A17 Pro, Camera 48MP, Titanium, Dynamic Island, Màn hình 6.7 inch Super Retina XDR', 29990000.00, 10, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img1.png'),
+(2, 1, 5, 'Samsung Galaxy S24 Ultra', 'Snapdragon 8 Gen 3, Camera 200MP, Bút S Pen, Màn hình 6.8 inch AMOLED 2X', 27990000.00, 10, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img2.jpg'),
+(3, 1, 6, 'MacBook Air M3 13 inch', 'Chip M3 8-core, RAM 16GB, SSD 512GB, Màn hình Liquid Retina 13.6 inch', 32990000.00, 9, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img3.jpg'),
+(4, 1, 6, 'Dell XPS 15 9530', 'Intel Core i7-13700H, RTX 4060, RAM 32GB, SSD 1TB, Màn hình 15.6 inch OLED 3.5K', 45990000.00, 10, 'pending', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img4.jpg'),
+(5, 1, 7, 'AirPods Pro 2', 'Chống ồn chủ động, Chip H2, USB-C, Âm thanh Spatial Audio', 5990000.00, 10, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img5.jpg'),
+(6, 1, 7, 'Chuột Logitech MX Master 3S', 'Wireless, Bluetooth + USB-C, 8000 DPI, Pin 70 ngày', 2390000.00, 15, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img6.jpg'),
+(7, 2, 8, 'Áo sơ mi nam Oxford', '100% cotton, form slim fit, nhiều màu sắc, phong cách công sở', 350000.00, 10, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img7.jpg'),
+(8, 2, 8, 'Áo thun nam basic Uniqlo', 'Vải voan nhẹ, họa tiết hoa nhí, thiết kế xòe nhẹ, phong cách vintage', 199000.00, 10, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img8.jpg'),
+(9, 2, 9, 'Váy maxi hoa nữ', 'Vải voan nhẹ, họa tiết hoa nhí, thiết kế xòe nhẹ, phong cách vintage', 450000.00, 16, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img9.jpg'),
+(10, 2, 9, 'Áo blazer nữ công sở', 'Chất liệu cao cấp, form chuẩn, phù hợp môi trường văn phòng', 890000.00, 10, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img10.jpg'),
+(11, 2, 10, 'Giày sneaker Nike Air Force 1', 'abc', 2990000.00, 10, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img11.jpg'),
+(12, 2, 10, 'Dép Adidas Adilette', 'Dép quai ngang, êm ái, chống nước, phù hợp đi biển, bể bơi', 890000.00, 7, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img12.jpg'),
+(13, 2, 11, 'Túi xách nữ Charles & Keith', 'Da PU cao cấp, nhiều ngăn, quai xách + đeo chéo, size 25x18cm', 1590000.00, 8, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img13.jpg'),
+(14, 3, 12, 'Bàn làm việc gỗ tự nhiên', 'Gỗ sồi 1.2m x 0.6m, thiết kế tối giản Scandinavian, chống trầy xước', 3990000.00, 10, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img14.jpg'),
+(15, 3, 12, 'Ghế gaming DXRacer', 'Da PU cao cấp, nâng hạ khí nén, tựa lưng 135 độ, tải trọng 150kg', 5490000.00, 10, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img15.jpg'),
+(16, 3, 13, 'Nồi cơm điện Panasonic 1.8L', 'Công nghệ nấu IH, lòng nồi chống dính, 6 chế độ nấu, hẹn giờ 24h', 2890000.00, 10, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img16.jpg'),
+(17, 3, 13, 'Bộ nồi inox 304 Happycook', 'Inox 3 đáy, 5 món, dùng được bếp từ, tặng kèm vá múc', 1690000.00, 10, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img17.jpg'),
+(18, 3, 14, 'Cây kim ngân', 'Chiều cao 40-50cm, dễ chăm sóc, hợp phong thủy, tặng chậu sứ', 250000.00, 8, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img18.jpg'),
+(19, 3, 14, 'Cây lưỡi hổ', 'Lọc không khí, chịu hạn tốt, chiều cao 30-40cm, chậu nhựa composite', 180000.00, 0, 'approved', 'https://vbrgfydchpkbzhfinmvx.supabase.co/storage/v1/object/public/Image_Shop/Img_Url/img19.jpg'),
+(22, 1, 2, 'Trần Đăng Khoa', 'RẤT ĐẸP TRAI', 99999999999.99, 8, 'approved', '/images/products/1764521096_Screenshot 2025-06-22 205801.png');
 
 -- --------------------------------------------------------
 
@@ -326,17 +324,20 @@ CREATE TABLE `shops` (
   `sid` int(11) NOT NULL,
   `aid` int(11) NOT NULL,
   `shop_name` varchar(100) NOT NULL,
-  `description` varchar(255) DEFAULT NULL
+  `description` varchar(255) DEFAULT NULL,
+  `status` enum('active','banned') DEFAULT 'active'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `shops`
 --
 
-INSERT INTO `shops` (`sid`, `aid`, `shop_name`, `description`) VALUES
-(1, 2, 'Tech Store An', 'Chuyên điện thoại, laptop, phụ kiện công nghệ chính hãng'),
-(2, 3, 'Fashion Binh Shop', 'Thời trang nam nữ, túi xách, giày dép trendy'),
-(3, 4, 'Home & Garden Cường', 'Đồ gia dụng, nội thất, cây cảnh cho ngôi nhà đẹp');
+INSERT INTO `shops` (`sid`, `aid`, `shop_name`, `description`, `status`) VALUES
+(1, 2, 'Tech Store An', 'Chuyên điện thoại, laptop, phụ kiện công nghệ chính hãng', 'active'),
+(2, 3, 'Fashion Binh Shop', 'Thời trang nam nữ, túi xách, giày dép trendy', 'active'),
+(3, 4, 'Home & Garden Cường', 'Đồ gia dụng, nội thất, cây cảnh cho ngôi nhà đẹp', 'active'),
+(4, 2, 'ANH ZAI SAY HI', 'Chuyên bán các anh zai say 2', 'active'),
+(5, 11, 'ANH ZAI SAY HI 2', 'dfdsfsdfs', 'active');
 
 -- --------------------------------------------------------
 
@@ -462,13 +463,13 @@ ALTER TABLE `wishlist`
 -- AUTO_INCREMENT cho bảng `acc`
 --
 ALTER TABLE `acc`
-  MODIFY `aid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `aid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT cho bảng `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `cid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `cid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT cho bảng `messages`
@@ -480,7 +481,7 @@ ALTER TABLE `messages`
 -- AUTO_INCREMENT cho bảng `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `oid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `oid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT cho bảng `products`
@@ -504,7 +505,7 @@ ALTER TABLE `reviews`
 -- AUTO_INCREMENT cho bảng `shops`
 --
 ALTER TABLE `shops`
-  MODIFY `sid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `sid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Các ràng buộc cho các bảng đã đổ
