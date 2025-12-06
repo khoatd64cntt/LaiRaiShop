@@ -337,19 +337,32 @@ ul {
 }
 
 .lairai-control {
-    width: 35px;
-    height: 60px;
-    background-color: rgba(0, 0, 0, 0.18);
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50%;
+    background-color: #fff !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    color: #333 !important;
     opacity: 0;
+    position: absolute !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    bottom: auto !important;
     z-index: 20;
-    transition: opacity 0.3s;
     display: flex;
     align-items: center;
     justify-content: center;
-    position: absolute !important;
-    bottom: auto !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
+
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.carousel-control-prev.lairai-control {
+    left: 10px !important;
+}
+
+.carousel-control-next.lairai-control {
+    right: 10px !important;
 }
 
 .hero-banner-main:hover .lairai-control {
@@ -357,7 +370,14 @@ ul {
 }
 
 .lairai-control:hover {
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: #135E4B !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgba(19, 94, 75, 0.4);
+    transform: translateY(-50%) scale(1.1) !important;
+}
+
+.lairai-control i {
+    font-size: 14px;
 }
 
 /* --- CATEGORY SECTION --- */

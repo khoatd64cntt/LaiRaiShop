@@ -1,7 +1,5 @@
 <?php
-session_start();
-// SỬA: Lùi 3 cấp để tìm db
-require_once '../../../db/db.php';
+require_once '../../../config.php';
 
 $error = "";
 $success = "";

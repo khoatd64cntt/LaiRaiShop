@@ -184,8 +184,12 @@ if (isset($_SESSION['aid'])) {
                         <div class="carousel-item"><img src="https://down-vn.img.susercontent.com/file/sg-11134258-821ey-mh9ynnduj66mcf@resize_w1594_nl.webp"></div>
                         <div class="carousel-item"><img src="https://down-vn.img.susercontent.com/file/vn-11134258-820l4-mh8pziequo7jdd@resize_w797_nl.webp"></div>
                     </div>
-                    <a class="carousel-control-prev lairai-control" href="#lairaiCarousel" role="button" data-slide="prev"><span class="carousel-control-prev-icon"></span></a>
-                    <a class="carousel-control-next lairai-control" href="#lairaiCarousel" role="button" data-slide="next"><span class="carousel-control-next-icon"></span></a>
+                    <a class="carousel-control-prev lairai-control" href="#lairaiCarousel" role="button" data-slide="prev">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                    <a class="carousel-control-next lairai-control" href="#lairaiCarousel" role="button" data-slide="next">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
                 </div>
             </div>
             <div class="hero-banner-side">
