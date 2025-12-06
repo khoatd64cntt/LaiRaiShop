@@ -92,14 +92,7 @@ if (isset($_SESSION['aid'])) {
                         <input type="text" name="keyword" placeholder="Bao ship 0Đ - Đăng ký ngay để nhận ưu đãi hấp dẫn!">
                         <button type="submit"><i class="fas fa-search"></i></button>
                     </form>
-                    <div class="search-keywords">
-                        <?php
-                        $keywords = ["Sục Crocs", "Áo Khoác Nam", "iPhone 15 Pro Max", "Dép Lào", "Quần Bò Ống Rộng", "Túi Xách Nữ", "MacBook Air M3", "Nồi Cơm Điện", "Cây Cảnh"];
-                        foreach ($keywords as $kw) {
-                            echo '<a href="search.php?keyword=' . urlencode($kw) . '">' . $kw . '</a>';
-                        }
-                        ?>
-                    </div>
+                    
                 </div>
 
                 <div class="cart-icon has-dropdown">
