@@ -1,4 +1,5 @@
 <?php
+// File: page/HomePage/LoginPage/login.php
 session_start();
 
 // 1. KẾT NỐI CONFIG & DB
@@ -6,7 +7,6 @@ require_once __DIR__ . '/../../../config.php';
 require_once ROOT_PATH . '/db/db.php';
 
 // --- XỬ LÝ ĐĂNG XUẤT ---
-// Nếu link có ?logout=true thì xóa sạch session và reload trang
 if (isset($_GET['logout']) && $_GET['logout'] == 'true') {
     $_SESSION = array();
     if (ini_get("session.use_cookies")) {
@@ -18,12 +18,10 @@ if (isset($_GET['logout']) && $_GET['logout'] == 'true') {
     exit();
 }
 
-// Kiểm tra xem có đang ở "Cổng Mật" không
 $is_secret_gate = (isset($_GET['gate']) && $_GET['gate'] === 'admin_entry');
 $error = "";
 
 // --- ĐIỀU HƯỚNG NẾU ĐÃ ĐĂNG NHẬP ---
-// Nếu đã có session rồi thì không cho ở trang login nữa, đẩy đi ngay
 if (isset($_SESSION['aid'])) {
     if ($_SESSION['role'] === "admin") {
         header("Location: " . BASE_URL . "/page/AdminPage/dashboard.php");
@@ -32,7 +30,14 @@ if (isset($_SESSION['aid'])) {
         header("Location: " . BASE_URL . "/page/SellerPage/dashboard.php");
         exit;
     } else {
-        header("Location: " . BASE_URL . "/page/HomePage/homepage.php");
+        // [CHECK BỔ SUNG] Nếu là User nhưng đang có đơn Pending -> Chuyển sang trang chờ
+        $aid = $_SESSION['aid'];
+        $check = $conn->query("SELECT status FROM shops WHERE aid = $aid AND status = 'pending'");
+        if ($check->num_rows > 0) {
+            header("Location: " . BASE_URL . "/page/HomePage/AccountPage/register_seller.php");
+        } else {
+            header("Location: " . BASE_URL . "/page/HomePage/homepage.php");
+        }
         exit;
     }
 }
@@ -51,51 +56,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($password === $user['password']) {
 
-            // =================================================================
-            // LOGIC PHÂN QUYỀN NGHIÊM NGẶT
-            // =================================================================
-
             if ($is_secret_gate) {
-                // --- TRƯỜNG HỢP 1: ĐANG Ở CỔNG ADMIN ---
-
+                // CỔNG ADMIN
                 if ($user['role'] === 'admin') {
-                    // Đúng là Admin -> Mời vào
                     $_SESSION['aid'] = $user['aid'];
                     $_SESSION['role'] = $user['role'];
                     $_SESSION['fullname'] = !empty(trim($user['afname'] . " " . $user['alname'])) ? trim($user['afname'] . " " . $user['alname']) : $user['username'];
                     header("Location: " . BASE_URL . "/page/AdminPage/dashboard.php");
                     exit;
                 } else {
-                    // Là User hoặc Seller nhưng đi nhầm cổng Admin -> BÁO LỖI TẠI CHỖ
                     $error = "CẢNH BÁO: Tài khoản này không có quyền truy cập trang Quản trị!";
                 }
             } else {
-                // --- TRƯỜNG HỢP 2: ĐANG Ở CỔNG THƯỜNG ---
-
+                // CỔNG THƯỜNG
                 if ($user['role'] === 'admin') {
-                    // Admin đi cổng thường -> Giả vờ sai pass
                     $error = "Tên đăng nhập hoặc mật khẩu không đúng!";
                 } else {
-                    // User/Seller đi cổng thường -> Mời vào
+                    // Đăng nhập thành công -> Lưu session
                     $_SESSION['aid'] = $user['aid'];
                     $_SESSION['role'] = $user['role'];
                     $_SESSION['fullname'] = !empty(trim($user['afname'] . " " . $user['alname'])) ? trim($user['afname'] . " " . $user['alname']) : $user['username'];
 
                     if ($user['role'] === "seller") {
+                        // Nếu là Seller -> Vào Dashboard Seller
                         header("Location: " . BASE_URL . "/page/SellerPage/dashboard.php");
                     } else {
-                        header("Location: " . BASE_URL . "/page/HomePage/homepage.php");
+                        // Nếu là User -> Kiểm tra xem có đang Pending duyệt shop không?
+                        $check_pending = $conn->query("SELECT status FROM shops WHERE aid = " . $user['aid'] . " AND status = 'pending'");
+
+                        if ($check_pending->num_rows > 0) {
+                            // Có shop đang chờ duyệt -> Vào trang thông báo chờ
+                            header("Location: " . BASE_URL . "/page/HomePage/AccountPage/register_seller.php");
+                        } else {
+                            // Không có shop hoặc chưa đăng ký -> Vào trang chủ
+                            header("Location: " . BASE_URL . "/page/HomePage/homepage.php");
+                        }
                     }
                     exit;
                 }
             }
-            // =================================================================
-
         } else {
             $error = "Mật khẩu không đúng!";
         }
     } else {
-        // --- CHECK ADMIN CỨNG (DEV) ---
         if ($username === "admin" && $password === "123456") {
             if ($is_secret_gate) {
                 $_SESSION['aid'] = 0;
