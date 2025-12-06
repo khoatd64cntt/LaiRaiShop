@@ -340,14 +340,16 @@ ul {
     width: 35px;
     height: 60px;
     background-color: rgba(0, 0, 0, 0.18);
-    top: 50%;
-    transform: translateY(-50%);
     opacity: 0;
     z-index: 20;
     transition: opacity 0.3s;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: absolute !important;
+    bottom: auto !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
 }
 
 .hero-banner-main:hover .lairai-control {

@@ -94,7 +94,7 @@ function getImgUrl($path)
                 <div class="top-bar-right">
                     <?php if (isset($_SESSION['aid'])): ?>
                         <span class="auth-link" style="color: white;">
-                            Xin chào, 
+                            Xin chào,
                             <a href="<?php echo BASE_URL; ?>/page/HomePage/profile.php" style="color: white; text-decoration: none;">
                                 <strong><?php echo htmlspecialchars($_SESSION['fullname'] ?? $_SESSION['username']); ?></strong>
                             </a>
@@ -199,7 +199,6 @@ function getImgUrl($path)
                         <div class="shop-name"><?= htmlspecialchars($product['shop_name'] ?? 'Shop Lai Rai') ?></div>
                         <div class="shop-status">Online vài phút trước</div>
                     </div>
-                    <a href="#" class="shop-btn"><i class="fas fa-store"></i> Xem Shop</a>
                 </div>
             </div>
 
@@ -423,11 +422,11 @@ function getImgUrl($path)
 
         $(document).ready(function() {
 
-            
+
             // --- XỬ LÝ NÚT MUA NGAY (ĐÃ SỬA) ---
             $('.btn-buy-now').click(function(e) {
                 e.preventDefault();
-                
+
                 // 1. Kiểm tra đăng nhập
                 if (!isLoggedIn) {
                     if (confirm("Bạn cần đăng nhập để mua hàng. Chuyển đến trang đăng nhập ngay?")) {

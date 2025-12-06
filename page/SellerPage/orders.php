@@ -45,7 +45,7 @@ $stmt_info->bind_param("i", $sid);
 $stmt_info->execute();
 $current_shop = $stmt_info->get_result()->fetch_assoc();
 
-// 2. XỬ LÝ CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG (ĐÃ SỬA LOGIC KHO)
+// 2. XỬ LÝ CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG (ĐÃ SỬA LỖI TRỪ KHO)
 if (isset($_POST['update_status'])) {
     $order_id = $_POST['oid'];
     $new_status = $_POST['status'];
@@ -59,31 +59,18 @@ if (isset($_POST['update_status'])) {
         // Chỉ xử lý nếu trạng thái thay đổi
         if ($old_status != $new_status) {
             
-            // --- LOGIC MỚI: XÁC ĐỊNH TRẠNG THÁI NÀO ĐANG GIỮ HÀNG ---
-            // 'active_held': Nhóm trạng thái mà hàng đã bị trừ khỏi kho (bao gồm cả Pending)
-            $active_held = ['pending', 'shipped', 'completed', 'paid']; 
-            
-            // Kiểm tra trạng thái cũ và mới có thuộc nhóm "đang giữ hàng" không
-            $is_old_held = in_array($old_status, $active_held);
-            $is_new_held = in_array($new_status, $active_held);
+            // Định nghĩa các trạng thái ĐÃ TRỪ KHO (Active)
+            // Pending: Giả định là CHƯA TRỪ KHO (vì bạn nói completed mới trừ)
+            $active_statuses = ['shipped', 'completed', 'paid']; 
 
-            // Xác định hành động:
-            // 1. TRỪ KHO (Deduct): Chỉ khi chuyển từ 'Hủy/Không giữ' -> 'Giữ hàng'
-            // (Ví dụ: Khôi phục đơn đã hủy -> Pending/Shipped)
-            $should_deduct = (!$is_old_held && $is_new_held);
-
-            // 2. HOÀN KHO (Refund): Chỉ khi chuyển từ 'Giữ hàng' -> 'Hủy/Không giữ'
-            // (Ví dụ: Pending/Shipped -> Cancelled)
-            $should_refund = ($is_old_held && !$is_new_held);
-
-            // 3. KHÔNG ĐỔI KHO: Nếu chuyển giữa các trạng thái đang giữ hàng (Ví dụ: Pending -> Shipped)
-            // thì không làm gì cả (vì hàng đã trừ lúc mua rồi).
+            $is_moving_to_active = in_array($new_status, $active_statuses) && !in_array($old_status, $active_statuses);
+            $is_moving_to_cancel = ($new_status == 'cancelled') && in_array($old_status, $active_statuses);
 
             $can_update = true;
             $error_msg = "";
 
-            // --- KIỂM TRA SỐ LƯỢNG (Chỉ kiểm tra nếu cần TRỪ KHO lại) ---
-            if ($should_deduct) {
+            // --- KIỂM TRA KHO (Chỉ khi chuyển từ Pending/Cancel -> Shipped/Completed) ---
+            if ($is_moving_to_active) {
                 $items = $conn->query("SELECT oi.pid, oi.quantity, p.stock, p.name 
                                        FROM order_items oi 
                                        JOIN products p ON oi.pid = p.pid 
@@ -92,7 +79,7 @@ if (isset($_POST['update_status'])) {
                 while ($item = $items->fetch_assoc()) {
                     if ($item['stock'] < $item['quantity']) {
                         $can_update = false;
-                        $error_msg = "Sản phẩm '" . $item['name'] . "' không đủ hàng để khôi phục (Kho: " . $item['stock'] . ", Cần: " . $item['quantity'] . ")";
+                        $error_msg = "Sản phẩm '" . $item['name'] . "' không đủ hàng (Kho: " . $item['stock'] . ", Cần: " . $item['quantity'] . ")";
                         break;
                     }
                 }
@@ -104,16 +91,16 @@ if (isset($_POST['update_status'])) {
                 $stmt->bind_param("si", $new_status, $order_id);
 
                 if ($stmt->execute()) {
-                    // A. THỰC HIỆN TRỪ KHO (Nếu khôi phục đơn từ Cancelled)
-                    if ($should_deduct) {
+                    // 1. TRỪ KHO: Nếu chuyển từ Pending/Cancelled -> Shipped/Completed
+                    if ($is_moving_to_active) {
                         $items_deduct = $conn->query("SELECT pid, quantity FROM order_items WHERE oid = $order_id");
                         while ($item = $items_deduct->fetch_assoc()) {
                             $conn->query("UPDATE products SET stock = stock - {$item['quantity']} WHERE pid = {$item['pid']}");
                         }
                     }
 
-                    // B. THỰC HIỆN HOÀN KHO (Nếu Hủy đơn đang chạy)
-                    if ($should_refund) {
+                    // 2. HOÀN KHO: Nếu chuyển từ Shipped/Completed -> Cancelled
+                    if ($is_moving_to_cancel) {
                         $items_refund = $conn->query("SELECT pid, quantity FROM order_items WHERE oid = $order_id");
                         while ($item = $items_refund->fetch_assoc()) {
                             $conn->query("UPDATE products SET stock = stock + {$item['quantity']} WHERE pid = {$item['pid']}");
