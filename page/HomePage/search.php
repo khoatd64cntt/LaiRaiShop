@@ -24,10 +24,9 @@ $sql = "SELECT p.*, c.name as cat_name FROM products p
 $params = [];
 $types = "";
 
-// GHI CHÚ: TÌM KIẾM CÓ PHÂN BIỆT DẤU TIẾNG VIỆT
+// GHI CHÚ: CHỈ TÌM KIẾM THEO TÊN
 if (!empty($keyword)) {
-    // Sử dụng BINARY để so sánh chính xác có dấu
-    $sql .= " AND BINARY p.name LIKE ?";
+    $sql .= " AND p.name LIKE ?";
     $params[] = "%$keyword%";
     $types .= "s";
 }
@@ -70,8 +69,8 @@ switch ($sort) {
     case 'relevance':
     default:
         if (!empty($keyword)) {
-            // Tìm kiếm có dấu trong cả name và description
-            $sql .= " AND (BINARY p.name LIKE ? OR BINARY p.description LIKE ?)";
+            // Dùng ngoặc đơn để gom nhóm điều kiện OR
+            $sql .= " AND (p.name LIKE ? OR p.description LIKE ?)";
             $params[] = "%$keyword%";
             $params[] = "%$keyword%";
             $types .= "ss";
@@ -161,7 +160,7 @@ if (isset($_SESSION['aid'])) {
 
                 <div class="search-box">
                     <form action="search.php" method="GET">
-                        <input type="text" name="keyword" placeholder="Bao ship 0đ - Đăng ký ngay để nhận ưu đãi hấp dẫn!">
+                        <input type="text" name="keyword" placeholder="Bao ship 0Đ - Đăng ký ngay để nhận ưu đãi hấp dẫn!">
                         <button type="submit"><i class="fas fa-search"></i></button>
                     </form>
                     <div class="search-keywords">
@@ -260,9 +259,9 @@ if (isset($_SESSION['aid'])) {
 
             <div class="sort-bar">
                 <span class="sort-label">Sắp xếp theo</span>
-                <a href="?keyword=<?php echo urlencode($keyword); ?>&sort=relevance&category=<?= $cat_input ?>" class="sort-btn <?php echo ($sort == 'relevance') ? 'active' : ''; ?>">Liên quan</a>
-                <a href="?keyword=<?php echo urlencode($keyword); ?>&sort=newest&category=<?= $cat_input ?>" class="sort-btn <?php echo ($sort == 'newest') ? 'active' : ''; ?>">Mới nhất</a>
-                <a href="?keyword=<?php echo urlencode($keyword); ?>&sort=sales&category=<?= $cat_input ?>" class="sort-btn <?php echo ($sort == 'sales') ? 'active' : ''; ?>">Bán chạy</a>
+                <a href="?keyword=<?php echo $keyword; ?>&sort=relevance&category=<?= $cat_input ?>" class="sort-btn <?php echo ($sort == 'relevance') ? 'active' : ''; ?>">Liên quan</a>
+                <a href="?keyword=<?php echo $keyword; ?>&sort=newest&category=<?= $cat_input ?>" class="sort-btn <?php echo ($sort == 'newest') ? 'active' : ''; ?>">Mới nhất</a>
+                <a href="?keyword=<?php echo $keyword; ?>&sort=sales&category=<?= $cat_input ?>" class="sort-btn <?php echo ($sort == 'sales') ? 'active' : ''; ?>">Bán chạy</a>
 
                 <div class="sort-price-dropdown">
                     <span class="<?php echo ($sort == 'price_asc' || $sort == 'price_desc') ? 'active-text' : ''; ?>">
@@ -274,8 +273,8 @@ if (isset($_SESSION['aid'])) {
                     </span>
                     <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
                     <div class="dropdown-content">
-                        <a href="?keyword=<?php echo urlencode($keyword); ?>&sort=price_asc&category=<?= $cat_input ?>">Giá: Thấp đến Cao</a>
-                        <a href="?keyword=<?php echo urlencode($keyword); ?>&sort=price_desc&category=<?= $cat_input ?>">Giá: Cao đến Thấp</a>
+                        <a href="?keyword=<?php echo $keyword; ?>&sort=price_asc&category=<?= $cat_input ?>">Giá: Thấp đến Cao</a>
+                        <a href="?keyword=<?php echo $keyword; ?>&sort=price_desc&category=<?= $cat_input ?>">Giá: Cao đến Thấp</a>
                     </div>
                 </div>
             </div>
