@@ -189,13 +189,6 @@ function getImgUrl($path)
             </div>
 
             <div class="cart-shop-group">
-                <div class="shop-header">
-                    <input type="checkbox" class="shop-check" onchange="checkShop(this)">
-                    <span class="badge-mall">Yêu thích+</span>
-                    <span style="font-weight: 500;">Sài Gòn New (LaiRai Official)</span>
-                    <i class="fas fa-comment-dots text-danger ml-2"></i>
-                </div>
-
                 <?php foreach ($_SESSION['cart'] as $id => $item): ?>
                     <div class="cart-item" id="row-<?= $id ?>">
                         <div class="item-info">
