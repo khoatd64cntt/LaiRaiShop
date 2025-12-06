@@ -1,10 +1,22 @@
 <?php
 // FILE: page/SellerPage/ProductPage/add_product.php
 
-// 1. KẾT NỐI SESSION
+// 1. KẾT NỐI CONFIG & SESSION
+// Định nghĩa đường dẫn tới config.php (lùi ra 3 cấp thư mục)
+$config_path = __DIR__ . '/../../../config.php';
+if (file_exists($config_path)) {
+    require_once $config_path;
+}
+
 $session_path = __DIR__ . '/../types/seller_session.php';
-if (file_exists($session_path)) require_once $session_path;
-else die("Lỗi: Không tìm thấy file session.");
+if (file_exists($session_path)) {
+    require_once $session_path;
+} else {
+    // Fallback tìm đường dẫn tuyệt đối
+    $real_session_path = $_SERVER['DOCUMENT_ROOT'] . '/LaiRaiShop/page/SellerPage/types/seller_session.php';
+    if (file_exists($real_session_path)) require_once $real_session_path;
+    else die("Lỗi: Không tìm thấy file session.");
+}
 
 $sid = $_SESSION['shop_id'];
 $msg = "";
@@ -18,7 +30,7 @@ if (isset($_POST['submit_add'])) {
     $desc = $_POST['description'];
 
     // --- XỬ LÝ UPLOAD ẢNH ---
-    // Định nghĩa thư mục lưu ảnh vật lý: D:/XAMPP/htdocs/LaiRaiShop/images/products/
+    // Định nghĩa thư mục lưu ảnh vật lý
     $target_dir = $_SERVER['DOCUMENT_ROOT'] . "/LaiRaiShop/images/products/";
 
     // Tạo thư mục nếu chưa có
@@ -27,11 +39,11 @@ if (isset($_POST['submit_add'])) {
     }
 
     $filename = basename($_FILES["image"]["name"]);
-    // Đổi tên file để tránh trùng lặp: time_tên_ảnh
+    // Đổi tên file để tránh trùng lặp
     $new_filename = time() . "_" . $filename;
     $target_file = $target_dir . $new_filename;
 
-    // Đường dẫn để lưu vào SQL (Dạng tương đối): /images/products/ten_anh.jpg
+    // Đường dẫn để lưu vào SQL
     $db_image_path = "/images/products/" . $new_filename;
 
     if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
@@ -62,7 +74,12 @@ $cats = $conn->query("SELECT * FROM categories");
     <meta charset="UTF-8">
     <title>Thêm sản phẩm</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-    <?php include ROOT_PATH . '/includes/head_meta.php'; ?>
+    
+    <?php 
+    $meta_path = $_SERVER['DOCUMENT_ROOT'] . '/LaiRaiShop/includes/head_meta.php';
+    if(file_exists($meta_path)) include $meta_path;
+    ?>
+
     <style>
         body {
             background-color: #f4f6f9;
