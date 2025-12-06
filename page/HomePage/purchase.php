@@ -29,7 +29,7 @@ $status_list = [
 $current_status = isset($_GET['status']) && array_key_exists($_GET['status'], $status_list) ? $_GET['status'] : 'all';
 
 // --- XỬ LÝ PHÂN TRANG & QUERY ---
-$limit = 5; 
+$limit = 5;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 if ($page < 1) $page = 1;
 $offset = ($page - 1) * $limit;
@@ -47,20 +47,28 @@ $total_pages = ceil($total_orders / $limit);
 $sql_orders = "SELECT * FROM orders $where_clause ORDER BY created_at DESC LIMIT $limit OFFSET $offset";
 $result_orders = $conn->query($sql_orders);
 
-function getStatusBadge($status) {
+function getStatusBadge($status)
+{
     switch ($status) {
-        case 'pending': return 'badge-warning';
-        case 'paid': return 'badge-info';
-        case 'shipped': return 'badge-primary';
-        case 'completed': return 'badge-success';
-        case 'cancelled': return 'badge-danger';
-        default: return 'badge-secondary';
+        case 'pending':
+            return 'badge-warning';
+        case 'paid':
+            return 'badge-info';
+        case 'shipped':
+            return 'badge-primary';
+        case 'completed':
+            return 'badge-success';
+        case 'cancelled':
+            return 'badge-danger';
+        default:
+            return 'badge-secondary';
     }
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <title>Đơn Mua | LaiRaiShop</title>
@@ -68,22 +76,82 @@ function getStatusBadge($status) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style/homepage.css?v=4">
     <link rel="icon" href="../../images/icon.png" />
-    
+
     <style>
-        body { background-color: #f5f5f5; font-size: 14px; }
-        
+        body {
+            background-color: #f5f5f5;
+            font-size: 14px;
+        }
+
         /* Sidebar */
-        .profile-sidebar { width: 100%; padding: 10px 0; }
-        .user-brief { display: flex; align-items: center; padding-bottom: 15px; border-bottom: 1px solid #efefef; margin-bottom: 15px; }
-        .user-brief img { width: 50px; height: 50px; border-radius: 50%; border: 1px solid #e1e1e1; margin-right: 15px; }
-        .user-brief div { font-weight: 600; color: #333; overflow: hidden; text-overflow: ellipsis; }
-        .user-brief a { font-weight: 400; color: #888; font-size: 12px; text-decoration: none; }
-        .sidebar-menu { list-style: none; padding: 0; margin: 0; }
-        .sidebar-menu li { margin-bottom: 10px; }
-        .sidebar-menu a { text-decoration: none; color: #333; display: block; padding: 5px 0; transition: color 0.2s; }
-        .sidebar-menu a:hover { color: #ee4d2d; }
-        .sidebar-menu li.active > a { color: #ee4d2d; font-weight: 600; }
-        .sidebar-menu i { width: 25px; text-align: center; color: #555; margin-right: 10px; }
+        .profile-sidebar {
+            width: 100%;
+            padding: 10px 0;
+        }
+
+        .user-brief {
+            display: flex;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #efefef;
+            margin-bottom: 15px;
+        }
+
+        .user-brief img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 1px solid #e1e1e1;
+            margin-right: 15px;
+        }
+
+        .user-brief div {
+            font-weight: 600;
+            color: #333;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-brief a {
+            font-weight: 400;
+            color: #888;
+            font-size: 12px;
+            text-decoration: none;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar-menu a {
+            text-decoration: none;
+            color: #333;
+            display: block;
+            padding: 5px 0;
+            transition: color 0.2s;
+        }
+
+        .sidebar-menu a:hover {
+            color: #ee4d2d;
+        }
+
+        .sidebar-menu li.active>a {
+            color: #ee4d2d;
+            font-weight: 600;
+        }
+
+        .sidebar-menu i {
+            width: 25px;
+            text-align: center;
+            color: #555;
+            margin-right: 10px;
+        }
 
         /* Tabs trạng thái */
         .purchase-tabs {
@@ -91,10 +159,11 @@ function getStatusBadge($status) {
             display: flex;
             border-bottom: 1px solid #e1e1e1;
             margin-bottom: 20px;
-            box-shadow: 0 1px 1px 0 rgba(0,0,0,.05);
+            box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .05);
             border-radius: 2px;
             overflow-x: auto;
         }
+
         .purchase-tabs a {
             padding: 15px 20px;
             cursor: pointer;
@@ -106,43 +175,108 @@ function getStatusBadge($status) {
             text-decoration: none;
             border-bottom: 2px solid transparent;
         }
-        .purchase-tabs a:hover { color: #ee4d2d; }
-        .purchase-tabs a.active { color: #ee4d2d; border-bottom: 2px solid #ee4d2d; font-weight: 500; }
-        
+
+        .purchase-tabs a:hover {
+            color: #ee4d2d;
+        }
+
+        .purchase-tabs a.active {
+            color: #ee4d2d;
+            border-bottom: 2px solid #ee4d2d;
+            font-weight: 500;
+        }
+
         /* Order Card */
-        .order-card { background: #fff; margin-bottom: 20px; box-shadow: 0 1px 1px 0 rgba(0,0,0,.05); border-radius: 2px; }
-        .order-header { padding: 15px 20px; border-bottom: 1px solid #eaeaea; display: flex; justify-content: space-between; align-items: center; background: #fafafa; }
-        .order-body { padding: 0 20px; }
-        .order-item { display: flex; padding: 15px 0; border-bottom: 1px solid #eaeaea; }
-        .order-item:last-child { border-bottom: none; }
-        .item-img { width: 80px; height: 80px; object-fit: cover; border: 1px solid #e1e1e1; margin-right: 15px; }
-        .order-footer { padding: 20px; background: #fffcf5; border-top: 1px dotted #e1e1e1; text-align: right; }
-        .total-money { color: #ee4d2d; font-size: 20px; font-weight: bold; }
-        
-        .pagination { justify-content: center; margin-top: 30px; }
-        .page-link { color: #555; }
-        .page-item.active .page-link { background-color: #ee4d2d; border-color: #ee4d2d; color: white; }
+        .order-card {
+            background: #fff;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .05);
+            border-radius: 2px;
+        }
+
+        .order-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eaeaea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fafafa;
+        }
+
+        .order-body {
+            padding: 0 20px;
+        }
+
+        .order-item {
+            display: flex;
+            padding: 15px 0;
+            border-bottom: 1px solid #eaeaea;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border: 1px solid #e1e1e1;
+            margin-right: 15px;
+        }
+
+        .order-footer {
+            padding: 20px;
+            background: #fffcf5;
+            border-top: 1px dotted #e1e1e1;
+            text-align: right;
+        }
+
+        .total-money {
+            color: #ee4d2d;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .pagination {
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .page-link {
+            color: #555;
+        }
+
+        .page-item.active .page-link {
+            background-color: #ee4d2d;
+            border-color: #ee4d2d;
+            color: white;
+        }
 
         /* CSS Mới cho Empty State */
         .empty-state-box {
             background: #fff;
             text-align: center;
             padding: 50px 20px;
-            box-shadow: 0 1px 1px 0 rgba(0,0,0,.05);
+            box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .05);
             border-radius: 2px;
-            min-height: 400px; /* Chiều cao tối thiểu */
+            min-height: 400px;
+            /* Chiều cao tối thiểu */
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
         }
+
         .empty-icon {
             font-size: 80px;
-            color: #e0e0e0; /* Màu xám nhạt */
+            color: #e0e0e0;
+            /* Màu xám nhạt */
             margin-bottom: 20px;
         }
     </style>
 </head>
+
 <body>
 
     <div class="sticky-header-wrapper">
@@ -150,9 +284,9 @@ function getStatusBadge($status) {
             <div class="container header-content">
                 <div class="logo"><a href="homepage.php"><img src="../../images/logo.png" alt="Logo"></a></div>
                 <div class="top-bar-right" style="margin-left: auto;">
-                     <a href="homepage.php" class="text-white">Trang Chủ</a> 
-                     <span class="mx-2 text-white">|</span> 
-                     <a href="LoginPage/logout.php" class="text-white">Đăng Xuất</a>
+                    <a href="homepage.php" class="text-white">Trang Chủ</a>
+                    <span class="mx-2 text-white">|</span>
+                    <a href="LoginPage/logout.php" class="text-white">Đăng Xuất</a>
                 </div>
             </div>
         </header>
@@ -160,7 +294,7 @@ function getStatusBadge($status) {
 
     <div class="container mt-4 mb-5">
         <div class="row">
-            
+
             <div class="col-md-3">
                 <div class="profile-sidebar">
                     <div class="user-brief">
@@ -180,12 +314,12 @@ function getStatusBadge($status) {
             </div>
 
             <div class="col-md-9">
-                
+
                 <div class="purchase-tabs">
                     <?php foreach ($status_list as $key => $label): ?>
-                        <a href="purchase.php?status=<?= $key ?>" 
-                           class="<?= ($current_status == $key) ? 'active' : '' ?>">
-                           <?= $label ?>
+                        <a href="purchase.php?status=<?= $key ?>"
+                            class="<?= ($current_status == $key) ? 'active' : '' ?>">
+                            <?= $label ?>
                         </a>
                     <?php endforeach; ?>
                 </div>
@@ -214,11 +348,11 @@ function getStatusBadge($status) {
                                               WHERE oi.oid = $oid";
                                 $res_items = $conn->query($sql_items);
                                 ?>
-                                
+
                                 <?php while ($item = $res_items->fetch_assoc()): ?>
-                                    <?php 
-                                        $imgSrc = $item['main_image'];
-                                        if (strpos($imgSrc, 'http') !== 0) $imgSrc = "../../" . ltrim($imgSrc, '/');
+                                    <?php
+                                    $imgSrc = $item['main_image'];
+                                    if (strpos($imgSrc, 'http') !== 0) $imgSrc = "../../" . ltrim($imgSrc, '/');
                                     ?>
                                     <a href="detail.php?id=<?= $item['pid'] ?>" class="text-decoration-none text-dark">
                                         <div class="order-item">
@@ -237,16 +371,16 @@ function getStatusBadge($status) {
 
                             <div class="order-footer">
                                 <div class="mb-3">
-                                    <i class="fas fa-file-invoice-dollar text-danger"></i> Thành tiền: 
+                                    <i class="fas fa-file-invoice-dollar text-danger"></i> Thành tiền:
                                     <span class="total-money"><?= number_format($order['total_amount'], 0, ',', '.') ?>₫</span>
                                 </div>
-                                <div class="action-buttons">
-                                    <?php if($order['status'] == 'completed'): ?>
+                                <!-- <div class="action-buttons">
+                                    <?php if ($order['status'] == 'completed'): ?>
                                         <button class="btn btn-danger">Mua Lại</button>
                                         <button class="btn btn-outline-secondary">Đánh Giá</button>
                                     <?php endif; ?>
                                     <button class="btn btn-outline-secondary">Liên Hệ Người Bán</button>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     <?php endwhile; ?>
@@ -289,7 +423,7 @@ function getStatusBadge($status) {
             </div>
         </div>
     </div>
-    
+
     <footer class="lairai-footer">
         <div class="container">
             <div class="footer-content">
@@ -403,4 +537,5 @@ function getStatusBadge($status) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="<?php echo BASE_URL; ?>/js/homepage.js?v=4"></script>
 </body>
+
 </html>
