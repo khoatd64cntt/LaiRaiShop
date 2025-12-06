@@ -371,7 +371,7 @@ ul {
 }
 
 .lairai-control:hover {
-    background-color: #135E4B !important;
+    background-color: #e6e6e6 !important;
     color: #fff !important;
     box-shadow: 0 4px 12px rgba(19, 94, 75, 0.4);
     transform: translateY(-50%) scale(1.1) !important;
