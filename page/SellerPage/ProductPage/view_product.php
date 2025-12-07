@@ -72,7 +72,6 @@ if (!empty($imgSrc)) {
         .sidebar-header { padding: 25px 20px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; gap: 10px; }
         .sidebar-header i { font-size: 24px; color: #135E4B; }
         .sidebar-header h2 { font-size: 20px; color: #135E4B; font-weight: 700; }
-        
         .user-profile { padding: 20px; text-align: center; background: #f9f9f9; border-bottom: 1px solid #eee; }
         .user-profile img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 2px solid #088178; }
         .user-profile h4 { font-size: 16px; margin-bottom: 5px; }
@@ -139,10 +138,10 @@ if (!empty($imgSrc)) {
                 <a href="<?php echo BASE_URL; ?>/page/HomePage/homepage.php"><i class="fas fa-home"></i> Xem Shop (Client)</a>
             </li>
             <li>
-                <a href="../HomePage/LoginPage/logout.php" style="color: #e74c3c;">
-                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
-                </a>
-            </li>
+    <a href="<?= BASE_URL ?>/page/HomePage/LoginPage/logout.php" style="color: #e74c3c;">
+        <i class="fas fa-sign-out-alt"></i> Đăng xuất
+    </a>
+</li>
         </ul>
     </div>
 
